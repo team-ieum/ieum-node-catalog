@@ -118,6 +118,13 @@ class BaseCompareTest(unittest.TestCase):
         self.assertEqual(validate.check(*head), [])
         self.assertEqual(validate.check_against_base(base, head), [])
 
+    def test_self_alias_can_follow_rename(self):
+        apps = {"ai": APP}
+        base = (apps, {"ai.reasoning": _event()}, [], {"ai.reasoning": "ai.reasoning"})
+        head = (apps, {"ai.think": _event()}, [], {"ai.reasoning": "ai.think"})
+        self.assertEqual(validate.check(*head), [])
+        self.assertEqual(validate.check_against_base(base, head), [])
+
     def test_alias_cannot_be_removed_or_changed(self):
         base = self.snap(["gmail.send"], aliases={"old": "gmail.send"})
         self.assertTrue(validate.check_against_base(base, self.snap(["gmail.send"])))

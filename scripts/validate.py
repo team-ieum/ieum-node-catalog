@@ -138,7 +138,8 @@ def check_against_base(base, head):
     _, h_events, h_presets, h_aliases = head
     errs = []
     for old, new in b_aliases.items():
-        if h_aliases.get(old) != new:
+        # 자기 별칭으로 저장된 노드는 원래 그 이름으로 풀렸으니 새 이름으로 바꿔도 의미가 같다. 삭제는 아래 이름 검사가 잡는다.
+        if new != old and h_aliases.get(old) != new:
             errs.append(f"aliases.json: '{old}' → '{new}'를 지우거나 바꿀 수 없다.")
     h_names = set(h_events) | {p.get("id") for p in h_presets}
     for name in sorted(set(b_events) | {p.get("id") for p in b_presets}):
