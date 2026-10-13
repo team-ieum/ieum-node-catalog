@@ -22,6 +22,8 @@
 
 ## 항목 필드
 
+이벤트 파일 기준. 프리셋은 `node_type`·`kind`·`trigger_type`·`builder`를 쓰지 않는다(로더가 정한다).
+
 | 필드 | 필수 | 설명 |
 |---|---|---|
 | `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` |
@@ -29,7 +31,7 @@
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키 또는 `builtin:github_*`(ACTION 전용 동적 서비스 액션 — `tools.registry.resolve_action_fn`이 푼다) |
 | `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`·`config.triggerType`·`config.serviceType`은 로더가 넣는다(쓰면 CI 거부) |
-| `builder` / `generation` | ⬜ | 기본 `true`. 액션과 앱 트리거(`trigger.gmail_new_email`·`trigger.github_new_issue`)는 `generation: false`(실행·생성 전환 전 — 채팅 수정에서는 pass-through로 보존), 앱 도구 AI 프리셋은 `builder: false`. 실행할 수 없는 액션(`action.gmail_send` — SMTP 자격증명 주입 경로 없음)도 `builder: false` |
+| `builder` / `generation` | ⬜ | 기본 `true`. 액션과 앱 트리거(`gmail.new_email`·`github.new_issue`)는 `generation: false`, 실행할 수 없는 액션(`gmail.send_email` — SMTP 자격증명 주입 경로 없음)은 `builder: false`. 프리셋은 `builder`를 쓰지 않는다(늘 빌더 비노출) |
 | `title` / `description` | builder면 ✅ | 빌더에 보이는 항목 이름·한 문장 설명 |
 | `tags` / `menu` | generation이면 ✅ | LLM 태그 검색·항상층 메뉴 |
 | `inputFields` | ⬜ | config 직속 필드(Field 목록). AI 항목은 공통 필드(llmProvider·model·prompt·credentialId·systemMessage) 뒤에 붙고, 같은 key를 쓰면 공통 필드에 병합된다(예: 템플릿별 prompt `llm.hint`) |
@@ -39,6 +41,7 @@
 | `match` | ⬜ | 저장된 노드 → 항목 매칭 `{경로: 값}`(값 null = 없거나 빔). 평가 전 type 대문자·문자열 tools → `{name}` 정규화(FE도 같게). 없으면 type + tool_key + triggerType로 자동. builder 항목끼리 같으면 거부 |
 | `fields` | ⬜ | 도구 필드 덮어쓰기 `{파라미터: 부분 Field}`. **도구당 한 항목만**(액션이 있으면 액션, 없으면 그 AI 항목). 시그니처 밖 키는 title·type 포함 전체 정의 |
 | `golden_snippet` | ⬜ | 완성형 노드 예시(검색층 few-shot). 그 자체로 검증을 통과해야 함 |
+| `app` | ⬜ | 프리셋만. 앱 키(apps.json 키) — serviceType을 얻는다 |
 | `service` | ⬜ | 동적 서브에이전트 서비스명(ai.github_query) |
 
 `slots`·`allowed_config_fields`를 파일에 쓰면 로더가 거부한다.
@@ -65,7 +68,7 @@
 - 슬롯 = label·description + 직속 필드 + `optionsSource`가 있는 도구 필드(항상 선택). `llm.slot: false` 제외.
 - 슬롯 kind = `llm.kind` → `llm.inject` → choices면 enum → cron → dict면 mapping → string.
 - 허용 config 키 = fixed.config 키 ∪ 직속 필드 최상위 키 ∪ (직속 optionsSource 필드가 있으면 `_names`).
-- 카탈로그 응답의 `fixed.config.brand`는 로더가 계산한다(`tools.registry.brand_for_entry`): 앱 트리거(TRIGGER + `app`)는 `triggerType` 접두사 → `SERVICE_BRAND`(GMAIL_NEW_EMAIL → `gmail`, GITHUB_NEW_ISSUE → `github`), 그 밖에 tool_key가 있거나 AI가 아니면 `brand_for_node(fixed)`, tool_key 없는 AI는 `service` 필드 → `SERVICE_BRAND`(없으면 `openai`). 로더 안에서는 intent 경로(`subagent_service_for_node`)를 타지 않는다 — `load_templates` 재진입으로 기동이 무한 재귀한다. 레지스트리 항목의 `fixed`에는 넣지 않고 응답 복사본에만 얹는다(생성 경로가 같은 `fixed`를 쓴다).
+- 카탈로그 응답의 `fixed.config.brand`는 로더가 계산한다: 이벤트와 앱 프리셋은 apps.json `brand`, 앱 없는 프리셋은 `service` → `SERVICE_BRAND`(없으면 `openai`). 로더 안에서는 intent 경로(`subagent_service_for_node`)를 타지 않는다 — `load_templates` 재진입으로 기동이 무한 재귀한다. 레지스트리 항목의 `fixed`에는 넣지 않고 응답 복사본에만 얹는다(생성 경로가 같은 `fixed`를 쓴다).
 
 ## 불변 규칙
 
