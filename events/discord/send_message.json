@@ -1,0 +1,45 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Discord 메시지 보내기",
+  "description": "등록한 웹훅으로 Discord에 메시지를 보내요.",
+  "tool_key": "discord",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {
+      "tools": [
+        {
+          "name": "discord"
+        }
+      ]
+    }
+  },
+  "fields": {
+    "webhookCredentialId": {
+      "title": "웹훅",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "optionsSource": "discord.webhooks",
+      "llm": {
+        "hint": "보유 Discord 웹훅 자격증명 ID(가용 목록에서 선택). 미상이면 비움."
+      }
+    },
+    "content": {
+      "title": "메시지",
+      "type": "text"
+    },
+    "username": {
+      "title": "보낸 사람 이름"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "message",
+      "title": "결과 메시지",
+      "type": "string"
+    }
+  ]
+}

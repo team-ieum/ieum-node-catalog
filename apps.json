@@ -1,0 +1,18 @@
+{
+  "gmail":           {"provider": "google",  "title": "Gmail",           "brand": "gmail",   "serviceType": "GOOGLE",  "auth": "google_oauth"},
+  "google_calendar": {"provider": "google",  "title": "Google Calendar", "brand": "google",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
+  "google_drive":    {"provider": "google",  "title": "Google Drive",    "brand": "google",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
+  "google_sheets":   {"provider": "google",  "title": "Google Sheets",   "brand": "sheets",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
+  "notion":          {"provider": "notion",  "title": "Notion",          "brand": "notion",  "serviceType": "NOTION",  "auth": "notion_token"},
+  "github":          {"provider": "github",  "title": "GitHub",          "brand": "github",  "serviceType": "GITHUB",  "auth": "github_token"},
+  "slack":           {"provider": "slack",   "title": "Slack",           "brand": "slack",   "serviceType": "SLACK",   "auth": "webhook_credential"},
+  "discord":         {"provider": "discord", "title": "Discord",         "brand": "discord", "serviceType": "DISCORD", "auth": "webhook_credential"},
+  "webhook":         {"provider": "ieum",    "title": "웹훅",             "brand": "webhook", "serviceType": null,      "auth": null},
+  "schedule":        {"provider": "ieum",    "title": "스케줄",           "brand": "webhook", "serviceType": null,      "auth": null},
+  "manual":          {"provider": "ieum",    "title": "수동 실행",         "brand": "webhook", "serviceType": null,      "auth": null},
+  "http":            {"provider": "ieum",    "title": "HTTP",            "brand": "webhook", "serviceType": null,      "auth": null},
+  "branch":          {"provider": "ieum",    "title": "분기",             "brand": "filter",  "serviceType": null,      "auth": null},
+  "transform":       {"provider": "ieum",    "title": "변환",             "brand": "filter",  "serviceType": null,      "auth": null},
+  "approval":        {"provider": "ieum",    "title": "승인",             "brand": "webhook", "serviceType": null,      "auth": null},
+  "ai":              {"provider": "ieum",    "title": "AI",              "brand": "openai",  "serviceType": null,      "auth": null}
+}

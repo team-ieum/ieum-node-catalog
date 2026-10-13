@@ -1,0 +1,44 @@
+{
+  "node_type": "TRIGGER",
+  "kind": "trigger",
+  "trigger_type": "WEBHOOK",
+  "title": "웹훅",
+  "description": "외부에서 신호가 오면 시작해요.",
+  "tool_key": null,
+  "tags": [
+    "웹훅",
+    "webhook",
+    "외부 이벤트",
+    "수신",
+    "콜백",
+    "트리거"
+  ],
+  "menu": "WEBHOOK 트리거: 외부 이벤트 수신 시 실행",
+  "fixed": {
+    "type": "TRIGGER",
+    "config": {}
+  },
+  "outputDynamic": true,
+  "golden_snippet": {
+    "id": "node-1",
+    "type": "TRIGGER",
+    "label": "웹훅 수신 트리거",
+    "description": "외부에서 신호가 오면 자동으로 시작돼요.",
+    "config": {
+      "triggerType": "WEBHOOK"
+    }
+  },
+  "inputFields": [
+    {
+      "key": "includeRaw",
+      "title": "원문 그대로 받기",
+      "type": "boolean",
+      "default": false,
+      "ref": false,
+      "description": "서명 헤더를 보내는 서비스(Stripe·GitHub)용이에요. 켜면 출력이 method·headers·query·body·rawBody가 되고, 헤더 이름은 소문자로 바꾸고 '-'는 '_'로 바꿔요. Authorization·Cookie 값은 가려져요.",
+      "llm": {
+        "slot": false
+      }
+    }
+  ]
+}
