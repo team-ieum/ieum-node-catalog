@@ -6,9 +6,6 @@
   "tool_key": null,
   "builder": true,
   "generation": false,
-  "match": {
-    "type": "AI"
-  },
   "fixed": {
     "type": "AI",
     "config": {

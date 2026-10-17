@@ -101,6 +101,7 @@
   ],
   "golden_snippet": {
     "id": "node-3",
+    "event": "branch.if",
     "type": "CONDITION",
     "label": "긴급 여부 분기",
     "description": "앞의 결과가 조건에 맞는지 보고 갈 길을 나눠요.",

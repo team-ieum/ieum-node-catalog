@@ -8,13 +8,7 @@
   "generation": false,
   "fixed": {
     "type": "ACTION",
-    "config": {
-      "tools": [
-        {
-          "name": "builtin:google_sheets_read"
-        }
-      ]
-    }
+    "config": {}
   },
   "fields": {
     "spreadsheet_id": {

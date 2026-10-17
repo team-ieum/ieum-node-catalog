@@ -14,11 +14,9 @@
 - `apps.json` — 앱 키 → `provider`(공급자, 계정 연결·UI 묶음 단위. 내장은 `ieum`), `title`, `brand`(아이콘 키),
   `serviceType`(BE 표시 분류, 내장은 null), `auth`(BE 인증 준비 키, 내장은 null).
 - `presets.json` — AI 프리셋 배열. 이벤트가 아니다: 생성 메뉴·슬롯 카탈로그·hydrate만 읽고, 빌더에는 나오지 않는다.
-  프리셋으로 만든 노드의 `event`는 `ai.agent`. `node_type`·`builder`를 쓰지 않는다. `match`를 쓰면 빌더엔 안 나와도
-  저장 노드 매칭(정적 검증 칸 규칙) 후보가 된다. 앱 도구 프리셋은 `app`(앱 키)으로 serviceType을 얻는다.
-- `aliases.json` — 옛 이름 → 이어받을 이벤트. 지우거나 값을 바꾸지 않는다(CI가 막는다). 이벤트를 지우거나 이름을 바꿀 때
-  옛 이름을 키로 추가한다. 다시 바꾸면 기존 별칭은 그대로 두고 새 별칭을 잇는다(`"old": "a"`, `"a": "b"` — 끝이 이벤트면 된다).
-  예외: 이름이 그대로인 자기 별칭(`"ai.agent": "ai.agent"`)은 그 이벤트 이름을 바꿀 때 값을 새 이름으로 바꿀 수 있다.
+  프리셋으로 만든 노드의 `event`는 `ai.agent`. `node_type`·`builder`를 쓰지 않는다. `match`(`config.tools`·`agentType` 기준)는
+  **AI 노드에 한해** 프리셋 칸 규칙(정적 검증)을 고르는 데만 쓴다. 노드 종류 판정은 `event`가 한다.
+  앱 도구 프리셋은 `app`(앱 키)으로 provider·brand를 얻는다.
 
 ## 항목 필드
 
@@ -30,7 +28,7 @@
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키 또는 `builtin:github_*`(ACTION 전용 동적 서비스 액션 — `tools.registry.resolve_action_fn`이 푼다) |
-| `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`·`config.triggerType`·`config.serviceType`은 로더가 넣는다(쓰면 CI 거부) |
+| `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 `{"type":"ACTION","config":{}}` |
 | `builder` / `generation` | ⬜ | 기본 `true`. 액션과 앱 트리거(`gmail.new_email`·`github.new_issue`)는 `generation: false`, 실행할 수 없는 액션(`gmail.send_email` — SMTP 자격증명 주입 경로 없음)은 `builder: false`. 프리셋은 `builder`를 쓰지 않는다(늘 빌더 비노출) |
 | `title` / `description` | builder면 ✅ | 빌더에 보이는 항목 이름·한 문장 설명 |
 | `tags` / `menu` | generation이면 ✅ | LLM 태그 검색·항상층 메뉴 |
@@ -38,10 +36,10 @@
 | `outputFields` | ⬜ | 출력 필드(Field 목록). AI 항목은 공통 출력(output)이 앞에 붙는다. 액션은 도구 성공 반환 키와 같아야 한다(성공 테스트의 `assert_matches_outputs`) |
 | `outputDynamic` | ⬜ | 최상위 출력 키가 실행마다 다름(수동·웹훅 트리거) |
 | `outputsFrom` | ⬜ | 출력 키를 노드 config에서 읽음(`config.mappings` = 그 dict의 키, `config.outputFields` = 원소의 `key`). 경로 값이 비어 있지 않으면 정적 `outputFields` **전체를 대체**하고(합치지 않는다), 비었거나 없으면 정적 `outputFields`를 쓴다 |
-| `match` | ⬜ | 저장된 노드 → 항목 매칭 `{경로: 값}`(값 null = 없거나 빔). 평가 전 type 대문자·문자열 tools → `{name}` 정규화(FE도 같게). 없으면 type + tool_key + triggerType로 자동. builder 항목끼리 같으면 거부 |
+| `match` | ⬜ | 프리셋만. AI 노드 → 프리셋 매칭 `{경로: 값}`(값 null = 없거나 빔). 평가 때 `type`은 노드 표기가 아니라 event가 정한 `AI`로 보고, 문자열 tools 원소는 정규화하지 않는다(agent Task 3·5). 조건 수 내림차순으로 평가하고, 프리셋끼리 같으면 거부. 이벤트에 쓰면 CI 거부(노드는 `event`로만 판정) |
 | `fields` | ⬜ | 도구 필드 덮어쓰기 `{파라미터: 부분 Field}`. **도구당 한 항목만**(액션이 있으면 액션, 없으면 그 AI 항목). 시그니처 밖 키는 title·type 포함 전체 정의 |
-| `golden_snippet` | ⬜ | 완성형 노드 예시(검색층 few-shot). 그 자체로 검증을 통과해야 함 |
-| `app` | ⬜ | 프리셋만. 앱 키(apps.json 키) — serviceType을 얻는다 |
+| `golden_snippet` | ⬜ | 완성형 노드 예시(검색층 few-shot). `event` 필수: 이벤트는 자기 이름, 프리셋은 `ai.agent`. `config.triggerType`·`config.serviceType`, ACTION `config.tools`를 쓰지 않는다(CI 거부). ACTION 칸은 `config.<칸>`. 그 자체로 검증을 통과해야 함 |
+| `app` | ⬜ | 프리셋만. 앱 키(apps.json 키) — provider·brand를 얻는다 |
 | `service` | ⬜ | 동적 서브에이전트 서비스명(ai.github_query) |
 
 `slots`·`allowed_config_fields`를 파일에 쓰면 로더가 거부한다.
@@ -64,7 +62,7 @@
 
 ## 파생 규칙 (core/node_fields.py)
 
-- 경로: 직속 `config.<key>`, 도구 필드 `config.tools.0.config.<key>`.
+- 경로: 직속 `config.<key>`. ACTION의 도구 필드도 `config.<key>`(ACTION config가 곧 칸). AI 프리셋 도구 필드는 `config.tools.0.config.<key>`. 정적 검증 에러 `field`도 이 경로를 그대로 쓴다.
 - 슬롯 = label·description + 직속 필드 + `optionsSource`가 있는 도구 필드(항상 선택). `llm.slot: false` 제외.
 - 슬롯 kind = `llm.kind` → `llm.inject` → choices면 enum → cron → dict면 mapping → string.
 - 허용 config 키 = fixed.config 키 ∪ 직속 필드 최상위 키 ∪ (직속 optionsSource 필드가 있으면 `_names`).
@@ -73,12 +71,12 @@
 ## 불변 규칙
 
 1. 이름 = 경로, 프리셋 id는 이벤트 이름과 겹치지 않는다.
-2. `tool_key`·`fixed.config.tools[*].name`은 `_TOOL_MAP` 키이거나 `resolve_action_fn`이 푸는 `builtin:github_*`(`mcp` 센티넬 제외).
+2. `tool_key`와 AI 항목 `fixed.config.tools[*].name`은 `_TOOL_MAP` 키이거나 `resolve_action_fn`이 푸는 `builtin:github_*`(`mcp` 센티넬 제외).
 3. 도구 하나의 `fields`는 한 항목에만.
 4. `optionsInputs`는 같은 항목의 필드 key만 가리킨다.
 5. `golden_snippet`은 단독으로 `WorkflowValidator` 노드 검증을 통과해야 한다.
-6. builder 항목의 match는 서로 달라야 한다(평가 순서: 조건 수 내림차순).
+6. 프리셋의 match는 서로 달라야 한다(평가 순서: 조건 수 내림차순). 이벤트는 match를 쓰지 않는다.
 
 ## 버전 규칙
 
-BE 카탈로그 ⊇ agent 카탈로그. 이벤트 추가는 BE 서브모듈을 먼저 올리고, 삭제·이름 변경은 agent를 먼저 올린다.
+BE 카탈로그 ⊇ agent 카탈로그. 이벤트 추가는 BE 서브모듈을 먼저 올리고, 삭제·이름 변경은 agent를 먼저 올린다. 삭제·이름 변경은 CI(`--base`)가 경고만 한다. 저장 데이터가 생기면 규칙을 다시 정한다.

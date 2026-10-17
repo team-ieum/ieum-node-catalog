@@ -1,6 +1,6 @@
 """카탈로그 형식 검사(CI). 표준 라이브러리만 쓴다.
 
-이름·경로·필수 키·별칭 규칙만 본다. Field 속성과 도구 시그니처 대조는 agent 로더가 서브모듈을 올릴 때
+이름·경로·필수 키·금지 키만 본다. Field 속성과 도구 시그니처 대조는 agent 로더가 서브모듈을 올릴 때
 pytest로 검사한다(도구 모듈이 agent에 있다)."""
 import io
 import json
@@ -19,8 +19,11 @@ NODE_TYPES = {"TRIGGER", "AI", "HTTP", "CONDITION", "TRANSFORM", "APPROVAL", "AC
 APP_KEYS = {"provider", "title", "brand", "serviceType", "auth"}
 # 경로·로더가 정하는 값 — 파일에 쓰면 두 군데가 어긋난다.
 EVENT_FORBIDDEN = {"id", "app", "slots", "allowed_config_fields"}
-# 프리셋 match는 허용 — 빌더엔 안 나오지만 저장 노드 매칭(정적 검증 칸 규칙)에 쓰인다.
+# 프리셋 match는 허용 — AI 노드에 한해 프리셋 칸 규칙(정적 검증)을 고르는 데 쓴다. 이벤트는 event로만 판정해 match가 없다.
 PRESET_FORBIDDEN = {"node_type", "builder", "event", "kind", "trigger_type", "slots", "allowed_config_fields"}
+# 노드에서 지운 옛 필드 — 정의 fixed에도 golden_snippet에도 쓰지 않는다.
+OLD_CONFIG_KEYS = ("triggerType", "serviceType")
+PRESET_EVENT = "ai.agent"  # 프리셋으로 만든 노드의 event
 
 
 def _read(path):
@@ -39,7 +42,7 @@ def load(root):
         for name in sorted(os.listdir(app_dir)):
             if name.endswith(".json"):
                 events[f"{app}.{name[:-5]}"] = _read(os.path.join(app_dir, name))
-    return apps, events, _read(os.path.join(root, "presets.json")), _read(os.path.join(root, "aliases.json"))
+    return apps, events, _read(os.path.join(root, "presets.json"))
 
 
 def _options_errors(where, entry):
@@ -57,7 +60,24 @@ def _options_errors(where, entry):
     return errs
 
 
-def check(apps, events, presets, aliases):
+def _snippet_errors(where, snip, event, node_type):
+    if snip is None:
+        return []
+    if not isinstance(snip, dict):
+        return [f"{where}: golden_snippet은 JSON 객체다."]
+    errs = []
+    if snip.get("event") != event:
+        errs.append(f"{where}: golden_snippet.event는 '{event}'여야 한다(지금 {snip.get('event')!r}).")
+    cfg = snip.get("config") if isinstance(snip.get("config"), dict) else {}
+    for k in OLD_CONFIG_KEYS:
+        if k in cfg:
+            errs.append(f"{where}: golden_snippet.config.{k}는 지운 옛 필드다 — 노드 종류는 event로 정한다.")
+    if node_type == "ACTION" and "tools" in cfg:
+        errs.append(f"{where}: ACTION golden_snippet은 칸을 config.<칸>에 쓴다 — config.tools를 쓰지 않는다.")
+    return errs
+
+
+def check(apps, events, presets):
     errs = []
     for key, app in apps.items():
         if not NAME_RE.match(key):
@@ -97,12 +117,17 @@ def check(apps, events, presets, aliases):
             errs.append(f"{name}: trigger_type은 트리거만 쓴다.")
         fixed = ev.get("fixed") if isinstance(ev.get("fixed"), dict) else {}
         cfg = fixed.get("config") if isinstance(fixed.get("config"), dict) else {}
-        for k in ("triggerType", "serviceType"):
+        for k in OLD_CONFIG_KEYS:
             if k in cfg:
-                errs.append(f"{name}: fixed.config.{k}는 로더가 넣는다 — 파일에 쓰지 않는다.")
+                errs.append(f"{name}: fixed.config.{k}는 지운 옛 필드다 — 파일에 쓰지 않는다.")
         if "event" in fixed:
             errs.append(f"{name}: fixed.event는 로더가 넣는다 — 파일에 쓰지 않는다.")
+        if ev.get("node_type") == "ACTION" and "tools" in cfg:
+            errs.append(f"{name}: ACTION 도구는 tool_key로 정한다 — fixed.config.tools를 쓰지 않는다.")
+        if "match" in ev:
+            errs.append(f"{name}: 이벤트는 match를 쓰지 않는다 — 노드는 event로만 판정한다(AI 칸 규칙용 match는 presets.json).")
         errs += _options_errors(name, ev)
+        errs += _snippet_errors(name, ev.get("golden_snippet"), name, ev.get("node_type"))
 
     seen = set()
     for p in presets:
@@ -119,33 +144,16 @@ def check(apps, events, presets, aliases):
         if "app" in p and p["app"] not in apps:
             errs.append(f"presets.json: '{pid}'의 앱 '{p['app']}'가 apps.json에 없다.")
         errs += _options_errors(pid, p)
-
-    for old, new in aliases.items():
-        # 별칭은 고칠 수 없으니(check_against_base) 이름을 두 번 바꾸면 사슬이 된다: 끝까지 따라가 이벤트에 닿으면 된다.
-        seen = set()
-        while new not in events and new in aliases and new not in seen:
-            seen.add(new)
-            new = aliases[new]
-        if new not in events:
-            errs.append(f"aliases.json: '{old}' → '{aliases[old]}'가 이벤트로 이어지지 않는다.")
+        errs += _snippet_errors(pid, p.get("golden_snippet"), PRESET_EVENT, "AI")
     return errs
 
 
 def check_against_base(base, head):
-    """base(병합 대상)에 있던 이름은 head에 남아 있거나 aliases로 이어져야 하고, 별칭은 지우거나 바꿀 수 없다.
-    저장된 노드가 옛 이름을 들고 있어서다."""
-    _, b_events, b_presets, b_aliases = base
-    _, h_events, h_presets, h_aliases = head
-    errs = []
-    for old, new in b_aliases.items():
-        # 자기 별칭으로 저장된 노드는 원래 그 이름으로 풀렸으니 새 이름으로 바꿔도 의미가 같다. 삭제는 아래 이름 검사가 잡는다.
-        if new != old and h_aliases.get(old) != new:
-            errs.append(f"aliases.json: '{old}' → '{new}'를 지우거나 바꿀 수 없다.")
-    h_names = set(h_events) | {p.get("id") for p in h_presets}
-    for name in sorted(set(b_events) | {p.get("id") for p in b_presets}):
-        if name not in h_names and name not in h_aliases:
-            errs.append(f"'{name}'를 지우거나 이름을 바꾸려면 aliases.json에 '{name}': '<이어받을 이벤트>'가 필요하다.")
-    return errs
+    """base(병합 대상)에 있던 이벤트가 head에서 사라지면(삭제·이름 변경) 경고만 한다. 지금은 저장 데이터가 없어
+    막지 않는다 — 저장 노드가 생기면 그 event가 모르는 event가 되니 그때 규칙을 다시 정한다.
+    프리셋은 노드에 저장되지 않아(노드 event는 ai.agent) 보지 않는다."""
+    return [f"경고: 이벤트 '{name}'가 사라졌다(삭제 또는 이름 변경). 이 event를 저장한 노드는 모르는 event가 된다."
+            for name in sorted(set(base[1]) - set(head[1]))]
 
 
 def _snapshot(ref):
@@ -169,7 +177,8 @@ def main(argv):
     if len(argv) == 2 and argv[0] == "--base":
         base = _snapshot(argv[1])
         if base is not None:
-            errs += check_against_base(base, head)
+            for w in check_against_base(base, head):
+                print(w)
     for e in errs:
         print(e)
     return 1 if errs else 0

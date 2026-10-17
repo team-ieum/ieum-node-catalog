@@ -5,9 +5,6 @@
   "title": "수동 실행",
   "description": "버튼을 누르면 시작해요.",
   "tool_key": null,
-  "match": {
-    "type": "TRIGGER"
-  },
   "tags": [
     "수동",
     "manual",
@@ -23,11 +20,10 @@
   "outputDynamic": true,
   "golden_snippet": {
     "id": "node-1",
+    "event": "manual.run",
     "type": "TRIGGER",
     "label": "수동 실행",
     "description": "버튼을 누르면 이 워크플로우가 시작돼요.",
-    "config": {
-      "triggerType": "MANUAL"
-    }
+    "config": {}
   }
 }

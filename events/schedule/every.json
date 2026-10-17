@@ -48,11 +48,11 @@
   ],
   "golden_snippet": {
     "id": "node-1",
+    "event": "schedule.every",
     "type": "TRIGGER",
     "label": "매일 아침 9시 트리거",
     "description": "정해둔 시각이 되면 자동으로 시작돼요.",
     "config": {
-      "triggerType": "SCHEDULE",
       "cron": "0 9 * * *"
     }
   }

@@ -101,6 +101,7 @@
   ],
   "golden_snippet": {
     "id": "node-2",
+    "event": "http.request",
     "type": "HTTP",
     "label": "환율 API 조회",
     "description": "지정한 주소로 요청을 보내 결과를 받아와요.",
