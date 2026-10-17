@@ -18,6 +18,6 @@ jobs:
       - run: python scripts/validate.py
       - if: github.event_name == 'pull_request'
         run: python scripts/validate.py --base origin/${{ github.base_ref }}
-      # main 직접 푸시도 별칭 삭제·이름 변경 규칙을 본다(직전 커밋과 비교).
+      # main 직접 푸시도 직전 커밋과 비교해 이벤트 삭제·이름 변경을 경고한다(실패시키지 않는다).
       - if: github.event_name == 'push'
         run: python scripts/validate.py --base ${{ github.event.before }}

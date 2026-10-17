@@ -8,13 +8,7 @@
   "generation": false,
   "fixed": {
     "type": "ACTION",
-    "config": {
-      "tools": [
-        {
-          "name": "builtin:notion_query_database"
-        }
-      ]
-    }
+    "config": {}
   },
   "fields": {
     "database_id": {

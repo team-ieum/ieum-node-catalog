@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
 import validate  # noqa: E402
@@ -10,7 +11,7 @@ APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": 
 
 def _event(**over):
     ev = {"node_type": "ACTION", "kind": "action", "tool_key": "gmail",
-          "fixed": {"type": "ACTION", "config": {"tools": [{"name": "gmail"}]}}}
+          "fixed": {"type": "ACTION", "config": {}}}
     ev.update(over)
     return ev
 
@@ -23,10 +24,10 @@ def _trigger(**over):
 
 
 class CheckTest(unittest.TestCase):
-    def ok(self, apps=None, events=None, presets=None, aliases=None):
+    def ok(self, apps=None, events=None, presets=None):
         return validate.check(apps if apps is not None else {"gmail": APP},
                               events if events is not None else {"gmail.send_email": _event()},
-                              presets or [], aliases or {})
+                              presets or [])
 
     def test_valid_catalog_has_no_errors(self):
         self.assertEqual(self.ok(), [])
@@ -57,12 +58,50 @@ class CheckTest(unittest.TestCase):
         errs = self.ok(events={"gmail.send_email": _event(trigger_type="MANUAL")})
         self.assertTrue(any("trigger_type" in e for e in errs), errs)
 
-    def test_loader_injected_values_must_not_be_written(self):
+    def test_old_fixed_keys_must_not_be_written(self):
         for cfg in ({"triggerType": "GMAIL_NEW_EMAIL"}, {"serviceType": "GOOGLE"}):
             errs = self.ok(events={"gmail.new_email": _trigger(fixed={"type": "TRIGGER", "config": cfg})})
             self.assertTrue(errs, cfg)
         errs = self.ok(events={"gmail.new_email": _trigger(fixed={"type": "TRIGGER", "event": "x", "config": {}})})
         self.assertTrue(any("event" in e for e in errs), errs)
+
+    def test_event_must_not_have_match(self):
+        errs = self.ok(events={"gmail.new_email": _trigger(match={"type": "TRIGGER"})})
+        self.assertTrue(any("match" in e for e in errs), errs)
+
+    def test_action_fixed_config_tools_forbidden(self):
+        bad = _event(fixed={"type": "ACTION", "config": {"tools": [{"name": "gmail"}]}})
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fixed.config.tools" in e for e in errs), errs)
+
+    def test_ai_event_fixed_tools_still_allowed(self):
+        ai = {"node_type": "AI", "kind": "action", "tool_key": None,
+              "fixed": {"type": "AI", "config": {"agentType": "react", "credentialId": "", "tools": []}}}
+        self.assertEqual(self.ok(apps={"ai": APP}, events={"ai.agent": ai}), [])
+
+    def test_golden_snippet_event_is_own_name(self):
+        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {"to": "a@b.c"}}
+        self.assertEqual(self.ok(events={"gmail.send_email": _event(golden_snippet=snip)}), [])
+        for bad in ({k: v for k, v in snip.items() if k != "event"}, {**snip, "event": "gmail.other"}):
+            errs = self.ok(events={"gmail.send_email": _event(golden_snippet=bad)})
+            self.assertTrue(any("golden_snippet.event" in e for e in errs), (bad, errs))
+
+    def test_preset_golden_snippet_event_is_ai_agent(self):
+        snip = {"id": "node-2", "event": "ai.agent", "type": "AI", "config": {"tools": [{"name": "gmail"}]}}
+        self.assertEqual(self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail", "golden_snippet": snip}]), [])
+        bad = {**snip, "event": "ai.gmail_send"}
+        errs = self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail", "golden_snippet": bad}])
+        self.assertTrue(any("golden_snippet.event" in e for e in errs), errs)
+
+    def test_golden_snippet_must_not_carry_old_fields(self):
+        trig = {"id": "node-1", "event": "gmail.new_email", "type": "TRIGGER",
+                "config": {"triggerType": "GMAIL_NEW_EMAIL"}}
+        errs = self.ok(events={"gmail.new_email": _trigger(golden_snippet=trig)})
+        self.assertTrue(any("triggerType" in e for e in errs), errs)
+        act = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION",
+               "config": {"tools": [{"name": "gmail", "config": {"to": "a@b.c"}}]}}
+        errs = self.ok(events={"gmail.send_email": _event(golden_snippet=act)})
+        self.assertTrue(any("config.tools" in e for e in errs), errs)
 
     def test_options_source_format(self):
         bad = _event(inputFields=[{"key": "a", "optionsSource": "Google Calendars"}])
@@ -77,18 +116,8 @@ class CheckTest(unittest.TestCase):
         self.assertTrue(self.ok(presets=[{"id": "gmail.send_email"}]))           # 이벤트와 이름 충돌
         self.assertTrue(self.ok(presets=[{"id": "p"}, {"id": "p"}]))             # 중복
         self.assertTrue(self.ok(presets=[{"id": "p", "builder": True}]))         # 로더가 정하는 키
-        self.assertEqual(self.ok(presets=[{"id": "p", "match": {"type": "AI"}}]), [])  # 매칭용 match는 허용
+        self.assertEqual(self.ok(presets=[{"id": "p", "match": {"type": "AI"}}]), [])  # AI 칸 규칙용 match는 허용
         self.assertTrue(self.ok(presets=[{"id": "p", "app": "nope"}]))           # 없는 앱
-
-    def test_alias_target_must_be_event(self):
-        self.assertEqual(self.ok(aliases={"action.gmail_send": "gmail.send_email"}), [])
-        self.assertTrue(self.ok(aliases={"action.gmail_send": "gmail.nope"}))
-
-    def test_alias_chain_reaching_event_passes(self):
-        # 이벤트 이름을 다시 바꾸면 옛 별칭은 그대로 두고 새 별칭을 잇는다.
-        events = {"gmail.send": _event()}
-        self.assertEqual(self.ok(events=events, aliases={"old": "gmail.send_email", "gmail.send_email": "gmail.send"}), [])
-        self.assertTrue(self.ok(events=events, aliases={"a": "b", "b": "a"}))   # 순환
 
     def test_app_shape(self):
         self.assertTrue(self.ok(apps={"gmail": {**APP, "brand": ""}}))
@@ -96,40 +125,41 @@ class CheckTest(unittest.TestCase):
         self.assertEqual(self.ok(apps={"gmail": {**APP, "serviceType": None, "auth": None}}), [])
 
 
+class RepoCatalogTest(unittest.TestCase):
+    def test_repo_catalog_passes(self):
+        self.assertEqual(validate.check(*validate.load(validate.ROOT)), [])
+
+
 class BaseCompareTest(unittest.TestCase):
-    def snap(self, events, presets=(), aliases=None):
-        return ({"gmail": APP}, {name: _event() for name in events}, [{"id": p} for p in presets], aliases or {})
+    def snap(self, events, presets=()):
+        return {"gmail": APP}, {name: _event() for name in events}, [{"id": p} for p in presets]
 
-    def test_removing_event_without_alias_fails(self):
-        errs = validate.check_against_base(self.snap(["gmail.send_email"]), self.snap([]))
-        self.assertTrue(any("gmail.send_email" in e for e in errs), errs)
+    def test_removed_event_is_warned(self):
+        warns = validate.check_against_base(self.snap(["gmail.send_email", "gmail.keep"]), self.snap(["gmail.keep"]))
+        self.assertEqual(len(warns), 1, warns)
+        self.assertIn("gmail.send_email", warns[0])
 
-    def test_rename_with_alias_passes(self):
-        head = self.snap(["gmail.send"], aliases={"gmail.send_email": "gmail.send"})
-        self.assertEqual(validate.check_against_base(self.snap(["gmail.send_email"]), head), [])
+    def test_renamed_event_is_warned(self):
+        warns = validate.check_against_base(self.snap(["gmail.send_email"]), self.snap(["gmail.send"]))
+        self.assertTrue(any("gmail.send_email" in w for w in warns), warns)
 
-    def test_removing_preset_without_alias_fails(self):
-        errs = validate.check_against_base(self.snap([], presets=["ai.gmail_send"]), self.snap([]))
-        self.assertTrue(errs)
+    def test_added_event_and_removed_preset_are_not_warned(self):
+        base = self.snap(["gmail.send_email"], presets=["ai.gmail_send"])
+        self.assertEqual(validate.check_against_base(base, self.snap(["gmail.send_email", "gmail.new"])), [])
 
-    def test_second_rename_keeps_old_alias(self):
-        base = self.snap(["gmail.send_email"], aliases={"old": "gmail.send_email"})
-        head = self.snap(["gmail.send"], aliases={"old": "gmail.send_email", "gmail.send_email": "gmail.send"})
-        self.assertEqual(validate.check(*head), [])
-        self.assertEqual(validate.check_against_base(base, head), [])
+    def test_base_warning_does_not_fail(self):
+        with mock.patch.object(validate, "load", return_value=self.snap(["gmail.keep"])), \
+                mock.patch.object(validate, "_snapshot", return_value=self.snap(["gmail.gone", "gmail.keep"])), \
+                mock.patch("builtins.print") as out:
+            self.assertEqual(validate.main(["--base", "origin/main"]), 0)
+        self.assertTrue(any("gmail.gone" in str(c) for c in out.call_args_list), out.call_args_list)
 
-    def test_self_alias_can_follow_rename(self):
-        apps = {"ai": APP}
-        base = (apps, {"ai.reasoning": _event()}, [], {"ai.reasoning": "ai.reasoning"})
-        head = (apps, {"ai.think": _event()}, [], {"ai.reasoning": "ai.think"})
-        self.assertEqual(validate.check(*head), [])
-        self.assertEqual(validate.check_against_base(base, head), [])
-
-    def test_alias_cannot_be_removed_or_changed(self):
-        base = self.snap(["gmail.send"], aliases={"old": "gmail.send"})
-        self.assertTrue(validate.check_against_base(base, self.snap(["gmail.send"])))
-        changed = self.snap(["gmail.send", "gmail.other"], aliases={"old": "gmail.other"})
-        self.assertTrue(validate.check_against_base(base, changed))
+    def test_check_error_still_fails_with_base(self):
+        head = ({"gmail": APP}, {"gmail.keep": _event(match={"type": "ACTION"})}, [])
+        with mock.patch.object(validate, "load", return_value=head), \
+                mock.patch.object(validate, "_snapshot", return_value=self.snap(["gmail.keep"])), \
+                mock.patch("builtins.print"):
+            self.assertEqual(validate.main(["--base", "origin/main"]), 1)
 
 
 if __name__ == "__main__":

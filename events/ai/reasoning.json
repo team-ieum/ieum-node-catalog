@@ -4,10 +4,6 @@
   "title": "AI",
   "description": "AI가 앞 단계 결과를 읽고 판단하거나 글을 써요.",
   "tool_key": null,
-  "match": {
-    "type": "AI",
-    "config.tools.0": null
-  },
   "tags": [
     "요약",
     "정리",
@@ -86,6 +82,7 @@
   "outputsFrom": "config.outputFields",
   "golden_snippet": {
     "id": "node-3",
+    "event": "ai.reasoning",
     "type": "AI",
     "label": "결과 요약",
     "description": "AI가 앞에서 모은 내용을 읽고 보기 좋게 요약해요.",

@@ -8,13 +8,7 @@
   "generation": false,
   "fixed": {
     "type": "ACTION",
-    "config": {
-      "tools": [
-        {
-          "name": "builtin:google_calendar_update"
-        }
-      ]
-    }
+    "config": {}
   },
   "fields": {
     "event_id": {

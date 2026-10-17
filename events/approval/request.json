@@ -45,6 +45,7 @@
   ],
   "golden_snippet": {
     "id": "node-3",
+    "event": "approval.request",
     "type": "APPROVAL",
     "label": "발송 전 승인",
     "description": "다음 단계로 넘어가기 전에 담당자가 확인하고 승인해요.",

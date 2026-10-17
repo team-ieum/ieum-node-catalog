@@ -21,12 +21,11 @@
   "outputDynamic": true,
   "golden_snippet": {
     "id": "node-1",
+    "event": "webhook.catch",
     "type": "TRIGGER",
     "label": "웹훅 수신 트리거",
     "description": "외부에서 신호가 오면 자동으로 시작돼요.",
-    "config": {
-      "triggerType": "WEBHOOK"
-    }
+    "config": {}
   },
   "inputFields": [
     {

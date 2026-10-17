@@ -8,13 +8,7 @@
   "generation": false,
   "fixed": {
     "type": "ACTION",
-    "config": {
-      "tools": [
-        {
-          "name": "builtin:github_create_issue"
-        }
-      ]
-    }
+    "config": {}
   },
   "fields": {
     "owner": {
