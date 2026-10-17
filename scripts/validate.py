@@ -23,6 +23,7 @@ EVENT_FORBIDDEN = {"id", "app", "slots", "allowed_config_fields"}
 PRESET_FORBIDDEN = {"node_type", "builder", "event", "kind", "trigger_type", "slots", "allowed_config_fields"}
 # 노드에서 지운 옛 필드 — 정의 fixed에도 golden_snippet에도 쓰지 않는다.
 OLD_CONFIG_KEYS = ("triggerType", "serviceType")
+ACTION_FIXED = {"type": "ACTION", "config": {}}  # 칸은 정의 fields, 도구는 tool_key — 골격에 남길 것이 없다
 PRESET_EVENT = "ai.agent"  # 프리셋으로 만든 노드의 event
 
 
@@ -68,7 +69,12 @@ def _snippet_errors(where, snip, event, node_type):
     errs = []
     if snip.get("event") != event:
         errs.append(f"{where}: golden_snippet.event는 '{event}'여야 한다(지금 {snip.get('event')!r}).")
-    cfg = snip.get("config") if isinstance(snip.get("config"), dict) else {}
+    if snip.get("type") != node_type:
+        errs.append(f"{where}: golden_snippet.type은 '{node_type}'여야 한다(지금 {snip.get('type')!r}).")
+    cfg = snip.get("config", {})
+    if not isinstance(cfg, dict):
+        errs.append(f"{where}: golden_snippet.config는 JSON 객체다.")
+        cfg = {}
     for k in OLD_CONFIG_KEYS:
         if k in cfg:
             errs.append(f"{where}: golden_snippet.config.{k}는 지운 옛 필드다 — 노드 종류는 event로 정한다.")
@@ -124,6 +130,8 @@ def check(apps, events, presets):
             errs.append(f"{name}: fixed.event는 로더가 넣는다 — 파일에 쓰지 않는다.")
         if ev.get("node_type") == "ACTION" and "tools" in cfg:
             errs.append(f"{name}: ACTION 도구는 tool_key로 정한다 — fixed.config.tools를 쓰지 않는다.")
+        if ev.get("node_type") == "ACTION" and ev.get("fixed") != ACTION_FIXED:
+            errs.append(f"{name}: ACTION fixed는 정확히 {json.dumps(ACTION_FIXED)}다(지금 {ev.get('fixed')!r}).")
         if "match" in ev:
             errs.append(f"{name}: 이벤트는 match를 쓰지 않는다 — 노드는 event로만 판정한다(AI 칸 규칙용 match는 presets.json).")
         errs += _options_errors(name, ev)

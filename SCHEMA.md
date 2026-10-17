@@ -28,7 +28,7 @@
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키 또는 `builtin:github_*`(ACTION 전용 동적 서비스 액션 — `tools.registry.resolve_action_fn`이 푼다) |
-| `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 `{"type":"ACTION","config":{}}` |
+| `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 정확히 `{"type":"ACTION","config":{}}`(다른 키가 있으면 CI 거부) |
 | `builder` / `generation` | ⬜ | 기본 `true`. 액션과 앱 트리거(`gmail.new_email`·`github.new_issue`)는 `generation: false`, 실행할 수 없는 액션(`gmail.send_email` — SMTP 자격증명 주입 경로 없음)은 `builder: false`. 프리셋은 `builder`를 쓰지 않는다(늘 빌더 비노출) |
 | `title` / `description` | builder면 ✅ | 빌더에 보이는 항목 이름·한 문장 설명 |
 | `tags` / `menu` | generation이면 ✅ | LLM 태그 검색·항상층 메뉴 |
@@ -38,7 +38,7 @@
 | `outputsFrom` | ⬜ | 출력 키를 노드 config에서 읽음(`config.mappings` = 그 dict의 키, `config.outputFields` = 원소의 `key`). 경로 값이 비어 있지 않으면 정적 `outputFields` **전체를 대체**하고(합치지 않는다), 비었거나 없으면 정적 `outputFields`를 쓴다 |
 | `match` | ⬜ | 프리셋만. AI 노드 → 프리셋 매칭 `{경로: 값}`(값 null = 없거나 빔). 평가 때 `type`은 노드 표기가 아니라 event가 정한 `AI`로 보고, 문자열 tools 원소는 정규화하지 않는다(agent Task 3·5). 조건 수 내림차순으로 평가하고, 프리셋끼리 같으면 거부. 이벤트에 쓰면 CI 거부(노드는 `event`로만 판정) |
 | `fields` | ⬜ | 도구 필드 덮어쓰기 `{파라미터: 부분 Field}`. **도구당 한 항목만**(액션이 있으면 액션, 없으면 그 AI 항목). 시그니처 밖 키는 title·type 포함 전체 정의 |
-| `golden_snippet` | ⬜ | 완성형 노드 예시(검색층 few-shot). `event` 필수: 이벤트는 자기 이름, 프리셋은 `ai.agent`. `config.triggerType`·`config.serviceType`, ACTION `config.tools`를 쓰지 않는다(CI 거부). ACTION 칸은 `config.<칸>`. 그 자체로 검증을 통과해야 함 |
+| `golden_snippet` | ⬜ | 완성형 노드 예시(검색층 few-shot). `event` 필수: 이벤트는 자기 이름, 프리셋은 `ai.agent`. `type` 필수: 정의의 `node_type`(프리셋은 `AI`). `config`는 있으면 JSON 객체. `config.triggerType`·`config.serviceType`, ACTION `config.tools`를 쓰지 않는다(CI 거부). ACTION 칸은 `config.<칸>`. 그 자체로 검증을 통과해야 함 |
 | `app` | ⬜ | 프리셋만. 앱 키(apps.json 키) — provider·brand를 얻는다 |
 | `service` | ⬜ | 동적 서브에이전트 서비스명(ai.github_query) |
 
