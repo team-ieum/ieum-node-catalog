@@ -103,6 +103,38 @@ class CheckTest(unittest.TestCase):
         errs = self.ok(events={"gmail.send_email": _event(golden_snippet=act)})
         self.assertTrue(any("config.tools" in e for e in errs), errs)
 
+    def test_golden_snippet_config_must_be_object(self):
+        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION"}
+        self.assertEqual(self.ok(events={"gmail.send_email": _event(golden_snippet=snip)}), [])  # config 없음은 허용
+        for cfg in (None, "x", []):
+            errs = self.ok(events={"gmail.send_email": _event(golden_snippet={**snip, "config": cfg})})
+            self.assertTrue(any("golden_snippet.config" in e for e in errs), (cfg, errs))
+
+    def test_golden_snippet_type_is_node_type(self):
+        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {}}
+        for bad in ({**snip, "type": "AI"}, {k: v for k, v in snip.items() if k != "type"}):
+            errs = self.ok(events={"gmail.send_email": _event(golden_snippet=bad)})
+            self.assertTrue(any("golden_snippet.type" in e for e in errs), (bad, errs))
+        psnip = {"id": "node-2", "event": "ai.agent", "type": "ACTION", "config": {}}
+        errs = self.ok(presets=[{"id": "ai.gmail_send", "golden_snippet": psnip}])
+        self.assertTrue(any("golden_snippet.type" in e for e in errs), errs)
+
+    def test_action_fixed_must_be_exact(self):
+        for fixed in ({"type": "ACTION", "config": {"credentialId": ""}}, {"type": "ACTION", "config": {}, "tool": "x"},
+                      {"type": "ACTION"}):
+            errs = self.ok(events={"gmail.send_email": _event(fixed=fixed)})
+            self.assertTrue(any("ACTION fixed" in e for e in errs), (fixed, errs))
+
+    def test_golden_snippet_service_type_forbidden(self):
+        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {"serviceType": "GOOGLE"}}
+        errs = self.ok(events={"gmail.send_email": _event(golden_snippet=snip)})
+        self.assertTrue(any("serviceType" in e for e in errs), errs)
+
+    def test_preset_golden_snippet_old_fields_forbidden(self):
+        snip = {"id": "node-2", "event": "ai.agent", "type": "AI", "config": {"triggerType": "MANUAL"}}
+        errs = self.ok(presets=[{"id": "ai.gmail_send", "golden_snippet": snip}])
+        self.assertTrue(any("triggerType" in e for e in errs), errs)
+
     def test_options_source_format(self):
         bad = _event(inputFields=[{"key": "a", "optionsSource": "Google Calendars"}])
         self.assertTrue(self.ok(events={"gmail.send_email": bad}))
