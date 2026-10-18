@@ -57,6 +57,8 @@ def _options_errors(where, entry):
         src = f.get("optionsSource")
         if src is not None and not (isinstance(src, str) and OPTIONS_SOURCE_RE.match(src)):
             errs.append(f"{where}: '{f.get('key')}'의 optionsSource '{src}'는 '<공급원>.<목록>' 형식이어야 한다.")
+        if "q" in (f.get("optionsInputs") or []):
+            errs.append(f"{where}: '{f.get('key')}'의 optionsInputs에 'q'를 쓰지 않는다 — 드롭다운 검색어 파라미터 이름이다.")
         fields.extend(f.get("children") or [])
     return errs
 

@@ -25,8 +25,8 @@
     },
     "calendar_id": {
       "title": "캘린더",
-      "description": "대상 캘린더 (비우면 기본 캘린더)",
-      "optionsSource": "google.calendars",
+      "description": "대상 캘린더 (비우면 기본 캘린더, 쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars",
       "llm": {
         "hint": "대상 캘린더 ID(사용자가 준 값·조회로 확인한 값). 모르면 비운다(기본 캘린더). 선행 노드 결과로 정해지는 ID는 넣지 않고 prompt에 쓴다.",
         "name": "calendar_id의 표시 이름(화면 표시용). calendar_id를 채웠을 때만 채운다."
@@ -38,15 +38,69 @@
     },
     "start_datetime": {
       "title": "새 시작",
-      "type": "datetime"
+      "type": "datetime",
+      "description": "비우면 그대로. 시작만 바꾸면 길이를 유지해요"
     },
     "end_datetime": {
       "title": "새 종료",
-      "type": "datetime"
+      "type": "datetime",
+      "description": "비우면 그대로. 종일 일정은 끝나는 날(포함)"
     },
     "description": {
       "title": "새 설명",
-      "type": "text"
+      "type": "text",
+      "description": "비우면 그대로"
+    },
+    "scope": {
+      "title": "적용 범위",
+      "description": "반복 일정일 때 이 일정만 또는 반복 전체(반복 전체는 날짜는 두고 시각만 바꿔요)",
+      "ref": false,
+      "choices": [
+        {
+          "id": "this",
+          "name": "이 일정만"
+        },
+        {
+          "id": "all",
+          "name": "반복 전체"
+        }
+      ]
+    },
+    "all_day": {
+      "title": "종일",
+      "description": "켜면 종일 일정, 끄면 시각 일정. 비우면 그대로",
+      "ref": false
+    },
+    "time_zone": {
+      "title": "시간대",
+      "description": "IANA 이름(예: Asia/Seoul). 비우면 캘린더 시간대"
+    },
+    "location": {
+      "title": "새 장소",
+      "description": "비우면 그대로"
+    },
+    "attendees": {
+      "title": "참석자",
+      "description": "이메일을 쉼표로 구분, 기존 참석자를 모두 바꿉니다. 비우면 그대로"
+    },
+    "send_updates": {
+      "title": "참석자 알림",
+      "description": "비우면 Google 기본 동작",
+      "ref": false,
+      "choices": [
+        {
+          "id": "all",
+          "name": "모두에게"
+        },
+        {
+          "id": "externalOnly",
+          "name": "외부 참석자에게만"
+        },
+        {
+          "id": "none",
+          "name": "보내지 않음"
+        }
+      ]
     }
   },
   "outputFields": [

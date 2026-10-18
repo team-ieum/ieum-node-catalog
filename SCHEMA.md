@@ -27,7 +27,7 @@
 | `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` |
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
-| `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키 또는 `builtin:github_*`(ACTION 전용 동적 서비스 액션 — `tools.registry.resolve_action_fn`이 푼다) |
+| `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키, 또는 ACTION 전용 키 — `builtin:github_*`(동적 서비스 액션)·`_ACTION_ONLY_TOOLS`(되돌릴 수 없는 일이라 AI 노드에 안 싣는 도구, 예 `builtin:google_calendar_delete`). 둘 다 `tools.registry.resolve_action_fn`이 푼다 |
 | `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 정확히 `{"type":"ACTION","config":{}}`(다른 키가 있으면 CI 거부) |
 | `builder` / `generation` | ⬜ | 기본 `true`. 액션과 앱 트리거(`gmail.new_email`·`github.new_issue`)는 `generation: false`, 실행할 수 없는 액션(`gmail.send_email` — SMTP 자격증명 주입 경로 없음)은 `builder: false`. 프리셋은 `builder`를 쓰지 않는다(늘 빌더 비노출) |
 | `title` / `description` | builder면 ✅ | 빌더에 보이는 항목 이름·한 문장 설명 |
@@ -68,10 +68,17 @@
 - 허용 config 키 = fixed.config 키 ∪ 직속 필드 최상위 키 ∪ (직속 optionsSource 필드가 있으면 `_names`).
 - 카탈로그 응답의 `fixed.config.brand`는 로더가 계산한다: 이벤트와 앱 프리셋은 apps.json `brand`, 앱 없는 프리셋은 `service` → `SERVICE_BRAND`(없으면 `openai`). 로더 안에서는 intent 경로(`subagent_service_for_node`)를 타지 않는다 — `load_templates` 재진입으로 기동이 무한 재귀한다. 레지스트리 항목의 `fixed`에는 넣지 않고 응답 복사본에만 얹는다(생성 경로가 같은 `fixed`를 쓴다).
 
+## 앱 이벤트 약속
+
+앱마다 자기 도구 파일에서 구현하고 공용 코드는 두지 않는다. 맞추는 것은 아래 두 가지다. 새로 만들거나 손대는 이벤트부터 적용한다(기존 `notion.query_database`·`github.list_issues` 등은 그 앱 차례에).
+
+1. **Search 이벤트 출력**: `found`(boolean)·`total`(integer)·`items`(list)가 필수다. 0건은 에러가 아니라 `{found:false, total:0, items:[]}` 성공이다. 출력 키는 늘 같다(0건 전용 키 없음 — 성공 테스트의 `assert_matches_outputs`가 `outputFields`와 대조한다).
+2. **드롭다운 검색어 파라미터 이름은 `q`**: BE `IntegrationOptionService`는 `cursor` 밖의 쿼리를 전부 `inputs`로 넘기고, 검색을 지원하는 공급원만 `inputs.get("q")`를 읽는다. 공백뿐인 `q`는 없음으로 본다. `OptionSource` 인터페이스는 바꾸지 않는다. `q`를 `optionsInputs` 칸 key로 쓰지 않는다(CI 거부).
+
 ## 불변 규칙
 
 1. 이름 = 경로, 프리셋 id는 이벤트 이름과 겹치지 않는다.
-2. `tool_key`와 AI 항목 `fixed.config.tools[*].name`은 `_TOOL_MAP` 키이거나 `resolve_action_fn`이 푸는 `builtin:github_*`(`mcp` 센티넬 제외).
+2. `tool_key`와 AI 항목 `fixed.config.tools[*].name`은 `_TOOL_MAP` 키이거나 `resolve_action_fn`이 푸는 ACTION 전용 키(`builtin:github_*`, `_ACTION_ONLY_TOOLS`)다(`mcp` 센티넬 제외). AI 항목 tools에는 `_TOOL_MAP` 키만 쓴다.
 3. 도구 하나의 `fields`는 한 항목에만.
 4. `optionsInputs`는 같은 항목의 필드 key만 가리킨다.
 5. `golden_snippet`은 단독으로 `WorkflowValidator` 노드 검증을 통과해야 한다.

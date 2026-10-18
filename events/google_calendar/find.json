@@ -1,0 +1,123 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "캘린더 일정 찾기",
+  "description": "조건에 맞는 일정을 시작 시각 순으로 찾아요.",
+  "tool_key": "builtin:google_calendar_find",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "읽을 캘린더 (비우면 기본 캘린더, 공휴일 캘린더 포함)",
+      "optionsSource": "google.calendars",
+      "llm": {
+        "hint": "대상 캘린더 ID(사용자가 준 값·조회로 확인한 값). 모르면 비운다(기본 캘린더). 선행 노드 결과로 정해지는 ID는 넣지 않고 prompt에 쓴다.",
+        "name": "calendar_id의 표시 이름(화면 표시용). calendar_id를 채웠을 때만 채운다."
+      }
+    },
+    "query": {
+      "title": "검색어",
+      "description": "제목·설명·장소·참석자에서 찾아요 (비우면 전체)"
+    },
+    "time_min": {
+      "title": "시작 시각",
+      "type": "datetime",
+      "description": "이 시각 이후에 끝나는 일정 (비우면 지금부터 — 시작순으로만 정렬되므로 비우면 가장 오래된 일정부터 나오는 것을 막아요)"
+    },
+    "time_max": {
+      "title": "종료 시각",
+      "type": "datetime",
+      "description": "이 시각 전에 시작하는 일정 (비우면 제한 없음)"
+    },
+    "max_results": {
+      "title": "최대 개수",
+      "description": "기본 50, 최대 250"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "한 건 이상 찾았는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "일정",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "summary",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "start",
+          "title": "시작",
+          "type": "datetime",
+          "description": "종일 일정은 날짜(YYYY-MM-DD)"
+        },
+        {
+          "key": "end",
+          "title": "종료",
+          "type": "datetime",
+          "description": "종일 일정은 날짜이고, Google 규칙대로 끝나는 날의 다음 날이에요"
+        },
+        {
+          "key": "allDay",
+          "title": "종일",
+          "type": "boolean"
+        },
+        {
+          "key": "location",
+          "title": "장소",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "htmlLink",
+          "title": "일정 링크",
+          "type": "string"
+        },
+        {
+          "key": "recurringEventId",
+          "title": "반복 일정 ID",
+          "type": "string",
+          "description": "반복 일정의 회차면 원본 일정 ID, 아니면 빈 값"
+        },
+        {
+          "key": "status",
+          "title": "상태",
+          "type": "string"
+        },
+        {
+          "key": "attendees",
+          "title": "참석자",
+          "type": "string",
+          "list": true,
+          "description": "참석자 이메일 목록"
+        }
+      ]
+    }
+  ]
+}

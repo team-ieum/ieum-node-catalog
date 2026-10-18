@@ -143,6 +143,14 @@ class CheckTest(unittest.TestCase):
         good = _event(inputFields=[{"key": "a", "optionsSource": "google.calendars"}])
         self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
 
+    def test_options_inputs_must_not_use_q(self):
+        """q는 드롭다운 검색어 파라미터 이름이다(SCHEMA 앱 이벤트 약속 2) — 칸 key로 넘기면 검색어와 섞인다."""
+        bad = _event(fields={"a": {"optionsSource": "google.events", "optionsInputs": ["q"]}})
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("'q'" in e for e in errs), errs)
+        good = _event(fields={"a": {"optionsSource": "google.events", "optionsInputs": ["calendar_id"]}})
+        self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
+
     def test_preset_rules(self):
         self.assertEqual(self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail"}]), [])
         self.assertTrue(self.ok(presets=[{"id": "gmail.send_email"}]))           # 이벤트와 이름 충돌

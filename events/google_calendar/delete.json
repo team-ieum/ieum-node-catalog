@@ -1,0 +1,76 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "캘린더 일정 삭제",
+  "description": "구글 캘린더에서 일정을 지워요.",
+  "tool_key": "builtin:google_calendar_delete",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "event_id": {
+      "title": "일정",
+      "description": "삭제할 일정",
+      "optionsSource": "google.events",
+      "optionsInputs": [
+        "calendar_id"
+      ]
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "대상 캘린더 (비우면 기본 캘린더, 쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "scope": {
+      "title": "적용 범위",
+      "description": "반복 일정일 때 이 일정만 또는 반복 전체",
+      "ref": false,
+      "choices": [
+        {
+          "id": "this",
+          "name": "이 일정만"
+        },
+        {
+          "id": "all",
+          "name": "반복 전체"
+        }
+      ]
+    },
+    "send_updates": {
+      "title": "참석자 알림",
+      "description": "비우면 Google 기본 동작",
+      "ref": false,
+      "choices": [
+        {
+          "id": "all",
+          "name": "모두에게"
+        },
+        {
+          "id": "externalOnly",
+          "name": "외부 참석자에게만"
+        },
+        {
+          "id": "none",
+          "name": "보내지 않음"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "eventId",
+      "title": "일정 ID",
+      "type": "string",
+      "description": "실제로 지운 일정(반복 전체면 원본) ID"
+    },
+    {
+      "key": "deleted",
+      "title": "삭제됨",
+      "type": "boolean",
+      "description": "이미 지워져 있었으면 false"
+    }
+  ]
+}
