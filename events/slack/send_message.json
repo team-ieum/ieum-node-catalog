@@ -1,7 +1,7 @@
 {
   "node_type": "ACTION",
   "kind": "action",
-  "title": "Slack 메시지 보내기",
+  "title": "Slack 웹훅으로 보내기",
   "description": "등록한 웹훅으로 Slack에 메시지를 보내요.",
   "tool_key": "slack",
   "builder": true,
@@ -24,10 +24,6 @@
     "message": {
       "title": "메시지",
       "type": "text"
-    },
-    "channel": {
-      "title": "채널",
-      "description": "비우면 웹훅 기본 채널"
     }
   },
   "outputFields": [
