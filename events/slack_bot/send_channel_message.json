@@ -1,0 +1,47 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Slack 채널에 메시지 보내기",
+  "description": "연결한 Slack 워크스페이스의 공개 채널에 봇으로 메시지를 보내요.",
+  "tool_key": "builtin:slack_send_channel_message",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "channel": {
+      "title": "채널",
+      "required": true,
+      "optionsSource": "slack.channels"
+    },
+    "text": {
+      "title": "메시지",
+      "type": "text",
+      "required": true,
+      "description": "4만 자가 넘으면 Slack이 잘라 보내요"
+    },
+    "thread_ts": {
+      "title": "스레드",
+      "description": "비우면 새 메시지. 답글을 달 메시지의 ts"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "ts",
+      "title": "메시지 ts",
+      "type": "string"
+    },
+    {
+      "key": "channel",
+      "title": "채널 ID",
+      "type": "string"
+    },
+    {
+      "key": "permalink",
+      "title": "메시지 링크",
+      "type": "string"
+    }
+  ]
+}
