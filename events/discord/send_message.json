@@ -1,7 +1,7 @@
 {
   "node_type": "ACTION",
   "kind": "action",
-  "title": "Discord 메시지 보내기",
+  "title": "Discord 웹훅으로 보내기",
   "description": "등록한 웹훅으로 Discord에 메시지를 보내요.",
   "tool_key": "discord",
   "builder": true,
@@ -31,8 +31,13 @@
   },
   "outputFields": [
     {
-      "key": "message",
-      "title": "결과 메시지",
+      "key": "id",
+      "title": "메시지 ID",
+      "type": "string"
+    },
+    {
+      "key": "channel_id",
+      "title": "채널 ID",
       "type": "string"
     }
   ]
