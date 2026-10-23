@@ -1,0 +1,56 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Discord 채널에 메시지 보내기",
+  "description": "연결한 Discord 서버의 채널에 봇으로 메시지를 보내요.",
+  "tool_key": "builtin:discord_send_channel_message",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "guild_id",
+      "title": "서버",
+      "type": "string",
+      "ref": false,
+      "optionsSource": "discord.guilds",
+      "description": "채널 목록을 고르는 데만 써요. 보낼 곳은 채널이 정해요"
+    }
+  ],
+  "fields": {
+    "channel_id": {
+      "title": "채널",
+      "required": true,
+      "optionsSource": "discord.channels",
+      "optionsInputs": [
+        "guild_id"
+      ]
+    },
+    "content": {
+      "title": "메시지",
+      "type": "text",
+      "required": true,
+      "description": "최대 2,000자. @everyone·역할 멘션은 알림이 가지 않아요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "id",
+      "title": "메시지 ID",
+      "type": "string"
+    },
+    {
+      "key": "channel_id",
+      "title": "채널 ID",
+      "type": "string"
+    },
+    {
+      "key": "url",
+      "title": "메시지 링크",
+      "type": "string"
+    }
+  ]
+}
