@@ -60,9 +60,24 @@
 - `llm`은 생성 전용이다. `hint`=슬롯 설명, `slot: false`=슬롯 만들지 않음, `name`=표시 이름 슬롯
   `<key>_name`(경로 `…_names.<key>`), `kind`=기존 슬롯 kind 고정, `inject`=시스템 주입(provider|model).
 
+### 동적 칸 (`fieldsSource`·`fieldsInputs`)
+
+```jsonc
+{"key": "properties", "title": "속성", "type": "dict", "ref": false,
+ "fieldsSource": "notion.properties", "fieldsInputs": ["data_source_id"]}
+```
+- `fieldsSource`: 이 `dict` 칸의 **안쪽 칸 목록**을 BE `GET /api/v1/integrations/{app}/fields/{resource}`에서 받는다.
+  형식은 `optionsSource`와 같은 `<공급원>.<목록>`이고 `type: dict` 칸에만 쓴다(시그니처 파생 `object`는 `fields`에서 `dict`로 덮는다. CI 거부).
+- `fieldsInputs`: 칸 목록 요청에 실을 같은 항목의 칸 key. `optionsInputs`와 규칙이 같다. `q`는 쓰지 않고, `fieldsSource` 없이 쓰지 않는다(CI 거부).
+- 응답 `data.fields`는 이 문서의 Field 모양이다. 저장은 `config.<칸> = {안쪽 key: 단순값}`이고, 안쪽 key는 응답 key를 그대로 쓴다.
+  표시 이름은 `config._names.<칸>.<안쪽 key>`에 둔다.
+- `optionsParams`(`{이름: 문자열}`)는 **`/fields` 응답 Field에만** 나온다. 그 칸 드롭다운 요청에 고정 쿼리로 싣는다(예: relation 칸의 대상 DB id).
+  카탈로그 파일에는 쓰지 않는다(agent `_FIELD_ATTRS`에 없다. 카탈로그 칸이 처음 필요해질 때 그 PR에서 허용한다).
+
 ## 파생 규칙 (core/node_fields.py)
 
 - 경로: 직속 `config.<key>`. ACTION의 도구 필드도 `config.<key>`(ACTION config가 곧 칸). AI 프리셋 도구 필드는 `config.tools.0.config.<key>`. 정적 검증 에러 `field`도 이 경로를 그대로 쓴다.
+  ACTION 동적 칸(`fieldsSource`) 안의 참조식 에러만 한 마디 더 내려가 `<칸 경로>.<안쪽 key>`(예 `config.properties.a%3Bc`)다. AI 노드 `tools[].config` 안은 지금처럼 `config.tools`.
 - 슬롯 = label·description + 직속 필드 + `optionsSource`가 있는 도구 필드(항상 선택). `llm.slot: false` 제외.
 - 슬롯 kind = `llm.kind` → `llm.inject` → choices면 enum → cron → dict면 mapping → string.
 - 허용 config 키 = fixed.config 키 ∪ 직속 필드 최상위 키 ∪ (직속 optionsSource 필드가 있으면 `_names`).
@@ -73,14 +88,14 @@
 앱마다 자기 도구 파일에서 구현하고 공용 코드는 두지 않는다. 맞추는 것은 아래 두 가지다. 새로 만들거나 손대는 이벤트부터 적용한다(기존 `notion.query_database`·`github.list_issues` 등은 그 앱 차례에).
 
 1. **Search 이벤트 출력**: `found`(boolean)·`total`(integer)·`items`(list)가 필수다. 0건은 에러가 아니라 `{found:false, total:0, items:[]}` 성공이다. 출력 키는 늘 같다(0건 전용 키 없음 — 성공 테스트의 `assert_matches_outputs`가 `outputFields`와 대조한다).
-2. **드롭다운 검색어 파라미터 이름은 `q`**: BE `IntegrationOptionService`는 `cursor` 밖의 쿼리를 전부 `inputs`로 넘기고, 검색을 지원하는 공급원만 `inputs.get("q")`를 읽는다. 공백뿐인 `q`는 없음으로 본다. `OptionSource` 인터페이스는 바꾸지 않는다. `q`를 `optionsInputs` 칸 key로 쓰지 않는다(CI 거부).
+2. **드롭다운 검색어 파라미터 이름은 `q`**: BE `IntegrationOptionService`는 `cursor` 밖의 쿼리를 전부 `inputs`로 넘기고, 검색을 지원하는 공급원만 `inputs.get("q")`를 읽는다. 공백뿐인 `q`는 없음으로 본다. `OptionSource` 인터페이스는 바꾸지 않는다. `q`를 `optionsInputs`·`fieldsInputs` 칸 key로 쓰지 않는다(CI 거부).
 
 ## 불변 규칙
 
 1. 이름 = 경로, 프리셋 id는 이벤트 이름과 겹치지 않는다.
 2. `tool_key`와 AI 항목 `fixed.config.tools[*].name`은 `_TOOL_MAP` 키이거나 `resolve_action_fn`이 푸는 ACTION 전용 키(`builtin:github_*`, `_ACTION_ONLY_TOOLS`)다(`mcp` 센티넬 제외). AI 항목 tools에는 `_TOOL_MAP` 키만 쓴다.
 3. 도구 하나의 `fields`는 한 항목에만.
-4. `optionsInputs`는 같은 항목의 필드 key만 가리킨다.
+4. `optionsInputs`·`fieldsInputs`는 같은 항목의 필드 key만 가리킨다.
 5. `golden_snippet`은 단독으로 `WorkflowValidator` 노드 검증을 통과해야 한다.
 6. 프리셋의 match는 서로 달라야 한다(평가 순서: 조건 수 내림차순). 이벤트는 match를 쓰지 않는다.
 

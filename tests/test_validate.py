@@ -151,6 +151,31 @@ class CheckTest(unittest.TestCase):
         good = _event(fields={"a": {"optionsSource": "google.events", "optionsInputs": ["calendar_id"]}})
         self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
 
+    def test_fields_source_format(self):
+        bad = _event(fields={"props": {"type": "dict", "fieldsSource": "Notion Properties"}})
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsSource" in e and "형식" in e for e in errs), errs)
+        good = _event(fields={"props": {"type": "dict", "fieldsSource": "notion.properties",
+                                        "fieldsInputs": ["data_source_id"]}})
+        self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
+
+    def test_fields_source_only_on_dict(self):
+        """fieldsSource는 dict 칸의 안쪽 칸 목록이다 — 시그니처 파생 type(object)을 dict로 덮지 않으면 거부한다."""
+        for over in ({"type": "object"}, {}):
+            bad = _event(fields={"props": {**over, "fieldsSource": "notion.properties"}})
+            errs = self.ok(events={"gmail.send_email": bad})
+            self.assertTrue(any("type 'dict'" in e for e in errs), (over, errs))
+
+    def test_fields_inputs_needs_fields_source(self):
+        bad = _event(fields={"props": {"type": "dict", "fieldsInputs": ["data_source_id"]}})
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsInputs는 fieldsSource와 함께" in e for e in errs), errs)
+
+    def test_fields_inputs_must_not_use_q(self):
+        bad = _event(fields={"props": {"type": "dict", "fieldsSource": "notion.properties", "fieldsInputs": ["q"]}})
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
+
     def test_preset_rules(self):
         self.assertEqual(self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail"}]), [])
         self.assertTrue(self.ok(presets=[{"id": "gmail.send_email"}]))           # 이벤트와 이름 충돌
