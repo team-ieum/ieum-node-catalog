@@ -1,0 +1,59 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "DB에 행 만들기",
+  "description": "Notion 데이터베이스에 새 행을 만들어요.",
+  "tool_key": "builtin:notion_create_row",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "data_source_id": {
+      "title": "데이터베이스",
+      "description": "행을 만들 데이터베이스",
+      "optionsSource": "notion.databases",
+      "ref": false,
+      "llm": {
+        "name": "data_source_id의 표시 이름(데이터베이스 이름). data_source_id를 채웠을 때만 채운다."
+      }
+    },
+    "properties": {
+      "title": "속성",
+      "type": "dict",
+      "fieldsSource": "notion.properties",
+      "fieldsInputs": [
+        "data_source_id"
+      ],
+      "ref": false
+    },
+    "template": {
+      "title": "템플릿",
+      "description": "비우면 템플릿 없이 만들어요",
+      "optionsSource": "notion.templates",
+      "optionsInputs": [
+        "data_source_id"
+      ],
+      "ref": false
+    },
+    "content": {
+      "title": "본문",
+      "type": "text",
+      "description": "Markdown. 템플릿과 같이 쓸 수 없어요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "pageId",
+      "title": "페이지 ID",
+      "type": "string"
+    },
+    {
+      "key": "url",
+      "title": "페이지 주소",
+      "type": "string"
+    }
+  ]
+}

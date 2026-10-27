@@ -1,0 +1,57 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "DB 행 수정",
+  "description": "Notion 데이터베이스 행의 속성이나 본문을 바꿔요.",
+  "tool_key": "builtin:notion_update_row",
+  "builder": true,
+  "generation": false,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "data_source_id": {
+      "title": "데이터베이스",
+      "type": "string",
+      "required": false,
+      "description": "행 목록과 속성 칸을 불러올 DB예요. 실행은 행이 속한 DB를 따라요",
+      "optionsSource": "notion.databases",
+      "ref": false
+    },
+    "row_id": {
+      "title": "행",
+      "description": "수정할 행",
+      "optionsSource": "notion.data_source_items",
+      "optionsInputs": [
+        "data_source_id"
+      ]
+    },
+    "properties": {
+      "title": "속성",
+      "type": "dict",
+      "fieldsSource": "notion.properties",
+      "fieldsInputs": [
+        "data_source_id"
+      ],
+      "ref": false
+    },
+    "content": {
+      "title": "본문",
+      "type": "text",
+      "description": "넣으면 본문 전체를 바꿔요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "pageId",
+      "title": "페이지 ID",
+      "type": "string"
+    },
+    {
+      "key": "url",
+      "title": "페이지 주소",
+      "type": "string"
+    }
+  ]
+}
