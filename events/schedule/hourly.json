@@ -1,0 +1,52 @@
+{
+  "node_type": "TRIGGER",
+  "kind": "trigger",
+  "trigger_type": "SCHEDULE",
+  "title": "매시간",
+  "description": "매시간 정각에 시작해요.",
+  "tool_key": null,
+  "tags": [
+    "스케줄",
+    "schedule",
+    "정기",
+    "주기",
+    "트리거",
+    "매시간",
+    "시간마다",
+    "정각"
+  ],
+  "menu": "SCHEDULE 트리거: 매시간 정각에 시작해요.",
+  "fixed": {
+    "type": "TRIGGER",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "weekends",
+      "title": "주말에도 실행",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "ref": false,
+      "description": "끄면 토요일·일요일에는 실행하지 않아요.",
+      "llm": {
+        "slot": false
+      }
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "triggeredAt",
+      "title": "실행 시각",
+      "type": "datetime"
+    }
+  ],
+  "golden_snippet": {
+    "id": "node-1",
+    "event": "schedule.hourly",
+    "type": "TRIGGER",
+    "label": "매시간 정각",
+    "description": "매시간 정각에 자동으로 시작돼요.",
+    "config": {}
+  }
+}

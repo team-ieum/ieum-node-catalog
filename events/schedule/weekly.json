@@ -1,0 +1,191 @@
+{
+  "node_type": "TRIGGER",
+  "kind": "trigger",
+  "trigger_type": "SCHEDULE",
+  "title": "매주",
+  "description": "매주 정한 요일·시각에 시작해요.",
+  "tool_key": null,
+  "tags": [
+    "스케줄",
+    "schedule",
+    "정기",
+    "주기",
+    "트리거",
+    "매주",
+    "요일",
+    "주간"
+  ],
+  "menu": "SCHEDULE 트리거: 매주 정한 요일·시각에 시작해요.",
+  "fixed": {
+    "type": "TRIGGER",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "weekday",
+      "title": "요일",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "choices": [
+        {
+          "id": "MON",
+          "name": "월요일"
+        },
+        {
+          "id": "TUE",
+          "name": "화요일"
+        },
+        {
+          "id": "WED",
+          "name": "수요일"
+        },
+        {
+          "id": "THU",
+          "name": "목요일"
+        },
+        {
+          "id": "FRI",
+          "name": "금요일"
+        },
+        {
+          "id": "SAT",
+          "name": "토요일"
+        },
+        {
+          "id": "SUN",
+          "name": "일요일"
+        }
+      ],
+      "llm": {
+        "hint": "요일 id MON~SUN"
+      }
+    },
+    {
+      "key": "hour",
+      "title": "시각",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "choices": [
+        {
+          "id": "0",
+          "name": "자정"
+        },
+        {
+          "id": "1",
+          "name": "오전 1시"
+        },
+        {
+          "id": "2",
+          "name": "오전 2시"
+        },
+        {
+          "id": "3",
+          "name": "오전 3시"
+        },
+        {
+          "id": "4",
+          "name": "오전 4시"
+        },
+        {
+          "id": "5",
+          "name": "오전 5시"
+        },
+        {
+          "id": "6",
+          "name": "오전 6시"
+        },
+        {
+          "id": "7",
+          "name": "오전 7시"
+        },
+        {
+          "id": "8",
+          "name": "오전 8시"
+        },
+        {
+          "id": "9",
+          "name": "오전 9시"
+        },
+        {
+          "id": "10",
+          "name": "오전 10시"
+        },
+        {
+          "id": "11",
+          "name": "오전 11시"
+        },
+        {
+          "id": "12",
+          "name": "정오"
+        },
+        {
+          "id": "13",
+          "name": "오후 1시"
+        },
+        {
+          "id": "14",
+          "name": "오후 2시"
+        },
+        {
+          "id": "15",
+          "name": "오후 3시"
+        },
+        {
+          "id": "16",
+          "name": "오후 4시"
+        },
+        {
+          "id": "17",
+          "name": "오후 5시"
+        },
+        {
+          "id": "18",
+          "name": "오후 6시"
+        },
+        {
+          "id": "19",
+          "name": "오후 7시"
+        },
+        {
+          "id": "20",
+          "name": "오후 8시"
+        },
+        {
+          "id": "21",
+          "name": "오후 9시"
+        },
+        {
+          "id": "22",
+          "name": "오후 10시"
+        },
+        {
+          "id": "23",
+          "name": "오후 11시"
+        }
+      ],
+      "llm": {
+        "hint": "사용자가 말한 시각을 0~23 정수 문자열 id로(오후 5시='17')"
+      }
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "triggeredAt",
+      "title": "실행 시각",
+      "type": "datetime"
+    }
+  ],
+  "golden_snippet": {
+    "id": "node-1",
+    "event": "schedule.weekly",
+    "type": "TRIGGER",
+    "label": "매주 금요일 오후 5시",
+    "description": "매주 금요일 오후 5시에 자동으로 시작돼요.",
+    "config": {
+      "weekday": "FRI",
+      "hour": "17"
+    }
+  }
+}
