@@ -271,6 +271,7 @@
     "event": "schedule.monthly",
     "type": "TRIGGER",
     "label": "매월 1일 오전 9시",
+    "description": "매월 1일 오전 9시에 자동으로 시작돼요.",
     "config": {
       "day": "1",
       "hour": "9"

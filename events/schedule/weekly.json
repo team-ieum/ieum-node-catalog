@@ -182,6 +182,7 @@
     "event": "schedule.weekly",
     "type": "TRIGGER",
     "label": "매주 금요일 오후 5시",
+    "description": "매주 금요일 오후 5시에 자동으로 시작돼요.",
     "config": {
       "weekday": "FRI",
       "hour": "17"
