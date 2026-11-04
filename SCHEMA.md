@@ -25,7 +25,7 @@
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키, 또는 ACTION 전용 키 — `builtin:github_*`(동적 서비스 액션)·`_ACTION_ONLY_TOOLS`(되돌릴 수 없는 일이라 AI 노드에 안 싣는 도구, 예 `builtin:google_calendar_delete`). 둘 다 `tools.registry.resolve_action_fn`이 푼다 |
 | `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 정확히 `{"type":"ACTION","config":{}}`(다른 키가 있으면 CI 거부) |
-| `builder` | ⬜ | 기본 `true`. 실행할 수 없는 액션(`gmail.send_email` — SMTP 자격증명 주입 경로 없음)은 `false`. 프리셋은 쓰지 않는다(늘 빌더 비노출) |
+| `builder` | ⬜ | 기본 `true`. `false`면 빌더·실행에서 빠진다(지금 카탈로그엔 없음). 프리셋은 쓰지 않는다(늘 빌더 비노출) |
 | `title` / `description` | builder면 ✅ | 빌더에 보이는 항목 이름·한 문장 설명 |
 | `inputFields` | ⬜ | config 직속 필드(Field 목록). AI 항목은 공통 필드(llmProvider·model·prompt·credentialId·systemMessage) 뒤에 붙고, 같은 key를 쓰면 공통 필드에 병합된다 |
 | `outputFields` | ⬜ | 출력 필드(Field 목록). AI 항목은 공통 출력(output)이 앞에 붙는다. 액션은 도구 성공 반환 키와 같아야 한다(성공 테스트의 `assert_matches_outputs`) |
