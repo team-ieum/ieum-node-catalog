@@ -5,17 +5,6 @@
   "title": "매주",
   "description": "매주 정한 요일·시각에 시작해요.",
   "tool_key": null,
-  "tags": [
-    "스케줄",
-    "schedule",
-    "정기",
-    "주기",
-    "트리거",
-    "매주",
-    "요일",
-    "주간"
-  ],
-  "menu": "SCHEDULE 트리거: 매주 정한 요일·시각에 시작해요.",
   "fixed": {
     "type": "TRIGGER",
     "config": {}
@@ -56,10 +45,7 @@
           "id": "SUN",
           "name": "일요일"
         }
-      ],
-      "llm": {
-        "hint": "요일 id MON~SUN"
-      }
+      ]
     },
     {
       "key": "hour",
@@ -164,10 +150,7 @@
           "id": "23",
           "name": "오후 11시"
         }
-      ],
-      "llm": {
-        "hint": "사용자가 말한 시각을 0~23 정수 문자열 id로(오후 5시='17')"
-      }
+      ]
     }
   ],
   "outputFields": [
@@ -176,16 +159,5 @@
       "title": "실행 시각",
       "type": "datetime"
     }
-  ],
-  "golden_snippet": {
-    "id": "node-1",
-    "event": "schedule.weekly",
-    "type": "TRIGGER",
-    "label": "매주 금요일 오후 5시",
-    "description": "매주 금요일 오후 5시에 자동으로 시작돼요.",
-    "config": {
-      "weekday": "FRI",
-      "hour": "17"
-    }
-  }
+  ]
 }

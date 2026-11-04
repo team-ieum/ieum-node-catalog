@@ -5,7 +5,6 @@
   "description": "AI가 고른 도구를 직접 써 가며 일을 처리해요.",
   "tool_key": null,
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "AI",
     "config": {

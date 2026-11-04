@@ -5,7 +5,6 @@
   "description": "Notion 데이터베이스에 새 행을 만들어요.",
   "tool_key": "builtin:notion_create_row",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}
@@ -15,10 +14,7 @@
       "title": "데이터베이스",
       "description": "행을 만들 데이터베이스",
       "optionsSource": "notion.databases",
-      "ref": false,
-      "llm": {
-        "name": "data_source_id의 표시 이름(데이터베이스 이름). data_source_id를 채웠을 때만 채운다."
-      }
+      "ref": false
     },
     "properties": {
       "title": "속성",

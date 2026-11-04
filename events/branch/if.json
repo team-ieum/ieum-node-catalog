@@ -4,16 +4,6 @@
   "title": "조건 분기",
   "description": "앞의 결과가 조건에 맞는지 보고 갈 길을 나눠요.",
   "tool_key": null,
-  "tags": [
-    "조건",
-    "condition",
-    "분기",
-    "if",
-    "판단",
-    "true",
-    "false"
-  ],
-  "menu": "CONDITION: 조건 분기. edges의 conditionType(true/false)로 경로 분리",
   "fixed": {
     "type": "CONDITION",
     "config": {}
@@ -66,30 +56,19 @@
           "id": "isNotEmpty",
           "name": "비어 있지 않음"
         }
-      ],
-      "llm": {
-        "kind": "string",
-        "hint": "비교 연산자 (예: equals, notEquals, contains, greaterThan, lessThan)"
-      }
+      ]
     },
     {
       "key": "left",
       "title": "비교할 값",
       "type": "string",
-      "required": true,
-      "llm": {
-        "kind": "expr",
-        "hint": "비교 좌변(선행 노드 참조식 가능)"
-      }
+      "required": true
     },
     {
       "key": "right",
       "title": "기준값",
       "type": "string",
-      "required": true,
-      "llm": {
-        "hint": "비교 우변(기대값)"
-      }
+      "required": true
     }
   ],
   "outputFields": [
@@ -98,17 +77,5 @@
       "title": "조건 결과",
       "type": "boolean"
     }
-  ],
-  "golden_snippet": {
-    "id": "node-3",
-    "event": "branch.if",
-    "type": "CONDITION",
-    "label": "긴급 여부 분기",
-    "description": "앞의 결과가 조건에 맞는지 보고 갈 길을 나눠요.",
-    "config": {
-      "operator": "equals",
-      "left": "{{nodes.node-2.output.output}}",
-      "right": "urgent"
-    }
-  }
+  ]
 }

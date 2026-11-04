@@ -5,7 +5,6 @@
   "description": "제목으로 페이지나 데이터베이스를 찾아요.",
   "tool_key": "builtin:notion_search",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}
