@@ -5,7 +5,6 @@
   "description": "연결한 Discord 서버의 채널에 봇으로 메시지를 보내요.",
   "tool_key": "builtin:discord_send_channel_message",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}

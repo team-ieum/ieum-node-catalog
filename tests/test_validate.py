@@ -79,61 +79,11 @@ class CheckTest(unittest.TestCase):
               "fixed": {"type": "AI", "config": {"agentType": "react", "credentialId": "", "tools": []}}}
         self.assertEqual(self.ok(apps={"ai": APP}, events={"ai.agent": ai}), [])
 
-    def test_golden_snippet_event_is_own_name(self):
-        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {"to": "a@b.c"}}
-        self.assertEqual(self.ok(events={"gmail.send_email": _event(golden_snippet=snip)}), [])
-        for bad in ({k: v for k, v in snip.items() if k != "event"}, {**snip, "event": "gmail.other"}):
-            errs = self.ok(events={"gmail.send_email": _event(golden_snippet=bad)})
-            self.assertTrue(any("golden_snippet.event" in e for e in errs), (bad, errs))
-
-    def test_preset_golden_snippet_event_is_ai_agent(self):
-        snip = {"id": "node-2", "event": "ai.agent", "type": "AI", "config": {"tools": [{"name": "gmail"}]}}
-        self.assertEqual(self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail", "golden_snippet": snip}]), [])
-        bad = {**snip, "event": "ai.gmail_send"}
-        errs = self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail", "golden_snippet": bad}])
-        self.assertTrue(any("golden_snippet.event" in e for e in errs), errs)
-
-    def test_golden_snippet_must_not_carry_old_fields(self):
-        trig = {"id": "node-1", "event": "gmail.new_email", "type": "TRIGGER",
-                "config": {"triggerType": "GMAIL_NEW_EMAIL"}}
-        errs = self.ok(events={"gmail.new_email": _trigger(golden_snippet=trig)})
-        self.assertTrue(any("triggerType" in e for e in errs), errs)
-        act = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION",
-               "config": {"tools": [{"name": "gmail", "config": {"to": "a@b.c"}}]}}
-        errs = self.ok(events={"gmail.send_email": _event(golden_snippet=act)})
-        self.assertTrue(any("config.tools" in e for e in errs), errs)
-
-    def test_golden_snippet_config_must_be_object(self):
-        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION"}
-        self.assertEqual(self.ok(events={"gmail.send_email": _event(golden_snippet=snip)}), [])  # config 없음은 허용
-        for cfg in (None, "x", []):
-            errs = self.ok(events={"gmail.send_email": _event(golden_snippet={**snip, "config": cfg})})
-            self.assertTrue(any("golden_snippet.config" in e for e in errs), (cfg, errs))
-
-    def test_golden_snippet_type_is_node_type(self):
-        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {}}
-        for bad in ({**snip, "type": "AI"}, {k: v for k, v in snip.items() if k != "type"}):
-            errs = self.ok(events={"gmail.send_email": _event(golden_snippet=bad)})
-            self.assertTrue(any("golden_snippet.type" in e for e in errs), (bad, errs))
-        psnip = {"id": "node-2", "event": "ai.agent", "type": "ACTION", "config": {}}
-        errs = self.ok(presets=[{"id": "ai.gmail_send", "golden_snippet": psnip}])
-        self.assertTrue(any("golden_snippet.type" in e for e in errs), errs)
-
     def test_action_fixed_must_be_exact(self):
         for fixed in ({"type": "ACTION", "config": {"credentialId": ""}}, {"type": "ACTION", "config": {}, "tool": "x"},
                       {"type": "ACTION"}):
             errs = self.ok(events={"gmail.send_email": _event(fixed=fixed)})
             self.assertTrue(any("ACTION fixed" in e for e in errs), (fixed, errs))
-
-    def test_golden_snippet_service_type_forbidden(self):
-        snip = {"id": "node-2", "event": "gmail.send_email", "type": "ACTION", "config": {"serviceType": "GOOGLE"}}
-        errs = self.ok(events={"gmail.send_email": _event(golden_snippet=snip)})
-        self.assertTrue(any("serviceType" in e for e in errs), errs)
-
-    def test_preset_golden_snippet_old_fields_forbidden(self):
-        snip = {"id": "node-2", "event": "ai.agent", "type": "AI", "config": {"triggerType": "MANUAL"}}
-        errs = self.ok(presets=[{"id": "ai.gmail_send", "golden_snippet": snip}])
-        self.assertTrue(any("triggerType" in e for e in errs), errs)
 
     def test_options_source_format(self):
         bad = _event(inputFields=[{"key": "a", "optionsSource": "Google Calendars"}])
@@ -177,12 +127,27 @@ class CheckTest(unittest.TestCase):
         self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
 
     def test_preset_rules(self):
-        self.assertEqual(self.ok(presets=[{"id": "ai.gmail_send", "app": "gmail"}]), [])
-        self.assertTrue(self.ok(presets=[{"id": "gmail.send_email"}]))           # 이벤트와 이름 충돌
-        self.assertTrue(self.ok(presets=[{"id": "p"}, {"id": "p"}]))             # 중복
-        self.assertTrue(self.ok(presets=[{"id": "p", "builder": True}]))         # 로더가 정하는 키
-        self.assertEqual(self.ok(presets=[{"id": "p", "match": {"type": "AI"}}]), [])  # AI 칸 규칙용 match는 허용
-        self.assertTrue(self.ok(presets=[{"id": "p", "app": "nope"}]))           # 없는 앱
+        m = {"type": "AI"}
+        self.assertEqual(self.ok(presets=[{"id": "ai.web_search", "app": "gmail", "match": m}]), [])
+        self.assertTrue(self.ok(presets=[{"id": "gmail.send_email", "match": m}]))           # 이벤트와 이름 충돌
+        self.assertTrue(self.ok(presets=[{"id": "p", "match": m}, {"id": "p", "match": {"type": "AI", "x": 1}}]))  # 중복
+        self.assertTrue(self.ok(presets=[{"id": "p", "match": m, "builder": True}]))         # 로더가 정하는 키
+        self.assertTrue(self.ok(presets=[{"id": "p", "match": m, "app": "nope"}]))           # 없는 앱
+        self.assertTrue(self.ok(presets=[{"id": "p"}]))                                      # match 없음
+
+    def test_generation_only_keys_are_rejected(self):
+        for key in ("tags", "menu", "golden_snippet", "generation"):
+            errs = self.ok(events={"gmail.send_email": _event(**{key: []})})
+            self.assertTrue(any(key in e for e in errs), (key, errs))
+            errs = self.ok(presets=[{"id": "p", "match": {"type": "AI"}, key: []}])
+            self.assertTrue(any(key in e for e in errs), (key, errs))
+
+    def test_field_llm_is_rejected(self):
+        field = {"key": "to", "title": "받는 사람", "type": "string", "llm": {"hint": "x"}}
+        errs = self.ok(events={"gmail.send_email": _event(inputFields=[field])})
+        self.assertTrue(any("llm" in e for e in errs), errs)
+        errs = self.ok(events={"gmail.send_email": _event(fields={"to": {"llm": {"hint": "x"}}})})
+        self.assertTrue(any("llm" in e for e in errs), errs)
 
     def test_app_shape(self):
         self.assertTrue(self.ok(apps={"gmail": {**APP, "brand": ""}}))

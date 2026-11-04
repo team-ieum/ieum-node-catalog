@@ -4,15 +4,6 @@
   "title": "HTTP 요청",
   "description": "지정한 주소로 요청을 보내 결과를 받아와요.",
   "tool_key": null,
-  "tags": [
-    "http",
-    "rest",
-    "api",
-    "외부 api",
-    "엔드포인트",
-    "요청"
-  ],
-  "menu": "HTTP: 내장 도구가 없는 임의 외부 REST API 호출 (Notion/Slack/Google/GitHub 등은 금지)",
   "fixed": {
     "type": "HTTP",
     "config": {}
@@ -42,36 +33,23 @@
           "id": "DELETE",
           "name": "DELETE"
         }
-      ],
-      "llm": {
-        "kind": "http_method",
-        "hint": "HTTP 메서드"
-      }
+      ]
     },
     {
       "key": "url",
       "title": "URL",
       "type": "string",
-      "required": true,
-      "llm": {
-        "hint": "요청 URL (내장 도구 지원 서비스 도메인 금지)"
-      }
+      "required": true
     },
     {
       "key": "headers",
       "title": "헤더",
-      "type": "dict",
-      "llm": {
-        "hint": "요청 헤더 dict"
-      }
+      "type": "dict"
     },
     {
       "key": "body",
       "title": "본문",
-      "type": "text",
-      "llm": {
-        "hint": "요청 바디(POST/PUT 시)"
-      }
+      "type": "text"
     },
     {
       "key": "webhookCredentialId",
@@ -79,10 +57,7 @@
       "type": "string",
       "ref": false,
       "optionsSource": "ieum.webhooks",
-      "description": "등록해 둔 웹훅 주소로 보낼 때 골라요",
-      "llm": {
-        "slot": false
-      }
+      "description": "등록해 둔 웹훅 주소로 보낼 때 골라요"
     }
   ],
   "outputFields": [
@@ -98,18 +73,5 @@
       "dynamic": true,
       "description": "JSON 객체 응답이면 객체, 아니면 문자열(빈 본문은 null)"
     }
-  ],
-  "golden_snippet": {
-    "id": "node-2",
-    "event": "http.request",
-    "type": "HTTP",
-    "label": "환율 API 조회",
-    "description": "지정한 주소로 요청을 보내 결과를 받아와요.",
-    "config": {
-      "method": "GET",
-      "url": "https://open.er-api.com/v6/latest/USD",
-      "headers": {},
-      "body": null
-    }
-  }
+  ]
 }

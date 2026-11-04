@@ -5,7 +5,6 @@
   "description": "구글 캘린더에서 일정을 지워요.",
   "tool_key": "builtin:google_calendar_delete",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}

@@ -5,7 +5,6 @@
   "description": "Notion 데이터베이스 행의 속성이나 본문을 바꿔요.",
   "tool_key": "builtin:notion_update_row",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}

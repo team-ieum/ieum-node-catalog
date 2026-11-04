@@ -21,10 +21,11 @@ APP_KEYS = {"provider", "title", "brand", "serviceType", "auth"}
 EVENT_FORBIDDEN = {"id", "app", "slots", "allowed_config_fields"}
 # 프리셋 match는 허용 — AI 노드에 한해 프리셋 칸 규칙(정적 검증)을 고르는 데 쓴다. 이벤트는 event로만 판정해 match가 없다.
 PRESET_FORBIDDEN = {"node_type", "builder", "event", "kind", "trigger_type", "slots", "allowed_config_fields"}
-# 노드에서 지운 옛 필드 — 정의 fixed에도 golden_snippet에도 쓰지 않는다.
+# 옛 생성 경로 전용 칸 — 읽는 곳이 없다.
+GENERATION_KEYS = {"tags", "menu", "golden_snippet", "generation"}
+# 노드에서 지운 옛 필드 — 정의 fixed에 쓰지 않는다.
 OLD_CONFIG_KEYS = ("triggerType", "serviceType")
 ACTION_FIXED = {"type": "ACTION", "config": {}}  # 칸은 정의 fields, 도구는 tool_key — 골격에 남길 것이 없다
-PRESET_EVENT = "ai.agent"  # 프리셋으로 만든 노드의 event
 
 
 def _read(path):
@@ -68,30 +69,16 @@ def _options_errors(where, entry):
             errs.append(f"{where}: '{f.get('key')}'의 fieldsInputs는 fieldsSource와 함께 쓴다.")
         if "q" in (f.get("fieldsInputs") or []):
             errs.append(f"{where}: '{f.get('key')}'의 fieldsInputs에 'q'를 쓰지 않는다 — 드롭다운 검색어 파라미터 이름이다.")
+        if "llm" in f:
+            errs.append(f"{where}: '{f.get('key')}'의 llm은 옛 생성 경로 전용이다 — 빌더 안내는 description에 쓴다.")
         fields.extend(f.get("children") or [])
     return errs
 
 
-def _snippet_errors(where, snip, event, node_type):
-    if snip is None:
-        return []
-    if not isinstance(snip, dict):
-        return [f"{where}: golden_snippet은 JSON 객체다."]
-    errs = []
-    if snip.get("event") != event:
-        errs.append(f"{where}: golden_snippet.event는 '{event}'여야 한다(지금 {snip.get('event')!r}).")
-    if snip.get("type") != node_type:
-        errs.append(f"{where}: golden_snippet.type은 '{node_type}'여야 한다(지금 {snip.get('type')!r}).")
-    cfg = snip.get("config", {})
-    if not isinstance(cfg, dict):
-        errs.append(f"{where}: golden_snippet.config는 JSON 객체다.")
-        cfg = {}
-    for k in OLD_CONFIG_KEYS:
-        if k in cfg:
-            errs.append(f"{where}: golden_snippet.config.{k}는 지운 옛 필드다 — 노드 종류는 event로 정한다.")
-    if node_type == "ACTION" and "tools" in cfg:
-        errs.append(f"{where}: ACTION golden_snippet은 칸을 config.<칸>에 쓴다 — config.tools를 쓰지 않는다.")
-    return errs
+
+def _generation_errors(where, entry):
+    bad = sorted(GENERATION_KEYS & entry.keys())
+    return [f"{where}: {bad}는 옛 생성 경로 전용이다 — 쓰지 않는다."] if bad else []
 
 
 def check(apps, events, presets):
@@ -145,8 +132,8 @@ def check(apps, events, presets):
             errs.append(f"{name}: ACTION fixed는 정확히 {json.dumps(ACTION_FIXED)}다(지금 {ev.get('fixed')!r}).")
         if "match" in ev:
             errs.append(f"{name}: 이벤트는 match를 쓰지 않는다 — 노드는 event로만 판정한다(AI 칸 규칙용 match는 presets.json).")
+        errs += _generation_errors(name, ev)
         errs += _options_errors(name, ev)
-        errs += _snippet_errors(name, ev.get("golden_snippet"), name, ev.get("node_type"))
 
     seen = set()
     for p in presets:
@@ -162,8 +149,10 @@ def check(apps, events, presets):
             errs.append(f"presets.json: '{pid}'의 {bad}는 로더가 정한다(프리셋은 늘 AI·빌더 비노출·event ai.agent).")
         if "app" in p and p["app"] not in apps:
             errs.append(f"presets.json: '{pid}'의 앱 '{p['app']}'가 apps.json에 없다.")
+        if "match" not in p:
+            errs.append(f"presets.json: '{pid}'에 match가 없다 — match 없는 프리셋은 쓰이지 않는다.")
+        errs += _generation_errors(pid, p)
         errs += _options_errors(pid, p)
-        errs += _snippet_errors(pid, p.get("golden_snippet"), PRESET_EVENT, "AI")
     return errs
 
 

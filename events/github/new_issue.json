@@ -6,7 +6,6 @@
   "description": "저장소에 새 이슈가 열리면 시작해요.",
   "tool_key": null,
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "TRIGGER",
     "config": {}

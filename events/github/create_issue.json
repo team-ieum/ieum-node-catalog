@@ -5,7 +5,6 @@
   "description": "저장소에 새 이슈를 만들어요.",
   "tool_key": "builtin:github_create_issue",
   "builder": true,
-  "generation": false,
   "fixed": {
     "type": "ACTION",
     "config": {}
