@@ -2,7 +2,7 @@
   "node_type": "CONDITION",
   "kind": "action",
   "title": "조건 분기",
-  "description": "앞의 결과가 조건에 맞는지 보고 갈 길을 나눠요.",
+  "description": "조건에 맞는 갈래로 길을 나눠요. 맞을 때만 계속하게도 할 수 있어요.",
   "tool_key": null,
   "fixed": {
     "type": "CONDITION",
@@ -13,7 +13,6 @@
       "key": "operator",
       "title": "비교 방식",
       "type": "string",
-      "required": true,
       "ref": false,
       "choices": [
         {
@@ -33,6 +32,22 @@
           "name": "포함하지 않음"
         },
         {
+          "id": "startsWith",
+          "name": "시작함"
+        },
+        {
+          "id": "endsWith",
+          "name": "끝남"
+        },
+        {
+          "id": "in",
+          "name": "목록 중 하나"
+        },
+        {
+          "id": "notIn",
+          "name": "목록에 없음"
+        },
+        {
           "id": "greaterThan",
           "name": "보다 큼"
         },
@@ -49,6 +64,30 @@
           "name": "이하"
         },
         {
+          "id": "numberEquals",
+          "name": "숫자로 같음"
+        },
+        {
+          "id": "before",
+          "name": "이전"
+        },
+        {
+          "id": "after",
+          "name": "이후"
+        },
+        {
+          "id": "sameDay",
+          "name": "같은 날"
+        },
+        {
+          "id": "isTrue",
+          "name": "참"
+        },
+        {
+          "id": "isFalse",
+          "name": "거짓"
+        },
+        {
           "id": "isEmpty",
           "name": "비어 있음"
         },
@@ -56,26 +95,240 @@
           "id": "isNotEmpty",
           "name": "비어 있지 않음"
         }
-      ]
+      ],
+      "description": "옛 방식이에요. '갈래'를 채우면 이 칸은 쓰지 않아요."
     },
     {
       "key": "left",
       "title": "비교할 값",
       "type": "string",
-      "required": true
+      "description": "옛 방식이에요. '갈래'를 채우면 이 칸은 쓰지 않아요."
     },
     {
       "key": "right",
       "title": "기준값",
       "type": "string",
-      "required": true
+      "description": "옛 방식이에요. '갈래'를 채우면 이 칸은 쓰지 않아요."
+    },
+    {
+      "key": "branches",
+      "title": "갈래",
+      "type": "object",
+      "list": true,
+      "description": "갈래(최대 10개)마다 이름과 조건을 정해요. 위에서부터 보고, 아무 갈래도 안 맞으면 '그 외' 갈래로 가거나 멈춰요(아래 칸). 갈래 id는 비워 두면 시스템이 채워요.",
+      "children": [
+        {
+          "key": "key",
+          "title": "갈래 id",
+          "type": "string",
+          "required": true,
+          "ref": false,
+          "description": "시스템이 만드는 갈래 id예요. 비워 두면 채워져요."
+        },
+        {
+          "key": "name",
+          "title": "갈래 이름",
+          "type": "string",
+          "required": true,
+          "ref": false
+        },
+        {
+          "key": "match",
+          "title": "조건 묶기",
+          "type": "string",
+          "ref": false,
+          "default": "all",
+          "choices": [
+            {
+              "id": "all",
+              "name": "모두 맞아야"
+            },
+            {
+              "id": "any",
+              "name": "하나라도 맞으면"
+            }
+          ]
+        },
+        {
+          "key": "rules",
+          "title": "조건",
+          "type": "object",
+          "list": true,
+          "required": true,
+          "description": "갈래마다 조건은 최대 10개예요.",
+          "children": [
+            {
+              "key": "left",
+              "title": "비교할 값",
+              "type": "string",
+              "required": true
+            },
+            {
+              "key": "operator",
+              "title": "비교 방식",
+              "type": "string",
+              "required": true,
+              "ref": false,
+              "choices": [
+                {
+                  "id": "equals",
+                  "name": "같음"
+                },
+                {
+                  "id": "notEquals",
+                  "name": "같지 않음"
+                },
+                {
+                  "id": "contains",
+                  "name": "포함"
+                },
+                {
+                  "id": "notContains",
+                  "name": "포함하지 않음"
+                },
+                {
+                  "id": "startsWith",
+                  "name": "시작함"
+                },
+                {
+                  "id": "endsWith",
+                  "name": "끝남"
+                },
+                {
+                  "id": "in",
+                  "name": "목록 중 하나"
+                },
+                {
+                  "id": "notIn",
+                  "name": "목록에 없음"
+                },
+                {
+                  "id": "greaterThan",
+                  "name": "보다 큼"
+                },
+                {
+                  "id": "lessThan",
+                  "name": "보다 작음"
+                },
+                {
+                  "id": "greaterThanOrEqual",
+                  "name": "이상"
+                },
+                {
+                  "id": "lessThanOrEqual",
+                  "name": "이하"
+                },
+                {
+                  "id": "numberEquals",
+                  "name": "숫자로 같음"
+                },
+                {
+                  "id": "before",
+                  "name": "이전"
+                },
+                {
+                  "id": "after",
+                  "name": "이후"
+                },
+                {
+                  "id": "sameDay",
+                  "name": "같은 날"
+                },
+                {
+                  "id": "isTrue",
+                  "name": "참"
+                },
+                {
+                  "id": "isFalse",
+                  "name": "거짓"
+                },
+                {
+                  "id": "isEmpty",
+                  "name": "비어 있음"
+                },
+                {
+                  "id": "isNotEmpty",
+                  "name": "비어 있지 않음"
+                }
+              ]
+            },
+            {
+              "key": "right",
+              "title": "기준값",
+              "type": "string",
+              "description": "비어 있음·참/거짓 비교는 비워 둬요. 목록 비교는 쉼표로 나눠요."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pick",
+      "title": "여러 갈래가 맞으면",
+      "type": "string",
+      "ref": false,
+      "default": "first",
+      "choices": [
+        {
+          "id": "first",
+          "name": "첫 번째만"
+        },
+        {
+          "id": "all",
+          "name": "맞는 갈래 전부"
+        }
+      ]
+    },
+    {
+      "key": "otherwise",
+      "title": "아무 갈래도 안 맞으면",
+      "type": "string",
+      "ref": false,
+      "default": "branch",
+      "description": "'여기서 멈추기'면 뒤 단계를 실행하지 않아요(맞을 때만 계속).",
+      "choices": [
+        {
+          "id": "branch",
+          "name": "그 외 갈래로"
+        },
+        {
+          "id": "stop",
+          "name": "여기서 멈추기"
+        }
+      ]
+    },
+    {
+      "key": "caseSensitive",
+      "title": "대소문자 구분",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "켜면 텍스트 비교에서 대소문자를 구분해요."
     }
   ],
   "outputFields": [
     {
+      "key": "branch",
+      "title": "갈래",
+      "type": "string",
+      "description": "고른 첫 갈래 이름. 멈추면 빈 값"
+    },
+    {
+      "key": "branches",
+      "title": "고른 갈래들",
+      "type": "string",
+      "list": true
+    },
+    {
+      "key": "matched",
+      "title": "맞은 갈래 있음",
+      "type": "boolean"
+    },
+    {
       "key": "result",
       "title": "조건 결과",
-      "type": "boolean"
+      "type": "boolean",
+      "description": "'맞은 갈래 있음'과 같아요"
     }
   ]
 }
