@@ -79,6 +79,10 @@
 1. **Search 이벤트 출력**: `found`(boolean)·`total`(integer)·`items`(list)가 필수다. 0건은 에러가 아니라 `{found:false, total:0, items:[]}` 성공이다. 출력 키는 늘 같다(0건 전용 키 없음 — 성공 테스트의 `assert_matches_outputs`가 `outputFields`와 대조한다).
 2. **드롭다운 검색어 파라미터 이름은 `q`**: BE `IntegrationOptionService`는 `cursor` 밖의 쿼리를 전부 `inputs`로 넘기고, 검색을 지원하는 공급원만 `inputs.get("q")`를 읽는다. 공백뿐인 `q`는 없음으로 본다. `OptionSource` 인터페이스는 바꾸지 않는다. `q`를 `optionsInputs`·`fieldsInputs` 칸 key로 쓰지 않는다(CI 거부).
 
+## 내장 노드
+
+- `branch.if`: `branches`가 있으면 새 모양, 없으면 레거시 3칸(`operator`·`left`·`right`). 필수 판정은 정적 검증 전용 규칙. 엣지 `conditionType` = 갈래 key | `else`(레거시 `true`|`false`).
+
 ## 불변 규칙
 
 1. 이름 = 경로, 프리셋 id는 이벤트 이름과 겹치지 않는다.
