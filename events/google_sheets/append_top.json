@@ -1,0 +1,67 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 맨 위에 행 추가",
+  "description": "머리글 바로 아래(2행)에 한 행을 넣어요.",
+  "tool_key": "builtin:google_sheets_append_top",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "columns": {
+      "title": "열",
+      "type": "dict",
+      "ref": false,
+      "fieldsSource": "google.sheet_columns",
+      "fieldsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "description": "1행 머리글이 열마다 칸으로 펼쳐져요"
+    },
+    "value_input_option": {
+      "title": "입력값 해석",
+      "ref": false,
+      "description": "전화번호·우편번호처럼 앞자리 0을 지켜야 하면 '그대로 저장'",
+      "choices": [
+        {
+          "id": "USER_ENTERED",
+          "name": "자동 변환"
+        },
+        {
+          "id": "RAW",
+          "name": "그대로 저장"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "updatedRange",
+      "title": "기록된 범위",
+      "type": "string"
+    },
+    {
+      "key": "row_number",
+      "title": "행 번호",
+      "type": "integer"
+    }
+  ]
+}

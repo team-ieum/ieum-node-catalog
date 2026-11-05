@@ -13,15 +13,17 @@
     "spreadsheet_id": {
       "title": "스프레드시트",
       "description": "대상 스프레드시트",
-      "optionsSource": "google.spreadsheets"
+      "optionsSource": "google.spreadsheets",
+      "ref": false
     },
-    "sheet_name": {
+    "sheet_id": {
       "title": "워크시트",
       "description": "대상 워크시트(탭)",
       "optionsSource": "google.worksheets",
       "optionsInputs": [
         "spreadsheet_id"
-      ]
+      ],
+      "ref": false
     },
     "cell_range": {
       "title": "범위",
