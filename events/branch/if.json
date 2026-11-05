@@ -115,7 +115,7 @@
       "title": "갈래",
       "type": "object",
       "list": true,
-      "description": "갈래마다 이름과 조건을 정해요. 위에서부터 보고, 아무 갈래도 안 맞으면 '그 외'로 가요. 갈래 id는 비워 두면 시스템이 채워요.",
+      "description": "갈래(최대 10개)마다 이름과 조건을 정해요. 위에서부터 보고, 아무 갈래도 안 맞으면 '그 외' 갈래로 가거나 멈춰요(아래 칸). 갈래 id는 비워 두면 시스템이 채워요.",
       "children": [
         {
           "key": "key",
@@ -155,6 +155,7 @@
           "type": "object",
           "list": true,
           "required": true,
+          "description": "갈래마다 조건은 최대 10개예요.",
           "children": [
             {
               "key": "left",
