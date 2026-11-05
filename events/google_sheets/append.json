@@ -2,7 +2,7 @@
   "node_type": "ACTION",
   "kind": "action",
   "title": "시트에 행 추가",
-  "description": "표 끝에 새 행을 덧붙여요.",
+  "description": "표 끝에 한 행을 추가해요.",
   "tool_key": "builtin:google_sheets_append",
   "builder": true,
   "fixed": {
@@ -13,24 +13,43 @@
     "spreadsheet_id": {
       "title": "스프레드시트",
       "description": "대상 스프레드시트",
-      "optionsSource": "google.spreadsheets"
+      "optionsSource": "google.spreadsheets",
+      "ref": false
     },
-    "sheet_name": {
+    "sheet_id": {
       "title": "워크시트",
       "description": "대상 워크시트(탭)",
       "optionsSource": "google.worksheets",
       "optionsInputs": [
         "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "columns": {
+      "title": "열",
+      "type": "dict",
+      "ref": false,
+      "fieldsSource": "google.sheet_columns",
+      "fieldsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "description": "1행 머리글이 열마다 칸으로 펼쳐져요"
+    },
+    "value_input_option": {
+      "title": "입력값 해석",
+      "ref": false,
+      "description": "전화번호·우편번호처럼 앞자리 0을 지켜야 하면 '그대로 저장'",
+      "choices": [
+        {
+          "id": "USER_ENTERED",
+          "name": "자동 변환"
+        },
+        {
+          "id": "RAW",
+          "name": "그대로 저장"
+        }
       ]
-    },
-    "cell_range": {
-      "title": "범위",
-      "description": "예: A:C"
-    },
-    "values": {
-      "title": "값",
-      "type": "json",
-      "description": "2차원 배열 JSON (예: [[\"홍길동\", 100]])"
     }
   },
   "outputFields": [
@@ -40,8 +59,8 @@
       "type": "string"
     },
     {
-      "key": "updatedRows",
-      "title": "추가된 행 수",
+      "key": "row_number",
+      "title": "행 번호",
       "type": "integer"
     }
   ]
