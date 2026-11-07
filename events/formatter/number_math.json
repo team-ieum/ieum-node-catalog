@@ -2,7 +2,7 @@
   "node_type": "TRANSFORM",
   "kind": "action",
   "title": "계산하기",
-  "description": "숫자에 다른 숫자들을 더하기·빼기·곱하기·나누기하거나 부호를 바꿔요.",
+  "description": "숫자에 다른 숫자 하나를 더하기·빼기·곱하기·나누기하거나 부호를 바꿔요.",
   "tool_key": null,
   "fixed": {"type": "TRANSFORM", "config": {}},
   "inputFields": [
@@ -22,11 +22,10 @@
       ]
     },
     {
-      "key": "values",
+      "key": "value",
       "title": "계산할 값",
       "type": "string",
-      "list": true,
-      "description": "입력값에 차례로 계산할 숫자들. '부호 바꾸기'가 아니면 하나 이상 필요해요."
+      "description": "입력값과 계산할 숫자. '부호 바꾸기'가 아니면 필요해요. 여러 번 계산하려면 노드를 이어 붙여요."
     }
   ],
   "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
