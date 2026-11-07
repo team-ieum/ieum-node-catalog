@@ -159,6 +159,18 @@ class RepoCatalogTest(unittest.TestCase):
     def test_repo_catalog_passes(self):
         self.assertEqual(validate.check(*validate.load(validate.ROOT)), [])
 
+    def test_formatter_events_are_transform_actions(self):
+        _, events, _ = validate.load(validate.ROOT)
+        fmt = {n: e for n, e in events.items() if n.startswith("formatter.")}
+        self.assertEqual(len(fmt), 22, sorted(fmt))
+        for name, ev in fmt.items():
+            self.assertEqual(ev["node_type"], "TRANSFORM", name)
+            self.assertEqual(ev["kind"], "action", name)
+            self.assertIsNone(ev["tool_key"], name)
+            inp = [f for f in ev.get("inputFields", []) if f["key"] == "input"]
+            self.assertEqual(len(inp), 1, name)
+            self.assertIs(inp[0].get("required"), True, name)
+
 
 class BaseCompareTest(unittest.TestCase):
     def snap(self, events, presets=()):

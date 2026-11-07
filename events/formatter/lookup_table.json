@@ -1,0 +1,25 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "대응표로 바꾸기",
+  "description": "미리 적어 둔 대응표에서 입력과 같은 키를 찾아 짝지은 값으로 바꿔요(예: 코드 → 이름).",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "table",
+      "title": "대응표",
+      "type": "dict",
+      "required": true,
+      "description": "키는 대소문자까지 글자 그대로 맞춰 찾아요."
+    },
+    {
+      "key": "fallback",
+      "title": "없을 때 값",
+      "type": "string",
+      "description": "대응표에 없을 때 낼 값. 비워 두면 빈 값이에요."
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

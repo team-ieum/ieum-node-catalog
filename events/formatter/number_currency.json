@@ -1,0 +1,39 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "금액 표기",
+  "description": "숫자를 12,000원·₩12,000·$12.00 같은 통화 금액 표기로 바꿔요. 환율 변환은 하지 않아요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "currency",
+      "title": "통화",
+      "type": "string",
+      "ref": false,
+      "default": "KRW",
+      "choices": [
+        {"id": "KRW", "name": "원 (KRW)"},
+        {"id": "USD", "name": "달러 (USD)"},
+        {"id": "JPY", "name": "엔 (JPY)"},
+        {"id": "EUR", "name": "유로 (EUR)"},
+        {"id": "CNY", "name": "위안 (CNY)"},
+        {"id": "GBP", "name": "파운드 (GBP)"}
+      ]
+    },
+    {
+      "key": "style",
+      "title": "표기 방식",
+      "type": "string",
+      "ref": false,
+      "default": "korean",
+      "description": "'한국식'은 원화에만 쓰고, 다른 통화는 기호 방식으로 내요.",
+      "choices": [
+        {"id": "korean", "name": "한국식 (12,000원)"},
+        {"id": "symbol", "name": "기호 (₩12,000)"}
+      ]
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

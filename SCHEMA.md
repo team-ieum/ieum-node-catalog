@@ -82,6 +82,7 @@
 ## 내장 노드
 
 - `branch.if`: `branches`가 있으면 새 모양, 없으면 레거시 3칸(`operator`·`left`·`right`). 필수 판정은 정적 검증 전용 규칙. 엣지 `conditionType` = 갈래 key | `else`(레거시 `true`|`false`).
+- `formatter.*`: node_type TRANSFORM, BE `TransformNodeExecutor`가 실행(LLM 없음). 입력 칸 `input`, 출력은 이벤트별 선언(대부분 `output`). 조건부 필수 칸은 required:false — 실행기가 검사.
 
 ## 불변 규칙
 

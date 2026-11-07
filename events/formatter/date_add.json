@@ -1,0 +1,19 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "날짜 더하기·빼기",
+  "description": "날짜·시각에 '+1 month -2 days'·'+3일 -2시간'처럼 기간을 더하거나 빼요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true, "description": "'지금'·'오늘'도 쓸 수 있어요."},
+    {
+      "key": "expression",
+      "title": "더하거나 뺄 기간",
+      "type": "string",
+      "required": true,
+      "description": "단위: 년·개월(달)·주·일·시간·분·초 또는 year·month·week·day·hour·minute·second. 예: +1 month -2 days"
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

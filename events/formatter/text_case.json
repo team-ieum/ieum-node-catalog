@@ -1,0 +1,25 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "대소문자 바꾸기",
+  "description": "영문을 모두 대문자·모두 소문자·첫 글자만 대문자·단어마다 대문자로 바꿔요. 한글은 그대로예요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "mode",
+      "title": "바꿀 모양",
+      "type": "string",
+      "ref": false,
+      "default": "title",
+      "choices": [
+        {"id": "upper", "name": "모두 대문자"},
+        {"id": "lower", "name": "모두 소문자"},
+        {"id": "capitalize", "name": "첫 글자만 대문자"},
+        {"id": "title", "name": "단어마다 첫 글자 대문자"}
+      ]
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

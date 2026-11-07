@@ -1,0 +1,34 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "패턴으로 뽑기",
+  "description": "정규식 패턴에 맞는 부분을 글에서 찾아 첫 번째 또는 전부 꺼내요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "pattern",
+      "title": "정규식 패턴",
+      "type": "string",
+      "required": true,
+      "description": "Java 정규식, 200자까지. 그룹이 아니라 맞은 부분 전체를 내요."
+    },
+    {
+      "key": "all",
+      "title": "전부 뽑기",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "켜면 맞은 것 전부를 목록으로, 끄면 첫 번째 하나만 내요."
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "output",
+      "title": "결과",
+      "type": "string",
+      "description": "맞은 첫 번째 부분. '전부 뽑기'면 목록이에요. 없으면 빈 값"
+    }
+  ]
+}

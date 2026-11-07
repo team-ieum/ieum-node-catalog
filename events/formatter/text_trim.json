@@ -1,0 +1,12 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "공백 정리",
+  "description": "글 앞뒤의 빈칸·줄바꿈을 없애요. 글 가운데 공백은 그대로 둬요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true}
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

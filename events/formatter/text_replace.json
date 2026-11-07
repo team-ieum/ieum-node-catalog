@@ -1,0 +1,25 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "찾아 바꾸기",
+  "description": "글 속의 특정 글자를 찾아 전부 다른 글자로 바꾸거나 지워요(정규식 아님).",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "find",
+      "title": "찾을 글자",
+      "type": "string",
+      "required": true,
+      "description": "글자 그대로 찾아요. 공백은 [:space:], 줄바꿈은 [:newline:], 탭은 [:tab:]로 쓸 수 있어요."
+    },
+    {
+      "key": "replace",
+      "title": "바꿀 글자",
+      "type": "string",
+      "description": "비워 두면 찾은 글자를 지워요."
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

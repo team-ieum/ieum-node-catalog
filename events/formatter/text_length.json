@@ -1,0 +1,23 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "글자 수 세기",
+  "description": "글의 글자 수 또는 단어 수를 세서 숫자로 내요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "unit",
+      "title": "셀 단위",
+      "type": "string",
+      "ref": false,
+      "default": "chars",
+      "choices": [
+        {"id": "chars", "name": "글자"},
+        {"id": "words", "name": "단어"}
+      ]
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "integer"}]
+}

@@ -1,0 +1,38 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "텍스트 나누기",
+  "description": "구분 기호(예: 쉼표)로 글을 조각내 첫째·둘째·마지막 조각이나 조각 전체 목록을 꺼내요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "separator",
+      "title": "구분 기호",
+      "type": "string",
+      "default": ","
+    },
+    {
+      "key": "part",
+      "title": "꺼낼 조각",
+      "type": "string",
+      "ref": false,
+      "default": "first",
+      "choices": [
+        {"id": "first", "name": "첫째"},
+        {"id": "second", "name": "둘째"},
+        {"id": "last", "name": "마지막"},
+        {"id": "all", "name": "전체 목록"}
+      ]
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "output",
+      "title": "결과",
+      "type": "string",
+      "description": "고른 조각. '전체 목록'이면 조각 목록이에요. 없는 조각이면 빈 값"
+    }
+  ]
+}

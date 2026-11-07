@@ -1,0 +1,37 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "목록에서 고르기",
+  "description": "검색 결과 같은 목록에서 첫째·마지막·몇 번째 항목 하나를 골라요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "목록", "type": "string", "required": true, "description": "JSON 배열이나 쉼표로 나눈 글."},
+    {
+      "key": "position",
+      "title": "고를 위치",
+      "type": "string",
+      "ref": false,
+      "default": "first",
+      "choices": [
+        {"id": "first", "name": "첫째"},
+        {"id": "last", "name": "마지막"},
+        {"id": "nth", "name": "몇 번째"}
+      ]
+    },
+    {
+      "key": "index",
+      "title": "몇 번째",
+      "type": "integer",
+      "description": "'몇 번째'일 때 필요해요. 1부터 세요."
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "output",
+      "title": "결과",
+      "type": "string",
+      "description": "고른 항목 그대로. 객체면 객체(JSON)로 넘어가요"
+    }
+  ]
+}

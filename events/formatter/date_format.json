@@ -1,0 +1,46 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "날짜 표기 바꾸기",
+  "description": "날짜·시각을 2026년 11월 7일 (토)·2026-11-07·ISO 같은 모양으로 바꾸고 시간대를 옮겨요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true, "description": "'지금'·'오늘'도 쓸 수 있어요."},
+    {
+      "key": "format",
+      "title": "표기 모양",
+      "type": "string",
+      "ref": false,
+      "default": "korean",
+      "choices": [
+        {"id": "korean", "name": "2026년 11월 7일 (토)"},
+        {"id": "korean_time", "name": "2026년 11월 7일 (토) 13:30"},
+        {"id": "date", "name": "2026-11-07"},
+        {"id": "datetime", "name": "2026-11-07 13:30"},
+        {"id": "iso", "name": "ISO (2026-11-07T13:30:00+09:00)"},
+        {"id": "custom", "name": "직접 정하기"}
+      ]
+    },
+    {
+      "key": "customPattern",
+      "title": "직접 정한 모양",
+      "type": "string",
+      "description": "'직접 정하기'일 때 필요해요. Java 날짜 패턴(예: yyyy.MM.dd HH:mm), 100자까지."
+    },
+    {
+      "key": "fromTimezone",
+      "title": "입력 시간대",
+      "type": "string",
+      "default": "Asia/Seoul",
+      "description": "시간대가 없는 입력을 이 시간대로 봐요."
+    },
+    {
+      "key": "toTimezone",
+      "title": "결과 시간대",
+      "type": "string",
+      "default": "Asia/Seoul"
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

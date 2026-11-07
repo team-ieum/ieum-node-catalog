@@ -1,0 +1,37 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "숫자 표기",
+  "description": "숫자에 천 단위 구분 기호(1,000)를 넣고 소수점 기호를 정해요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "thousands",
+      "title": "천 단위 구분",
+      "type": "string",
+      "ref": false,
+      "default": "comma",
+      "choices": [
+        {"id": "comma", "name": "쉼표 (1,000)"},
+        {"id": "period", "name": "마침표 (1.000)"},
+        {"id": "space", "name": "빈칸 (1 000)"},
+        {"id": "none", "name": "없음 (1000)"}
+      ]
+    },
+    {
+      "key": "decimal",
+      "title": "소수점",
+      "type": "string",
+      "ref": false,
+      "default": "period",
+      "description": "천 단위 구분과 같은 기호는 쓸 수 없어요.",
+      "choices": [
+        {"id": "period", "name": "마침표 (0.5)"},
+        {"id": "comma", "name": "쉼표 (0,5)"}
+      ]
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}
