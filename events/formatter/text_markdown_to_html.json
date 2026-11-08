@@ -2,7 +2,7 @@
   "node_type": "TRANSFORM",
   "kind": "action",
   "title": "Markdown을 HTML로",
-  "description": "Markdown으로 쓴 글(예: AI 답변)을 메일에 넣을 수 있는 안전한 HTML로 바꿔요.",
+  "description": "마크다운(Markdown) 글(예: AI 답변)을 메일에 넣을 수 있는 안전한 HTML로 변환해요.",
   "tool_key": null,
   "fixed": {"type": "TRANSFORM", "config": {}},
   "inputFields": [

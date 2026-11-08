@@ -11,7 +11,8 @@
       "key": "separator",
       "title": "구분 기호",
       "type": "string",
-      "default": ","
+      "default": ",",
+      "description": "비우면 쉼표(,)."
     },
     {
       "key": "part",

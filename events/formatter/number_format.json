@@ -2,7 +2,7 @@
   "node_type": "TRANSFORM",
   "kind": "action",
   "title": "숫자 표기",
-  "description": "숫자에 천 단위 구분 기호(1,000)를 넣고 소수점 기호를 정해요.",
+  "description": "숫자에 천 단위 쉼표(1,000) 같은 구분 기호를 넣고 소수점 기호를 정해요.",
   "tool_key": null,
   "fixed": {"type": "TRANSFORM", "config": {}},
   "inputFields": [

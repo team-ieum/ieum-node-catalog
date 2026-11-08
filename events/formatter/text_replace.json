@@ -2,7 +2,7 @@
   "node_type": "TRANSFORM",
   "kind": "action",
   "title": "찾아 바꾸기",
-  "description": "글 속의 특정 글자를 찾아 전부 다른 글자로 바꾸거나 지워요(정규식 아님).",
+  "description": "글 속의 특정 글자를 찾아 전부 다른 글자로 치환하거나 지워요(정규식 아님).",
   "tool_key": null,
   "fixed": {"type": "TRANSFORM", "config": {}},
   "inputFields": [

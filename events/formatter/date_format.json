@@ -2,7 +2,7 @@
   "node_type": "TRANSFORM",
   "kind": "action",
   "title": "날짜 표기 바꾸기",
-  "description": "날짜·시각을 2026년 11월 7일 (토)·2026-11-07·ISO 같은 모양으로 바꾸고 시간대를 옮겨요.",
+  "description": "날짜·시각을 한국식(2026년 11월 7일 (토))·2026-11-07·ISO 같은 모양으로 바꾸고 시간대를 옮겨요.",
   "tool_key": null,
   "fixed": {"type": "TRANSFORM", "config": {}},
   "inputFields": [
@@ -33,13 +33,14 @@
       "title": "입력 시간대",
       "type": "string",
       "default": "Asia/Seoul",
-      "description": "시간대가 없는 입력을 이 시간대로 봐요."
+      "description": "시간대가 없는 입력을 이 시간대로 봐요. 비우면 Asia/Seoul."
     },
     {
       "key": "toTimezone",
       "title": "결과 시간대",
       "type": "string",
-      "default": "Asia/Seoul"
+      "default": "Asia/Seoul",
+      "description": "결과를 이 시간대로 바꿔요. 비우면 Asia/Seoul."
     }
   ],
   "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
