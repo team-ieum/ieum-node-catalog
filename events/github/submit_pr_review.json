@@ -1,0 +1,111 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub PR 리뷰 제출",
+  "description": "PR에 리뷰와 줄 코멘트를 남겨요.",
+  "tool_key": "builtin:github_submit_pr_review",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "PR이 있는 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "pull_number": {
+      "title": "PR 번호",
+      "description": "트리거의 PR 번호를 넣으세요"
+    },
+    "author": {
+      "title": "리뷰 작성자",
+      "ref": false,
+      "default": "bot",
+      "choices": [
+        {
+          "id": "bot",
+          "name": "IEUM 봇"
+        },
+        {
+          "id": "me",
+          "name": "내 GitHub 계정"
+        }
+      ]
+    },
+    "event": {
+      "title": "리뷰 결과",
+      "ref": false,
+      "default": "COMMENT",
+      "choices": [
+        {
+          "id": "COMMENT",
+          "name": "코멘트"
+        },
+        {
+          "id": "APPROVE",
+          "name": "승인"
+        },
+        {
+          "id": "REQUEST_CHANGES",
+          "name": "변경 요청"
+        }
+      ]
+    },
+    "body": {
+      "title": "본문",
+      "type": "text"
+    },
+    "comments": {
+      "title": "줄 코멘트",
+      "type": "json",
+      "description": "[{path, line, body}] 목록 — AI 노드 출력을 넣으세요"
+    },
+    "commit_id": {
+      "title": "커밋 SHA",
+      "description": "비우면 최신 커밋. 'GitHub PR 변경 내용 가져오기'의 head SHA를 넣으면 리뷰 중 새 커밋이 와도 줄 위치가 맞아요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "review_id",
+      "title": "리뷰 ID",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "리뷰 주소",
+      "type": "string"
+    },
+    {
+      "key": "state",
+      "title": "상태",
+      "type": "string"
+    },
+    {
+      "key": "posted_comments",
+      "title": "단 줄 코멘트 수",
+      "type": "integer"
+    },
+    {
+      "key": "moved_comments",
+      "title": "본문으로 옮긴 코멘트 수",
+      "type": "integer"
+    },
+    {
+      "key": "warnings",
+      "title": "경고",
+      "type": "string",
+      "list": true
+    }
+  ]
+}
