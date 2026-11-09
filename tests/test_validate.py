@@ -190,7 +190,7 @@ class RepoCatalogTest(unittest.TestCase):
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
         outs = {f["key"]: f for f in events["github.get_pr_reviews"]["outputFields"]}
-        self.assertEqual(set(outs), {"found", "total", "items", "message", "comments", "approved_count",
+        self.assertEqual(set(outs), {"found", "total", "items", "message", "comments", "approved_count", "truncated",
                                      "changes_requested_count"})
         self.assertIs(outs["comments"].get("list"), True)
 

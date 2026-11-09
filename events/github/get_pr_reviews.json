@@ -68,6 +68,7 @@
     {
       "key": "items",
       "title": "리뷰",
+      "description": "최신 리뷰부터 최대 50개, 본문은 2,000자까지",
       "type": "object",
       "list": true,
       "children": [
@@ -111,6 +112,7 @@
     {
       "key": "comments",
       "title": "줄 코멘트",
+      "description": "최신 코멘트부터 최대 100개, 본문은 1,000자까지",
       "type": "object",
       "list": true,
       "children": [
@@ -144,12 +146,20 @@
     {
       "key": "approved_count",
       "title": "승인 수",
+      "description": "리뷰어별 마지막 결정 기준",
       "type": "integer"
     },
     {
       "key": "changes_requested_count",
       "title": "변경 요청 수",
+      "description": "리뷰어별 마지막 결정 기준",
       "type": "integer"
+    },
+    {
+      "key": "truncated",
+      "title": "잘림",
+      "description": "목록이나 본문이 잘렸으면 true",
+      "type": "boolean"
     },
     {
       "key": "message",

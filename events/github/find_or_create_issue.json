@@ -2,7 +2,7 @@
   "node_type": "ACTION",
   "kind": "action",
   "title": "GitHub 이슈 찾기, 없으면 만들기",
-  "description": "조건에 맞는 이슈를 찾고, 없으면 새로 만들어요. 번호·라벨 기준이 가장 정확해요.",
+  "description": "조건에 맞는 이슈를 찾고, 없으면 새로 만들어요. 제목은 정확히 같은 이슈만 찾아요 — 중복을 확실히 막으려면 라벨 기준으로 찾으세요.",
   "tool_key": "builtin:github_find_or_create_issue",
   "builder": true,
   "fixed": {
