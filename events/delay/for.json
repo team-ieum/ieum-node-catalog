@@ -1,0 +1,56 @@
+{
+  "node_type": "DELAY",
+  "kind": "action",
+  "title": "일정 시간 기다리기",
+  "description": "정한 시간만큼 기다린 뒤 다음 단계로 넘어가요. 1분~30일.",
+  "tool_key": null,
+  "fixed": {
+    "type": "DELAY",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "amount",
+      "title": "기다릴 양",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "key": "unit",
+      "title": "단위",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "choices": [
+        {
+          "id": "minutes",
+          "name": "분"
+        },
+        {
+          "id": "hours",
+          "name": "시간"
+        },
+        {
+          "id": "days",
+          "name": "일"
+        },
+        {
+          "id": "weeks",
+          "name": "주"
+        }
+      ]
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "waitedUntil",
+      "title": "재개한 시각",
+      "type": "datetime"
+    },
+    {
+      "key": "scheduledFor",
+      "title": "예정했던 시각",
+      "type": "datetime"
+    }
+  ]
+}

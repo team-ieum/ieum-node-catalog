@@ -200,6 +200,18 @@ class RepoCatalogTest(unittest.TestCase):
         self.assertEqual(set(outs), {"member", "found", "total", "items", "message"})
         self.assertEqual(outs["member"]["type"], "boolean")
 
+    def test_delay_events_are_delay_actions(self):
+        _, events, _ = validate.load(validate.ROOT)
+        base = {"waitedUntil", "scheduledFor"}
+        expected = {"delay.for": base, "delay.until": base, "delay.queue": base | {"queuePosition"}}
+        self.assertEqual(sorted(n for n in events if n.startswith("delay.")), sorted(expected))
+        for name, outs in expected.items():
+            ev = events[name]
+            self.assertEqual(ev["node_type"], "DELAY", name)
+            self.assertEqual(ev["kind"], "action", name)
+            self.assertIsNone(ev["tool_key"], name)
+            self.assertEqual({f["key"] for f in ev.get("outputFields", [])}, outs, name)
+
 
 class BaseCompareTest(unittest.TestCase):
     def snap(self, events, presets=()):

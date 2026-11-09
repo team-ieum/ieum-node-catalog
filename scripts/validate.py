@@ -15,7 +15,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 OPTIONS_SOURCE_RE = re.compile(r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")
 KINDS = {"trigger", "action", "search"}
-NODE_TYPES = {"TRIGGER", "AI", "HTTP", "CONDITION", "TRANSFORM", "APPROVAL", "ACTION"}
+NODE_TYPES = {"TRIGGER", "AI", "HTTP", "CONDITION", "TRANSFORM", "APPROVAL", "ACTION", "DELAY"}
 APP_KEYS = {"provider", "title", "brand", "serviceType", "auth"}
 # 경로·로더가 정하는 값 — 파일에 쓰면 두 군데가 어긋난다.
 EVENT_FORBIDDEN = {"id", "app", "slots", "allowed_config_fields"}

@@ -1,0 +1,57 @@
+{
+  "node_type": "DELAY",
+  "kind": "action",
+  "title": "정한 시각까지 기다리기",
+  "description": "정한 시각이 되면 다음 단계로 넘어가요. 시간대가 없으면 한국 시간이에요.",
+  "tool_key": null,
+  "fixed": {
+    "type": "DELAY",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "until",
+      "title": "시각",
+      "type": "string",
+      "required": true,
+      "description": "예: 2026-11-10 09:00 또는 앞 단계 값"
+    },
+    {
+      "key": "ifPast",
+      "title": "이미 지난 시각이면",
+      "type": "string",
+      "ref": false,
+      "default": "continue_1d",
+      "choices": [
+        {
+          "id": "continue_15m",
+          "name": "15분 이내면 바로 계속"
+        },
+        {
+          "id": "continue_1h",
+          "name": "1시간 이내면 바로 계속"
+        },
+        {
+          "id": "continue_1d",
+          "name": "1일 이내면 바로 계속"
+        },
+        {
+          "id": "always",
+          "name": "항상 바로 계속"
+        }
+      ]
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "waitedUntil",
+      "title": "재개한 시각",
+      "type": "datetime"
+    },
+    {
+      "key": "scheduledFor",
+      "title": "예정했던 시각",
+      "type": "datetime"
+    }
+  ]
+}

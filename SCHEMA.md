@@ -20,7 +20,7 @@
 
 | 필드 | 필수 | 설명 |
 |---|---|---|
-| `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` |
+| `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` `DELAY` |
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
 | `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키, 또는 ACTION 전용 키 — `builtin:github_*`(동적 서비스 액션)·`_ACTION_ONLY_TOOLS`(되돌릴 수 없는 일이라 AI 노드에 안 싣는 도구, 예 `builtin:google_calendar_delete`). 둘 다 `tools.registry.resolve_action_fn`이 푼다 |
@@ -83,6 +83,7 @@
 
 - `branch.if`: `branches`가 있으면 새 모양, 없으면 레거시 3칸(`operator`·`left`·`right`). 필수 판정은 정적 검증 전용 규칙. 엣지 `conditionType` = 갈래 key | `else`(레거시 `true`|`false`).
 - `formatter.*`: node_type TRANSFORM, BE `TransformNodeExecutor`가 실행(LLM 없음). 입력 칸 `input`, 출력은 이벤트별 선언(대부분 `output`). 조건부 필수 칸은 required:false — 실행기가 검사.
+- `delay.*`: node_type DELAY, BE 런타임이 노드를 보류하고 실행을 WAITING_DELAY로 멈춘 뒤 sweeper가 이어진 실행으로 재개(LLM 없음). 출력 `waitedUntil`·`scheduledFor`(큐는 `queuePosition`).
 
 ## 불변 규칙
 

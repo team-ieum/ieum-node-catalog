@@ -17,5 +17,6 @@
   "transform":       {"provider": "ieum",    "title": "변환",             "brand": "filter",  "serviceType": null,      "auth": null},
   "formatter":       {"provider": "ieum",    "title": "포맷터",           "brand": "filter",  "serviceType": null,      "auth": null},
   "approval":        {"provider": "ieum",    "title": "승인",             "brand": "webhook", "serviceType": null,      "auth": null},
+  "delay":           {"provider": "ieum",    "title": "기다리기",         "brand": "webhook", "serviceType": null,      "auth": null},
   "ai":              {"provider": "ieum",    "title": "AI",              "brand": "openai",  "serviceType": null,      "auth": null}
 }
