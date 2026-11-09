@@ -1,0 +1,132 @@
+{
+  "node_type": "TRIGGER",
+  "kind": "trigger",
+  "trigger_type": "GITHUB_NEW_PR",
+  "title": "새 GitHub PR",
+  "description": "저장소에 PR이 열리거나 새 커밋이 올라오면 시작해요. 저장소 멤버가 연 PR만 반응해요.",
+  "tool_key": null,
+  "builder": true,
+  "fixed": {
+    "type": "TRIGGER",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "repoId",
+      "title": "저장소",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "description": "새 PR을 지켜볼 저장소",
+      "optionsSource": "github.installed_repos"
+    },
+    {
+      "key": "onOpened",
+      "title": "PR이 열릴 때",
+      "type": "boolean",
+      "ref": false,
+      "default": true
+    },
+    {
+      "key": "onSynchronize",
+      "title": "새 커밋이 올라올 때",
+      "type": "boolean",
+      "ref": false,
+      "default": true
+    },
+    {
+      "key": "onReopened",
+      "title": "PR이 다시 열릴 때",
+      "type": "boolean",
+      "ref": false,
+      "default": true
+    },
+    {
+      "key": "onReadyForReview",
+      "title": "초안이 준비 완료될 때",
+      "type": "boolean",
+      "ref": false,
+      "default": true
+    },
+    {
+      "key": "excludeDrafts",
+      "title": "초안 PR 제외",
+      "type": "boolean",
+      "ref": false,
+      "default": true
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "owner",
+      "title": "소유자",
+      "type": "string"
+    },
+    {
+      "key": "repoName",
+      "title": "저장소 이름",
+      "type": "string"
+    },
+    {
+      "key": "repo",
+      "title": "저장소",
+      "type": "string",
+      "description": "owner/name"
+    },
+    {
+      "key": "prNumber",
+      "title": "PR 번호",
+      "type": "integer"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "body",
+      "title": "본문",
+      "type": "text"
+    },
+    {
+      "key": "url",
+      "title": "링크",
+      "type": "string"
+    },
+    {
+      "key": "author",
+      "title": "작성자",
+      "type": "string"
+    },
+    {
+      "key": "action",
+      "title": "이벤트",
+      "type": "string"
+    },
+    {
+      "key": "draft",
+      "title": "초안",
+      "type": "boolean"
+    },
+    {
+      "key": "baseBranch",
+      "title": "대상 브랜치",
+      "type": "string"
+    },
+    {
+      "key": "headBranch",
+      "title": "작업 브랜치",
+      "type": "string"
+    },
+    {
+      "key": "headSha",
+      "title": "최신 커밋 SHA",
+      "type": "string"
+    },
+    {
+      "key": "createdAt",
+      "title": "만든 시각",
+      "type": "datetime"
+    }
+  ]
+}
