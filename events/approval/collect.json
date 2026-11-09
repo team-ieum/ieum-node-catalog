@@ -1,0 +1,189 @@
+{
+  "node_type": "APPROVAL",
+  "kind": "action",
+  "title": "값 입력받기",
+  "description": "사람이 칸을 채우면 그 값으로 다음 단계를 이어가요.",
+  "tool_key": null,
+  "fixed": {
+    "type": "APPROVAL",
+    "config": {}
+  },
+  "inputFields": [
+    {
+      "key": "message",
+      "title": "안내 메시지",
+      "type": "text",
+      "description": "비우면 '값을 입력해 주세요'라고 보여요"
+    },
+    {
+      "key": "fields",
+      "title": "입력 칸",
+      "type": "object",
+      "list": true,
+      "required": true,
+      "ref": false,
+      "description": "사람이 채울 칸이에요. 다음 단계에서 values.<이름>으로 꺼내요.",
+      "children": [
+        {
+          "key": "key",
+          "title": "이름",
+          "type": "string",
+          "required": true,
+          "ref": false
+        },
+        {
+          "key": "label",
+          "title": "보여 줄 이름",
+          "type": "string",
+          "ref": false
+        },
+        {
+          "key": "type",
+          "title": "종류",
+          "type": "string",
+          "required": true,
+          "ref": false,
+          "choices": [
+            {
+              "id": "short",
+              "name": "짧은 글"
+            },
+            {
+              "id": "long",
+              "name": "긴 글"
+            },
+            {
+              "id": "number",
+              "name": "숫자"
+            },
+            {
+              "id": "date",
+              "name": "날짜"
+            },
+            {
+              "id": "boolean",
+              "name": "예·아니오"
+            },
+            {
+              "id": "choice",
+              "name": "선택지"
+            }
+          ]
+        },
+        {
+          "key": "required",
+          "title": "꼭 채우기",
+          "type": "boolean"
+        },
+        {
+          "key": "default",
+          "title": "기본값",
+          "type": "text"
+        },
+        {
+          "key": "options",
+          "title": "보기",
+          "type": "string",
+          "ref": false,
+          "description": "쉼표로 구분해요. 선택지일 때 꼭 채워요"
+        }
+      ]
+    },
+    {
+      "key": "webhookCredentialId",
+      "title": "알림 받을 Discord 웹훅",
+      "type": "string",
+      "ref": false,
+      "optionsSource": "discord.webhooks",
+      "description": "고르면 입력 요청을 Discord로도 알려요"
+    },
+    {
+      "key": "timeoutAmount",
+      "title": "제한 시간",
+      "type": "integer",
+      "default": 24,
+      "description": "5분~7일"
+    },
+    {
+      "key": "timeoutUnit",
+      "title": "제한 시간 단위",
+      "type": "string",
+      "ref": false,
+      "default": "hours",
+      "choices": [
+        {
+          "id": "minutes",
+          "name": "분"
+        },
+        {
+          "id": "hours",
+          "name": "시간"
+        },
+        {
+          "id": "days",
+          "name": "일"
+        }
+      ]
+    },
+    {
+      "key": "onTimeout",
+      "title": "시간이 지나면",
+      "type": "string",
+      "ref": false,
+      "default": "stop",
+      "choices": [
+        {
+          "id": "stop",
+          "name": "멈추기"
+        },
+        {
+          "id": "continue",
+          "name": "건너뛰고 계속"
+        }
+      ]
+    },
+    {
+      "key": "reminder",
+      "title": "중간에 한 번 더 알리기",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "제한 시간의 절반이 지나면 다시 알려요"
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "decision",
+      "title": "결정",
+      "type": "string",
+      "description": "submitted·timeout 중 하나"
+    },
+    {
+      "key": "approvedBy",
+      "title": "입력한 사람 ID",
+      "type": "string"
+    },
+    {
+      "key": "approvedAt",
+      "title": "입력한 시각",
+      "type": "datetime"
+    },
+    {
+      "key": "reviewer",
+      "title": "처리한 사람",
+      "type": "object"
+    },
+    {
+      "key": "note",
+      "title": "메모",
+      "type": "string"
+    },
+    {
+      "key": "values",
+      "title": "입력한 값",
+      "type": "object",
+      "dynamic": true,
+      "description": "칸 이름으로 꺼내요. 예: values.email"
+    }
+  ]
+}

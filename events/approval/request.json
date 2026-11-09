@@ -12,7 +12,128 @@
     {
       "key": "message",
       "title": "승인 요청 메시지",
-      "type": "text"
+      "type": "text",
+      "description": "비우면 '승인이 필요해요'라고 보여요"
+    },
+    {
+      "key": "items",
+      "title": "검토할 내용",
+      "type": "object",
+      "list": true,
+      "ref": false,
+      "description": "승인하는 사람에게 보여 줄 값이에요. 다음 단계에서 content.<이름>으로 꺼내요.",
+      "children": [
+        {
+          "key": "key",
+          "title": "이름",
+          "type": "string",
+          "required": true,
+          "ref": false
+        },
+        {
+          "key": "value",
+          "title": "값",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "editable",
+      "title": "승인하면서 고칠 수 있게",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "key": "approveLabel",
+      "title": "승인 버튼 이름",
+      "type": "string",
+      "ref": false,
+      "default": "승인"
+    },
+    {
+      "key": "rejectLabel",
+      "title": "거절 버튼 이름",
+      "type": "string",
+      "ref": false,
+      "default": "거절"
+    },
+    {
+      "key": "onReject",
+      "title": "거절하면",
+      "type": "string",
+      "ref": false,
+      "default": "stop",
+      "choices": [
+        {
+          "id": "stop",
+          "name": "멈추기"
+        },
+        {
+          "id": "continue",
+          "name": "계속하기"
+        }
+      ]
+    },
+    {
+      "key": "webhookCredentialId",
+      "title": "알림 받을 Discord 웹훅",
+      "type": "string",
+      "ref": false,
+      "optionsSource": "discord.webhooks",
+      "description": "고르면 승인 요청을 Discord로도 알려요"
+    },
+    {
+      "key": "timeoutAmount",
+      "title": "제한 시간",
+      "type": "integer",
+      "default": 24,
+      "description": "5분~7일"
+    },
+    {
+      "key": "timeoutUnit",
+      "title": "제한 시간 단위",
+      "type": "string",
+      "ref": false,
+      "default": "hours",
+      "choices": [
+        {
+          "id": "minutes",
+          "name": "분"
+        },
+        {
+          "id": "hours",
+          "name": "시간"
+        },
+        {
+          "id": "days",
+          "name": "일"
+        }
+      ]
+    },
+    {
+      "key": "onTimeout",
+      "title": "시간이 지나면",
+      "type": "string",
+      "ref": false,
+      "default": "stop",
+      "choices": [
+        {
+          "id": "stop",
+          "name": "멈추기"
+        },
+        {
+          "id": "continue",
+          "name": "건너뛰고 계속"
+        }
+      ]
+    },
+    {
+      "key": "reminder",
+      "title": "중간에 한 번 더 알리기",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "제한 시간의 절반이 지나면 다시 알려요"
     }
   ],
   "outputFields": [
@@ -20,6 +141,12 @@
       "key": "approved",
       "title": "승인 여부",
       "type": "boolean"
+    },
+    {
+      "key": "decision",
+      "title": "결정",
+      "type": "string",
+      "description": "approved·rejected·timeout 중 하나"
     },
     {
       "key": "approvedBy",
@@ -30,6 +157,33 @@
       "key": "approvedAt",
       "title": "승인 시각",
       "type": "datetime"
+    },
+    {
+      "key": "reviewer",
+      "title": "처리한 사람",
+      "type": "object"
+    },
+    {
+      "key": "note",
+      "title": "메모",
+      "type": "string"
+    },
+    {
+      "key": "content",
+      "title": "검토한 내용",
+      "type": "object",
+      "dynamic": true,
+      "description": "이름으로 꺼내요. 예: content.amount"
+    },
+    {
+      "key": "rejectedBy",
+      "title": "거절한 사람 ID",
+      "type": "string"
+    },
+    {
+      "key": "reason",
+      "title": "거절 사유",
+      "type": "string"
     }
   ]
 }
