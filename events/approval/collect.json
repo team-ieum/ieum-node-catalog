@@ -73,7 +73,8 @@
         {
           "key": "required",
           "title": "꼭 채우기",
-          "type": "boolean"
+          "type": "boolean",
+          "ref": false
         },
         {
           "key": "default",
@@ -102,7 +103,7 @@
       "title": "제한 시간",
       "type": "integer",
       "default": 24,
-      "description": "5분~7일"
+      "description": "5분에서 7일 사이로 정해요"
     },
     {
       "key": "timeoutUnit",
@@ -156,7 +157,7 @@
       "key": "decision",
       "title": "결정",
       "type": "string",
-      "description": "submitted·timeout 중 하나"
+      "description": "submitted(제출)·timeout(시간 초과) 중 하나예요"
     },
     {
       "key": "approvedBy",
