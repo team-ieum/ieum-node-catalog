@@ -28,13 +28,14 @@
       "description": "이슈·PR 번호 — 트리거 번호를 넣거나 직접 적어요"
     },
     "body": {
-      "title": "코멘트"
+      "title": "코멘트",
+      "type": "text"
     }
   },
   "outputFields": [
     {
       "key": "id",
-      "title": "코멘트 id",
+      "title": "코멘트 ID",
       "type": "integer"
     },
     {

@@ -61,7 +61,8 @@
       "title": "새 이슈 제목"
     },
     "body": {
-      "title": "새 이슈 내용"
+      "title": "새 이슈 내용",
+      "type": "text"
     },
     "labels": {
       "title": "라벨",

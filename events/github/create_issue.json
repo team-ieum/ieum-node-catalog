@@ -32,14 +32,17 @@
     },
     "labels": {
       "title": "라벨",
+      "type": "string",
       "description": "쉼표로 구분, 저장소에 이미 있는 라벨 이름"
     },
     "assignees": {
       "title": "담당자",
+      "type": "string",
       "description": "쉼표로 구분한 GitHub 아이디"
     },
     "milestone": {
       "title": "마일스톤",
+      "type": "string",
       "optionsSource": "github.milestones",
       "optionsInputs": [
         "owner",

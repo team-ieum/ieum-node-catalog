@@ -73,7 +73,7 @@
       "children": [
         {
           "key": "id",
-          "title": "리뷰 id",
+          "title": "리뷰 ID",
           "type": "integer"
         },
         {

@@ -31,7 +31,8 @@
       "title": "제목"
     },
     "body": {
-      "title": "내용"
+      "title": "내용",
+      "type": "text"
     },
     "state": {
       "title": "상태",
@@ -49,6 +50,7 @@
     },
     "state_reason": {
       "title": "닫는 이유",
+      "description": "상태를 바꿀 때만 적용돼요",
       "ref": false,
       "choices": [
         {
