@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 import validate  # noqa: E402
 
 # 앱 이벤트 약속 1(Search 출력)을 지키는 GitHub search 이벤트. list_issues·get_pr_files는 옛 모양이라 뺀다.
-GITHUB_SEARCH_EVENTS = {"github.find_issue"}
+GITHUB_SEARCH_EVENTS = {"github.find_issue", "github.find_pull_request", "github.get_pr_reviews"}
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
@@ -184,6 +184,13 @@ class RepoCatalogTest(unittest.TestCase):
             for key in ("found", "total", "items", "message"):
                 self.assertIn(key, outs, name)
             self.assertIs(outs["items"].get("list"), True, name)
+
+    def test_get_pr_reviews_outputs(self):
+        _, events, _ = validate.load(validate.ROOT)
+        outs = {f["key"]: f for f in events["github.get_pr_reviews"]["outputFields"]}
+        self.assertEqual(set(outs), {"found", "total", "items", "message", "comments", "approved_count",
+                                     "changes_requested_count"})
+        self.assertIs(outs["comments"].get("list"), True)
 
 
 class BaseCompareTest(unittest.TestCase):

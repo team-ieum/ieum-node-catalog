@@ -1,0 +1,91 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub PR 찾기, 없으면 만들기",
+  "description": "같은 브랜치끼리 열린 PR을 찾고, 없으면 새로 만들어요.",
+  "tool_key": "builtin:github_find_or_create_pull_request",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "PR을 찾거나 만들 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "head": {
+      "title": "보낼 브랜치",
+      "description": "다른 포크면 아이디:브랜치",
+      "optionsSource": "github.branches",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
+    },
+    "base": {
+      "title": "받을 브랜치",
+      "optionsSource": "github.branches",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
+    },
+    "title": {
+      "title": "새 PR 제목"
+    },
+    "body": {
+      "title": "새 PR 내용",
+      "type": "text"
+    },
+    "draft": {
+      "title": "초안으로 만들기",
+      "ref": false
+    },
+    "maintainer_can_modify": {
+      "title": "관리자 수정 허용",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 만듦",
+      "type": "boolean"
+    },
+    {
+      "key": "number",
+      "title": "PR 번호",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "PR 주소",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "state",
+      "title": "상태",
+      "type": "string"
+    },
+    {
+      "key": "draft",
+      "title": "초안",
+      "type": "boolean"
+    }
+  ]
+}

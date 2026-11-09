@@ -1,0 +1,160 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub PR 리뷰 가져오기",
+  "description": "PR에 달린 리뷰와 줄 코멘트를 가져와요. 승인·변경 요청 수도 함께 세요.",
+  "tool_key": "builtin:github_get_pr_reviews",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "PR이 있는 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "pull_number": {
+      "title": "PR 번호",
+      "description": "트리거의 PR 번호를 넣거나 번호를 직접 적어요"
+    },
+    "include_comments": {
+      "title": "줄 코멘트도 가져오기",
+      "ref": false
+    },
+    "states": {
+      "title": "리뷰 상태",
+      "description": "쉼표로 구분: APPROVED, CHANGES_REQUESTED, COMMENTED, DISMISSED (비우면 전부)"
+    },
+    "author_type": {
+      "title": "작성자 종류",
+      "ref": false,
+      "choices": [
+        {
+          "id": "human",
+          "name": "사람만"
+        },
+        {
+          "id": "bot",
+          "name": "봇만"
+        },
+        {
+          "id": "all",
+          "name": "전부"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "리뷰",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "리뷰 id",
+          "type": "integer"
+        },
+        {
+          "key": "author",
+          "title": "작성자",
+          "type": "string"
+        },
+        {
+          "key": "author_type",
+          "title": "작성자 종류",
+          "type": "string"
+        },
+        {
+          "key": "state",
+          "title": "상태",
+          "type": "string"
+        },
+        {
+          "key": "body",
+          "title": "내용",
+          "type": "text"
+        },
+        {
+          "key": "submitted_at",
+          "title": "제출 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "commit_id",
+          "title": "커밋 SHA",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "comments",
+      "title": "줄 코멘트",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "path",
+          "title": "경로",
+          "type": "string"
+        },
+        {
+          "key": "line",
+          "title": "줄",
+          "type": "integer"
+        },
+        {
+          "key": "body",
+          "title": "내용",
+          "type": "text"
+        },
+        {
+          "key": "author",
+          "title": "작성자",
+          "type": "string"
+        },
+        {
+          "key": "created_at",
+          "title": "만든 시각",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "approved_count",
+      "title": "승인 수",
+      "type": "integer"
+    },
+    {
+      "key": "changes_requested_count",
+      "title": "변경 요청 수",
+      "type": "integer"
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub PR 수정",
+  "description": "PR의 제목·내용·상태·받을 브랜치를 바꿔요. 빈 칸은 그대로 둬요.",
+  "tool_key": "builtin:github_update_pull_request",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "PR이 있는 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "pull_number": {
+      "title": "PR 번호",
+      "description": "트리거의 PR 번호를 넣거나 번호를 직접 적어요"
+    },
+    "title": {
+      "title": "제목"
+    },
+    "body": {
+      "title": "내용",
+      "type": "text"
+    },
+    "state": {
+      "title": "상태",
+      "ref": false,
+      "choices": [
+        {
+          "id": "open",
+          "name": "열림"
+        },
+        {
+          "id": "closed",
+          "name": "닫힘"
+        }
+      ]
+    },
+    "base": {
+      "title": "받을 브랜치",
+      "optionsSource": "github.branches",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "number",
+      "title": "PR 번호",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "PR 주소",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "state",
+      "title": "상태",
+      "type": "string"
+    }
+  ]
+}
