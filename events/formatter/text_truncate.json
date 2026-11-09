@@ -1,0 +1,27 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "길이 자르기",
+  "description": "긴 글을 정한 글자 수까지만 남겨요. 끝에 말줄임표(…)를 붙일 수 있어요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "maxLength",
+      "title": "최대 글자 수",
+      "type": "integer",
+      "required": true,
+      "description": "한글·이모지도 한 글자로 세요."
+    },
+    {
+      "key": "ellipsis",
+      "title": "말줄임표 붙이기",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "켜면 잘린 글 끝에 …을 붙여요. …까지 합쳐 최대 글자 수예요."
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

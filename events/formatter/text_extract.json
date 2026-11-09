@@ -1,0 +1,40 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "이메일·전화·URL·숫자 뽑기",
+  "description": "글 속에서 이메일 주소·한국 전화번호·웹 주소·숫자를 찾아 첫 번째 또는 전부 꺼내요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "kind",
+      "title": "뽑을 것",
+      "type": "string",
+      "required": true,
+      "ref": false,
+      "choices": [
+        {"id": "email", "name": "이메일"},
+        {"id": "phone", "name": "전화번호"},
+        {"id": "url", "name": "URL"},
+        {"id": "number", "name": "숫자"}
+      ]
+    },
+    {
+      "key": "all",
+      "title": "전부 뽑기",
+      "type": "boolean",
+      "ref": false,
+      "default": false,
+      "description": "켜면 찾은 것 전부를 목록으로, 끄면 첫 번째 하나만 내요."
+    }
+  ],
+  "outputFields": [
+    {
+      "key": "output",
+      "title": "결과",
+      "type": "string",
+      "description": "찾은 첫 번째 값. '전부 뽑기'면 목록이에요. 못 찾으면 빈 값"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "기본값 넣기",
+  "description": "앞 단계 값이 비어 있으면 정해 둔 기본값을, 비어 있지 않으면 원래 값을 그대로 넘겨요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {"key": "defaultValue", "title": "기본값", "type": "string", "required": true}
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

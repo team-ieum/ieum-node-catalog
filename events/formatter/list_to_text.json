@@ -1,0 +1,13 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "목록을 글로",
+  "description": "목록의 항목들을 구분 기호로 이어 붙여 한 줄 글로 만들어요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "목록", "type": "string", "required": true, "description": "JSON 배열이나 쉼표로 나눈 글."},
+    {"key": "separator", "title": "구분 기호", "type": "string", "default": ", ", "description": "비우면 쉼표와 공백(, )."}
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

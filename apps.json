@@ -15,6 +15,7 @@
   "http":            {"provider": "ieum",    "title": "HTTP",            "brand": "webhook", "serviceType": null,      "auth": null},
   "branch":          {"provider": "ieum",    "title": "분기",             "brand": "filter",  "serviceType": null,      "auth": null},
   "transform":       {"provider": "ieum",    "title": "변환",             "brand": "filter",  "serviceType": null,      "auth": null},
+  "formatter":       {"provider": "ieum",    "title": "포맷터",           "brand": "filter",  "serviceType": null,      "auth": null},
   "approval":        {"provider": "ieum",    "title": "승인",             "brand": "webhook", "serviceType": null,      "auth": null},
   "ai":              {"provider": "ieum",    "title": "AI",              "brand": "openai",  "serviceType": null,      "auth": null}
 }

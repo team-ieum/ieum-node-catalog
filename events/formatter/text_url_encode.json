@@ -1,0 +1,23 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "URL 인코딩",
+  "description": "주소에 넣을 수 있게 글을 %로 인코딩하거나, 인코딩된 글을 원래대로 풀어요.",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "입력값", "type": "string", "required": true},
+    {
+      "key": "direction",
+      "title": "방향",
+      "type": "string",
+      "ref": false,
+      "default": "encode",
+      "choices": [
+        {"id": "encode", "name": "인코딩"},
+        {"id": "decode", "name": "디코딩"}
+      ]
+    }
+  ],
+  "outputFields": [{"key": "output", "title": "결과", "type": "string"}]
+}

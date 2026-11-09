@@ -1,0 +1,18 @@
+{
+  "node_type": "TRANSFORM",
+  "kind": "action",
+  "title": "두 날짜 비교",
+  "description": "두 날짜 사이가 며칠·몇 시간·몇 분인지와 어느 쪽이 앞인지 알려 줘요(D-day 계산).",
+  "tool_key": null,
+  "fixed": {"type": "TRANSFORM", "config": {}},
+  "inputFields": [
+    {"key": "input", "title": "기준 날짜", "type": "string", "required": true, "description": "'지금'·'오늘'도 쓸 수 있어요."},
+    {"key": "other", "title": "비교할 날짜", "type": "string", "required": true, "description": "'지금'·'오늘'도 쓸 수 있어요."}
+  ],
+  "outputFields": [
+    {"key": "days", "title": "일 차이", "type": "integer", "description": "비교할 날짜 − 기준 날짜. 지났으면 음수"},
+    {"key": "hours", "title": "시간 차이", "type": "integer"},
+    {"key": "minutes", "title": "분 차이", "type": "integer"},
+    {"key": "isBefore", "title": "기준 날짜가 앞", "type": "boolean"}
+  ]
+}
