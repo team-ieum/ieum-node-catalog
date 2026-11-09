@@ -29,6 +29,22 @@
     "body": {
       "title": "내용",
       "type": "text"
+    },
+    "labels": {
+      "title": "라벨",
+      "description": "쉼표로 구분, 저장소에 이미 있는 라벨 이름"
+    },
+    "assignees": {
+      "title": "담당자",
+      "description": "쉼표로 구분한 GitHub 아이디"
+    },
+    "milestone": {
+      "title": "마일스톤",
+      "optionsSource": "github.milestones",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
     }
   },
   "outputFields": [
@@ -46,6 +62,12 @@
       "key": "title",
       "title": "제목",
       "type": "string"
+    },
+    {
+      "key": "warnings",
+      "title": "반영되지 않은 항목",
+      "type": "string",
+      "list": true
     }
   ]
 }

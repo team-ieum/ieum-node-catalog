@@ -1,0 +1,117 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub 이슈 수정",
+  "description": "이슈의 제목·내용·상태·라벨·담당자를 바꿔요. 빈 칸은 그대로 둬요.",
+  "tool_key": "builtin:github_update_issue",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "이슈가 있는 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "issue_number": {
+      "title": "이슈 번호",
+      "description": "트리거의 이슈 번호를 넣거나 번호를 직접 적어요"
+    },
+    "title": {
+      "title": "제목"
+    },
+    "body": {
+      "title": "내용"
+    },
+    "state": {
+      "title": "상태",
+      "ref": false,
+      "choices": [
+        {
+          "id": "open",
+          "name": "열림"
+        },
+        {
+          "id": "closed",
+          "name": "닫힘"
+        }
+      ]
+    },
+    "state_reason": {
+      "title": "닫는 이유",
+      "ref": false,
+      "choices": [
+        {
+          "id": "completed",
+          "name": "완료"
+        },
+        {
+          "id": "not_planned",
+          "name": "진행 안 함"
+        },
+        {
+          "id": "duplicate",
+          "name": "중복"
+        },
+        {
+          "id": "reopened",
+          "name": "다시 열림"
+        }
+      ]
+    },
+    "labels": {
+      "title": "라벨",
+      "description": "쉼표로 구분. 기존 라벨을 모두 바꿔요 — 더하려면 '라벨 추가' 노드"
+    },
+    "assignees": {
+      "title": "담당자",
+      "description": "쉼표로 구분한 GitHub 아이디"
+    },
+    "milestone": {
+      "title": "마일스톤",
+      "optionsSource": "github.milestones",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "number",
+      "title": "이슈 번호",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "이슈 주소",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "state",
+      "title": "상태",
+      "type": "string"
+    },
+    {
+      "key": "warnings",
+      "title": "반영되지 않은 항목",
+      "type": "string",
+      "list": true
+    }
+  ]
+}
