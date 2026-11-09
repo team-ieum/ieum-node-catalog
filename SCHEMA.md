@@ -84,6 +84,7 @@
 - `branch.if`: `branches`가 있으면 새 모양, 없으면 레거시 3칸(`operator`·`left`·`right`). 필수 판정은 정적 검증 전용 규칙. 엣지 `conditionType` = 갈래 key | `else`(레거시 `true`|`false`).
 - `formatter.*`: node_type TRANSFORM, BE `TransformNodeExecutor`가 실행(LLM 없음). 입력 칸 `input`, 출력은 이벤트별 선언(대부분 `output`). 조건부 필수 칸은 required:false — 실행기가 검사.
 - `delay.*`: node_type DELAY, BE 런타임이 노드를 보류하고 실행을 WAITING_DELAY로 멈춘 뒤 sweeper가 이어진 실행으로 재개(LLM 없음). 출력 `waitedUntil`·`scheduledFor`(큐는 `queuePosition`).
+- `approval.*`: node_type APPROVAL, BE 런타임이 게이트를 열고 실행을 WAITING_APPROVAL로 멈춘 뒤 사람이 처리하면 이어진 실행으로 재개(LLM 없음). 노드 구분은 `event`로만 한다(`config.mode` 없음, `event` null = `approval.request`). `request`(승인·거절) 출력 `approved`·`decision`·`content`…, `collect`(값 입력받기) 출력 `decision`·`values`….
 
 ## 불변 규칙
 

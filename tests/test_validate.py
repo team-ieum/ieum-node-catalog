@@ -212,6 +212,36 @@ class RepoCatalogTest(unittest.TestCase):
             self.assertIsNone(ev["tool_key"], name)
             self.assertEqual({f["key"] for f in ev.get("outputFields", [])}, outs, name)
 
+    def test_approval_events_are_approval_actions(self):
+        _, events, _ = validate.load(validate.ROOT)
+        expected = {
+            "approval.request": {"approved", "decision", "approvedBy", "approvedAt", "reviewer", "note", "content",
+                                 "rejectedBy", "reason"},
+            "approval.collect": {"decision", "approvedBy", "approvedAt", "reviewer", "note", "values"},
+        }
+        self.assertEqual(sorted(n for n in events if n.startswith("approval.")), sorted(expected))
+        for name, outs in expected.items():
+            ev = events[name]
+            self.assertEqual(ev["node_type"], "APPROVAL", name)
+            self.assertEqual(ev["kind"], "action", name)
+            self.assertIsNone(ev["tool_key"], name)
+            self.assertEqual({f["key"] for f in ev.get("outputFields", [])}, outs, name)
+            self.assertNotIn("mode", ev["fixed"]["config"], name)
+            self.assertNotIn("mode", {f["key"] for f in ev.get("inputFields", [])}, name)
+        common = {"message", "webhookCredentialId", "timeoutAmount", "timeoutUnit", "onTimeout", "reminder"}
+        inputs = {
+            "approval.request": (common | {"items", "editable", "approveLabel", "rejectLabel", "onReject"},
+                                 "items", {"key", "value"}, "content"),
+            "approval.collect": (common | {"fields"},
+                                 "fields", {"key", "label", "type", "required", "default", "options"}, "values"),
+        }
+        for name, (keys, list_key, child_keys, dyn_key) in inputs.items():
+            fields = {f["key"]: f for f in events[name]["inputFields"]}
+            self.assertEqual(set(fields), keys, name)
+            self.assertEqual({c["key"] for c in fields[list_key]["children"]}, child_keys, name)
+            outs = {f["key"]: f for f in events[name]["outputFields"]}
+            self.assertIs(outs[dyn_key].get("dynamic"), True, name)
+
 
 class BaseCompareTest(unittest.TestCase):
     def snap(self, events, presets=()):
