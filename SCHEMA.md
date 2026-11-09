@@ -74,7 +74,7 @@
 
 ## 앱 이벤트 약속
 
-앱마다 자기 도구 파일에서 구현하고 공용 코드는 두지 않는다. 맞추는 것은 아래 두 가지다. 새로 만들거나 손대는 이벤트부터 적용한다(기존 `notion.query_database`·`github.list_issues` 등은 그 앱 차례에).
+앱마다 자기 도구 파일에서 구현하고 공용 코드는 두지 않는다. 맞추는 것은 아래 두 가지다. 새로 만들거나 손대는 이벤트부터 적용한다(기존 `notion.query_database`·`github.list_issues` 등은 그 앱 차례에). `github.list_issues`는 그대로 두고, 이 약속을 지키는 이슈 찾기는 `github.find_issue`다.
 
 1. **Search 이벤트 출력**: `found`(boolean)·`total`(integer)·`items`(list)가 필수다. 0건은 에러가 아니라 `{found:false, total:0, items:[]}` 성공이다. 출력 키는 늘 같다(0건 전용 키 없음 — 성공 테스트의 `assert_matches_outputs`가 `outputFields`와 대조한다).
 2. **드롭다운 검색어 파라미터 이름은 `q`**: BE `IntegrationOptionService`는 `cursor` 밖의 쿼리를 전부 `inputs`로 넘기고, 검색을 지원하는 공급원만 `inputs.get("q")`를 읽는다. 공백뿐인 `q`는 없음으로 본다. `OptionSource` 인터페이스는 바꾸지 않는다. `q`를 `optionsInputs`·`fieldsInputs` 칸 key로 쓰지 않는다(CI 거부).

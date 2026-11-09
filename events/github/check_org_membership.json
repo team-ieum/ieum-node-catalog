@@ -1,0 +1,63 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub 조직 멤버 확인",
+  "description": "사용자가 조직의 멤버인지 확인해요. 멤버가 아니면 '멤버가 아닙니다'로 이어가요.",
+  "tool_key": "builtin:github_check_org_membership",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "org": {
+      "title": "조직",
+      "description": "조직을 고르세요 — 맨 앞 항목은 내 계정이에요",
+      "optionsSource": "github.owners"
+    },
+    "username": {
+      "title": "사용자",
+      "description": "확인할 GitHub 아이디"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "member",
+      "title": "멤버임",
+      "type": "boolean"
+    },
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "멤버",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "org",
+          "title": "조직",
+          "type": "string"
+        },
+        {
+          "key": "username",
+          "title": "사용자",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

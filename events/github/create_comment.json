@@ -1,0 +1,47 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub 코멘트 달기",
+  "description": "이슈나 PR에 코멘트를 달아요.",
+  "tool_key": "builtin:github_create_comment",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "이슈나 PR이 있는 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "issue_number": {
+      "title": "이슈 번호",
+      "description": "이슈·PR 번호 — 트리거 번호를 넣거나 직접 적어요"
+    },
+    "body": {
+      "title": "코멘트",
+      "type": "text"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "id",
+      "title": "코멘트 ID",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "코멘트 주소",
+      "type": "string"
+    }
+  ]
+}

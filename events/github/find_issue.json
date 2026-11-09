@@ -1,0 +1,150 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub 이슈 찾기",
+  "description": "번호·라벨·담당자·작성자·제목·본문으로 이슈를 찾아요. 없으면 '결과가 없습니다'로 이어가요.",
+  "tool_key": "builtin:github_find_issue",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "이슈를 찾을 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "search_by": {
+      "title": "찾는 기준",
+      "ref": false,
+      "choices": [
+        {
+          "id": "number",
+          "name": "번호"
+        },
+        {
+          "id": "title",
+          "name": "제목"
+        },
+        {
+          "id": "body",
+          "name": "본문"
+        },
+        {
+          "id": "label",
+          "name": "라벨"
+        },
+        {
+          "id": "assignee",
+          "name": "담당자"
+        },
+        {
+          "id": "author",
+          "name": "작성자"
+        }
+      ]
+    },
+    "value": {
+      "title": "찾을 값",
+      "description": "이슈 번호·라벨 이름·GitHub 아이디·검색어"
+    },
+    "state": {
+      "title": "상태",
+      "ref": false,
+      "choices": [
+        {
+          "id": "open",
+          "name": "열림"
+        },
+        {
+          "id": "closed",
+          "name": "닫힘"
+        },
+        {
+          "id": "all",
+          "name": "전체"
+        }
+      ]
+    },
+    "max_results": {
+      "title": "최대 개수",
+      "description": "1~100"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "이슈",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "number",
+          "title": "번호",
+          "type": "integer"
+        },
+        {
+          "key": "title",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "state",
+          "title": "상태",
+          "type": "string"
+        },
+        {
+          "key": "url",
+          "title": "이슈 주소",
+          "type": "string"
+        },
+        {
+          "key": "labels",
+          "title": "라벨",
+          "type": "string",
+          "list": true
+        },
+        {
+          "key": "assignees",
+          "title": "담당자",
+          "type": "string",
+          "list": true
+        },
+        {
+          "key": "author",
+          "title": "작성자",
+          "type": "string"
+        },
+        {
+          "key": "created_at",
+          "title": "만든 시각",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

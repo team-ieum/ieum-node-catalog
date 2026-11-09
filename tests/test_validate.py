@@ -6,6 +6,11 @@ from unittest import mock
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
 import validate  # noqa: E402
 
+# 앱 이벤트 약속 1(Search 출력)을 지키는 GitHub search 이벤트. list_issues·get_pr_files는 옛 모양이라 뺀다.
+GITHUB_SEARCH_EVENTS = {"github.find_issue", "github.find_pull_request", "github.get_pr_reviews",
+                        "github.find_branch", "github.get_file", "github.find_repo", "github.find_org",
+                        "github.check_org_membership", "github.find_user"}
+
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
 
@@ -170,6 +175,30 @@ class RepoCatalogTest(unittest.TestCase):
             inp = [f for f in ev.get("inputFields", []) if f["key"] == "input"]
             self.assertEqual(len(inp), 1, name)
             self.assertIs(inp[0].get("required"), True, name)
+
+    def test_github_search_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        search = {n: e for n, e in events.items() if n.startswith("github.") and e.get("kind") == "search"
+                  and n not in ("github.list_issues", "github.get_pr_files")}
+        self.assertEqual(set(search), GITHUB_SEARCH_EVENTS)
+        for name, ev in search.items():
+            outs = {f["key"]: f for f in ev.get("outputFields", [])}
+            for key in ("found", "total", "items", "message"):
+                self.assertIn(key, outs, name)
+            self.assertIs(outs["items"].get("list"), True, name)
+
+    def test_get_pr_reviews_outputs(self):
+        _, events, _ = validate.load(validate.ROOT)
+        outs = {f["key"]: f for f in events["github.get_pr_reviews"]["outputFields"]}
+        self.assertEqual(set(outs), {"found", "total", "items", "message", "comments", "approved_count", "truncated",
+                                     "changes_requested_count"})
+        self.assertIs(outs["comments"].get("list"), True)
+
+    def test_check_org_membership_outputs(self):
+        _, events, _ = validate.load(validate.ROOT)
+        outs = {f["key"]: f for f in events["github.check_org_membership"]["outputFields"]}
+        self.assertEqual(set(outs), {"member", "found", "total", "items", "message"})
+        self.assertEqual(outs["member"]["type"], "boolean")
 
 
 class BaseCompareTest(unittest.TestCase):

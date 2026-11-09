@@ -1,0 +1,63 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub 사용자 찾기",
+  "description": "아이디로 GitHub 사용자를 찾아 이름·종류를 가져와요.",
+  "tool_key": "builtin:github_find_user",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "username": {
+      "title": "사용자",
+      "description": "비우면 연결한 내 계정"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "사용자",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "login",
+          "title": "아이디",
+          "type": "string"
+        },
+        {
+          "key": "name",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "type",
+          "title": "종류",
+          "type": "string"
+        },
+        {
+          "key": "url",
+          "title": "프로필 주소",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

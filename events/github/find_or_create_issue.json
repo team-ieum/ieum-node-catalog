@@ -1,0 +1,135 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "GitHub 이슈 찾기, 없으면 만들기",
+  "description": "조건에 맞는 이슈를 찾고, 없으면 새로 만들어요. 제목은 정확히 같은 이슈만 찾아요 — 중복을 확실히 막으려면 라벨 기준으로 찾으세요.",
+  "tool_key": "builtin:github_find_or_create_issue",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "이슈를 찾거나 만들 저장소",
+      "optionsSource": "github.repos",
+      "optionsInputs": [
+        "owner"
+      ]
+    },
+    "search_by": {
+      "title": "찾는 기준",
+      "ref": false,
+      "choices": [
+        {
+          "id": "number",
+          "name": "번호"
+        },
+        {
+          "id": "title",
+          "name": "제목"
+        },
+        {
+          "id": "body",
+          "name": "본문"
+        },
+        {
+          "id": "label",
+          "name": "라벨"
+        },
+        {
+          "id": "assignee",
+          "name": "담당자"
+        },
+        {
+          "id": "author",
+          "name": "작성자"
+        }
+      ]
+    },
+    "value": {
+      "title": "찾을 값",
+      "description": "이슈 번호·라벨 이름·GitHub 아이디·검색어"
+    },
+    "title": {
+      "title": "새 이슈 제목"
+    },
+    "body": {
+      "title": "새 이슈 내용",
+      "type": "text"
+    },
+    "labels": {
+      "title": "라벨",
+      "description": "쉼표로 구분, 저장소에 이미 있는 라벨 이름"
+    },
+    "assignees": {
+      "title": "담당자",
+      "description": "쉼표로 구분한 GitHub 아이디"
+    },
+    "milestone": {
+      "title": "마일스톤",
+      "optionsSource": "github.milestones",
+      "optionsInputs": [
+        "owner",
+        "repo"
+      ]
+    },
+    "state": {
+      "title": "찾을 이슈 상태",
+      "ref": false,
+      "choices": [
+        {
+          "id": "open",
+          "name": "열림"
+        },
+        {
+          "id": "closed",
+          "name": "닫힘"
+        },
+        {
+          "id": "all",
+          "name": "전체"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 만듦",
+      "type": "boolean"
+    },
+    {
+      "key": "number",
+      "title": "이슈 번호",
+      "type": "integer"
+    },
+    {
+      "key": "url",
+      "title": "이슈 주소",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "state",
+      "title": "상태",
+      "type": "string"
+    },
+    {
+      "key": "warnings",
+      "title": "반영되지 않은 항목",
+      "type": "string",
+      "list": true
+    }
+  ]
+}
