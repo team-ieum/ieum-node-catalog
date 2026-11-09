@@ -1,0 +1,63 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub 조직 찾기",
+  "description": "아이디로 조직을 찾아 이름·설명을 가져와요.",
+  "tool_key": "builtin:github_find_org",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "org": {
+      "title": "조직",
+      "description": "찾을 조직의 GitHub 아이디"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "조직",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "login",
+          "title": "아이디",
+          "type": "string"
+        },
+        {
+          "key": "name",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "url",
+          "title": "조직 주소",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

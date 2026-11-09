@@ -7,7 +7,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 import validate  # noqa: E402
 
 # 앱 이벤트 약속 1(Search 출력)을 지키는 GitHub search 이벤트. list_issues·get_pr_files는 옛 모양이라 뺀다.
-GITHUB_SEARCH_EVENTS = {"github.find_issue", "github.find_pull_request", "github.get_pr_reviews"}
+GITHUB_SEARCH_EVENTS = {"github.find_issue", "github.find_pull_request", "github.get_pr_reviews",
+                        "github.find_branch", "github.get_file", "github.find_repo", "github.find_org",
+                        "github.check_org_membership", "github.find_user"}
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
@@ -191,6 +193,12 @@ class RepoCatalogTest(unittest.TestCase):
         self.assertEqual(set(outs), {"found", "total", "items", "message", "comments", "approved_count",
                                      "changes_requested_count"})
         self.assertIs(outs["comments"].get("list"), True)
+
+    def test_check_org_membership_outputs(self):
+        _, events, _ = validate.load(validate.ROOT)
+        outs = {f["key"]: f for f in events["github.check_org_membership"]["outputFields"]}
+        self.assertEqual(set(outs), {"member", "found", "total", "items", "message"})
+        self.assertEqual(outs["member"]["type"], "boolean")
 
 
 class BaseCompareTest(unittest.TestCase):

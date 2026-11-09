@@ -1,0 +1,83 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "GitHub 저장소 찾기",
+  "description": "소유자와 이름으로 저장소를 찾아 기본 정보를 가져와요.",
+  "tool_key": "builtin:github_find_repo",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "owner": {
+      "title": "소유자",
+      "description": "저장소를 가진 계정 또는 조직",
+      "optionsSource": "github.owners"
+    },
+    "repo": {
+      "title": "저장소",
+      "description": "찾을 저장소 이름"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "저장소",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "name",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "full_name",
+          "title": "전체 이름",
+          "type": "string"
+        },
+        {
+          "key": "owner",
+          "title": "소유자",
+          "type": "string"
+        },
+        {
+          "key": "private",
+          "title": "비공개",
+          "type": "boolean"
+        },
+        {
+          "key": "default_branch",
+          "title": "기본 브랜치",
+          "type": "string"
+        },
+        {
+          "key": "url",
+          "title": "저장소 주소",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}
