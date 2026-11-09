@@ -72,7 +72,7 @@
     },
     "commit_id": {
       "title": "커밋 SHA",
-      "description": "비우면 최신 커밋. R1의 head SHA를 넣으세요"
+      "description": "비우면 최신 커밋. 'GitHub PR 변경 내용 가져오기'의 head SHA를 넣으면 리뷰 중 새 커밋이 와도 줄 위치가 맞아요"
     }
   },
   "outputFields": [
