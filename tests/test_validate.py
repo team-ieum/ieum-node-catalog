@@ -11,6 +11,10 @@ GITHUB_SEARCH_EVENTS = {"github.find_issue", "github.find_pull_request", "github
                         "github.find_branch", "github.get_file", "github.find_repo", "github.find_org",
                         "github.check_org_membership", "github.find_user"}
 
+SHEETS_SEARCH_EVENTS = {"google_sheets.lookup_row", "google_sheets.read", "google_sheets.lookup_rows",
+                        "google_sheets.get_rows", "google_sheets.get_row", "google_sheets.find_spreadsheet",
+                        "google_sheets.find_worksheet", "google_sheets.get_spreadsheet"}
+
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
 
@@ -186,6 +190,42 @@ class RepoCatalogTest(unittest.TestCase):
             for key in ("found", "total", "items", "message"):
                 self.assertIn(key, outs, name)
             self.assertIs(outs["items"].get("list"), True, name)
+
+    def test_google_sheets_search_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        new = SHEETS_SEARCH_EVENTS - {"google_sheets.lookup_row", "google_sheets.read"}
+        search = {n for n, e in events.items() if n.startswith("google_sheets.") and e.get("kind") == "search"}
+        self.assertEqual(search, SHEETS_SEARCH_EVENTS)
+        for name in new:
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["fixed"], ev["builder"]),
+                             ("ACTION", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+
+            def walk(fs):
+                for f in fs:
+                    self.assertTrue(f.get("title") and f.get("type"), (name, f.get("key")))
+                    walk(f.get("children") or [])
+            walk(ev["outputFields"])
+            outs = {f["key"]: f for f in ev["outputFields"]}
+            for key in ("found", "total", "items"):
+                self.assertIn(key, outs, name)
+            self.assertIs(outs["items"].get("list"), True, name)
+            for key, f in ev.get("fields", {}).items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+        lookup_row = events["google_sheets.lookup_row"]["fields"]
+        for key in ("lookup_column", "lookup_value", "lookup_column_2", "lookup_value_2", "from_bottom"):
+            self.assertEqual(events["google_sheets.lookup_rows"]["fields"][key], lookup_row[key], key)
+        # 출력 2MB 예산·Drive 한 페이지 초과 → truncated, find_spreadsheet 항목엔 소유 여부.
+        outs = {n: [f["key"] for f in events[n]["outputFields"]] for n in new}
+        for name in ("google_sheets.lookup_rows", "google_sheets.get_rows", "google_sheets.find_spreadsheet"):
+            self.assertEqual(outs[name], ["found", "total", "items", "truncated"], name)
+            truncated = events[name]["outputFields"][-1]
+            self.assertEqual((truncated["type"], truncated["title"]), ("boolean", "잘림"), name)
+        items = {f["key"]: f for f in events["google_sheets.find_spreadsheet"]["outputFields"]}["items"]
+        self.assertEqual([c["key"] for c in items["children"]], ["id", "name", "url", "modified_time", "owned_by_me"])
+        self.assertEqual((items["children"][-1]["type"], items["children"][-1]["title"]), ("boolean", "내 파일"))
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
