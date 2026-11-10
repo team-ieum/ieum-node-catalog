@@ -15,6 +15,10 @@ SHEETS_SEARCH_EVENTS = {"google_sheets.lookup_row", "google_sheets.read", "googl
                         "google_sheets.get_rows", "google_sheets.get_row", "google_sheets.find_spreadsheet",
                         "google_sheets.find_worksheet", "google_sheets.get_spreadsheet"}
 
+GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
+                   "include_signature", "label_ids"]
+GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
+
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
 
@@ -347,6 +351,51 @@ class RepoCatalogTest(unittest.TestCase):
                                        "isAcceptingResponses", "linkedSheetId", "questions"])
         self.assertIs(items["questions"]["list"], True)
         self.assertEqual([c["key"] for c in items["questions"]["children"]], ["questionId", "title", "kind", "required"])
+
+    def test_gmail_send_family_events(self):
+        _, events, _ = validate.load(validate.ROOT)
+        send = events["gmail.send_email"]["fields"]
+        find = events["gmail.find_email"]
+        no_subject = [k for k in GMAIL_SEND_KEYS if k != "subject"]
+        expected = {
+            "gmail.reply": (["thread_id"] + no_subject, ["messageId", "threadId"]),
+            "gmail.forward": (["message_id"] + no_subject, ["messageId", "threadId"]),
+            "gmail.create_draft": (GMAIL_SEND_KEYS[:-1], ["draftId", "messageId", "threadId"]),
+            "gmail.create_reply_draft": (["thread_id"] + no_subject[:-1], ["draftId", "messageId", "threadId"]),
+            "gmail.find_or_send": (["query", "search_label_ids", "include_spam_trash"] + GMAIL_SEND_KEYS,
+                                   ["created"] + GMAIL_MAIL_KEYS),
+        }
+        for name, (keys, outs) in expected.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:google_" + name.replace(".", "_"), name)
+            self.assertTrue(ev["title"].strip() and ev["description"].strip(), name)
+            self.assertEqual(list(ev["fields"]), keys, name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            for k in ("cc", "bcc", "from_email", "from_name", "reply_to", "include_signature", "label_ids"):
+                if k in ev["fields"]:
+                    self.assertEqual(ev["fields"][k], send[k], (name, k))
+            for k in ("body_format", "subject"):
+                if k in ev["fields"] and name != "gmail.forward":
+                    self.assertEqual(ev["fields"][k], send[k], (name, k))
+        self.assertEqual(events["gmail.reply"]["fields"]["thread_id"]["optionsSource"], "google.gmail_threads")
+        self.assertEqual(events["gmail.create_reply_draft"]["fields"]["thread_id"],
+                         events["gmail.reply"]["fields"]["thread_id"])
+        self.assertEqual(events["gmail.forward"]["fields"]["message_id"]["optionsSource"], "google.gmail_messages")
+        fos = events["gmail.find_or_send"]
+        self.assertEqual(fos["fields"]["search_label_ids"], find["fields"]["label_ids"])
+        for k in ("query", "include_spam_trash"):
+            self.assertEqual(fos["fields"][k], find["fields"][k], k)
+        for k in ("to", "body"):
+            self.assertEqual(fos["fields"][k], send[k], k)
+        mail = {f["key"]: f for f in fos["outputFields"]}
+        items = {c["key"]: c for c in {f["key"]: f for f in find["outputFields"]}["items"]["children"]}
+        for k in GMAIL_MAIL_KEYS:
+            self.assertEqual(mail[k], items[k], k)
+        self.assertEqual(mail["created"]["type"], "boolean")
+        for name in ("gmail.create_draft", "gmail.create_reply_draft"):
+            self.assertEqual(events[name]["outputFields"][0], {"key": "draftId", "title": "초안 ID", "type": "string"})
 
 
 class BaseCompareTest(unittest.TestCase):
