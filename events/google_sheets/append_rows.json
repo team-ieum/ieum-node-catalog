@@ -1,0 +1,77 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트에 여러 행 추가",
+  "description": "표 끝에 여러 행을 한 번에 추가해요.",
+  "tool_key": "builtin:google_sheets_append_rows",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "rows": {
+      "title": "행 목록",
+      "type": "json",
+      "description": "앞 단계 목록(JSON 배열). 항목 키는 열 문자(A)나 머리글 이름이에요"
+    },
+    "column_map": {
+      "title": "열별 항목 키",
+      "type": "dict",
+      "ref": false,
+      "fieldsSource": "google.sheet_columns",
+      "fieldsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "description": "열마다 목록 항목에서 꺼낼 키 이름(예: email, values.B). 비우면 항목 키를 열 문자·머리글로 읽어요"
+    },
+    "value_input_option": {
+      "title": "입력값 해석",
+      "ref": false,
+      "description": "전화번호·우편번호처럼 앞자리 0을 지켜야 하면 '그대로 저장'",
+      "choices": [
+        {
+          "id": "USER_ENTERED",
+          "name": "자동 변환"
+        },
+        {
+          "id": "RAW",
+          "name": "그대로 저장"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "updatedRange",
+      "title": "기록된 범위",
+      "type": "string"
+    },
+    {
+      "key": "row_number",
+      "title": "첫 행 번호",
+      "type": "integer"
+    },
+    {
+      "key": "row_count",
+      "title": "추가한 행 수",
+      "type": "integer"
+    }
+  ]
+}

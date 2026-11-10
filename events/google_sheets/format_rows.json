@@ -1,0 +1,69 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 행 서식",
+  "description": "행의 배경색·글자색·굵게·기울임·취소선을 바꿔요.",
+  "tool_key": "builtin:google_sheets_format_rows",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "row_numbers": {
+      "title": "행 번호",
+      "description": "예: 5 / 5,7 / 5-9. '시트에서 여러 행 찾기' 결과 목록도 돼요"
+    },
+    "background_color": {
+      "title": "배경색",
+      "description": "#RRGGBB(예: #FFF2CC). 비우면 그대로"
+    },
+    "text_color": {
+      "title": "글자색",
+      "description": "#RRGGBB(예: #1A73E8). 비우면 그대로"
+    },
+    "bold": {
+      "title": "굵게",
+      "ref": false,
+      "description": "비우면 그대로, 켜면 적용, 끄면 해제"
+    },
+    "italic": {
+      "title": "기울임",
+      "ref": false,
+      "description": "비우면 그대로, 켜면 적용, 끄면 해제"
+    },
+    "strikethrough": {
+      "title": "취소선",
+      "ref": false,
+      "description": "비우면 그대로, 켜면 적용, 끄면 해제"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "row_count",
+      "title": "서식을 바꾼 행 수",
+      "type": "integer"
+    },
+    {
+      "key": "row_numbers",
+      "title": "서식을 바꾼 행 번호",
+      "type": "integer",
+      "list": true
+    }
+  ]
+}
