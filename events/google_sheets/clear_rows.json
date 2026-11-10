@@ -1,0 +1,46 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 행 비우기",
+  "description": "행의 값만 지워요. 서식과 행은 남아요.",
+  "tool_key": "builtin:google_sheets_clear_rows",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "row_numbers": {
+      "title": "행 번호",
+      "description": "예: 5 / 5,7 / 5-9. '시트에서 여러 행 찾기' 결과 목록도 돼요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "row_count",
+      "title": "비운 행 수",
+      "type": "integer"
+    },
+    {
+      "key": "row_numbers",
+      "title": "비운 행 번호",
+      "type": "integer",
+      "list": true
+    }
+  ]
+}

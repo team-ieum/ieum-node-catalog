@@ -15,6 +15,16 @@ SHEETS_SEARCH_EVENTS = {"google_sheets.lookup_row", "google_sheets.read", "googl
                         "google_sheets.get_rows", "google_sheets.get_row", "google_sheets.find_spreadsheet",
                         "google_sheets.find_worksheet", "google_sheets.get_spreadsheet"}
 
+SHEETS_ROW_EVENTS = {
+    "google_sheets.append_rows": ["spreadsheet_id", "sheet_id", "rows", "column_map", "value_input_option"],
+    "google_sheets.update_rows": ["spreadsheet_id", "sheet_id", "rows", "column_map", "overwrite_all",
+                                  "value_input_option"],
+    "google_sheets.clear_rows": ["spreadsheet_id", "sheet_id", "row_numbers"],
+    "google_sheets.delete_rows": ["spreadsheet_id", "sheet_id", "row_numbers", "confirm_delete"],
+    "google_sheets.format_rows": ["spreadsheet_id", "sheet_id", "row_numbers", "background_color", "text_color",
+                                  "bold", "italic", "strikethrough"],
+}
+
 GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
                    "include_signature", "label_ids"]
 GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
@@ -278,6 +288,49 @@ class RepoCatalogTest(unittest.TestCase):
         items = {f["key"]: f for f in events["google_sheets.find_spreadsheet"]["outputFields"]}["items"]
         self.assertEqual([c["key"] for c in items["children"]], ["id", "name", "url", "modified_time", "owned_by_me"])
         self.assertEqual((items["children"][-1]["type"], items["children"][-1]["title"]), ("boolean", "내 파일"))
+
+    def test_google_sheets_row_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        base = events["google_sheets.update_row"]["fields"]
+        for name, keys in SHEETS_ROW_EVENTS.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            self.assertEqual(list(ev["fields"]), keys, name)
+            for key in ("spreadsheet_id", "sheet_id", "overwrite_all", "value_input_option"):
+                if key in ev["fields"]:
+                    self.assertEqual(ev["fields"][key], base[key], (name, key))
+            for key, f in ev["fields"].items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+            for f in ev["outputFields"]:
+                self.assertTrue(f.get("title") and f.get("type"), (name, f.get("key")))
+            outs = [f["key"] for f in ev["outputFields"]]
+            if name == "google_sheets.append_rows":
+                self.assertEqual(outs, ["updatedRange", "row_number", "row_count"])
+            else:
+                self.assertEqual(outs, ["row_count", "row_numbers"], name)
+                self.assertEqual((ev["outputFields"][1]["type"], ev["outputFields"][1].get("list")),
+                                 ("integer", True))
+        for name in ("google_sheets.append_rows", "google_sheets.update_rows"):
+            f = events[name]["fields"]
+            self.assertEqual(f["rows"]["type"], "json")
+            cm = f["column_map"]
+            self.assertEqual((cm["type"], cm["ref"], cm["fieldsSource"], cm["fieldsInputs"]),
+                             ("dict", False, "google.sheet_columns", ["spreadsheet_id", "sheet_id"]))
+        # type·required는 agent 시그니처에서 파생(boolean·required). default가 생기면 삭제 확인이 무력해진다.
+        self.assertEqual(events["google_sheets.delete_rows"]["fields"]["confirm_delete"],
+                         {"title": "삭제 확인", "ref": False,
+                          "description": "켜야 실행돼요. 지운 행은 되돌릴 수 없어요(버전 기록으로만 복구)"})
+        fmt = events["google_sheets.format_rows"]["fields"]
+        for key in ("bold", "italic", "strikethrough"):
+            self.assertIs(fmt[key]["ref"], False, key)
+            self.assertNotIn("choices", fmt[key])
+            self.assertNotIn("default", fmt[key])
+        for key in ("row_numbers", "background_color", "text_color"):
+            self.assertNotIn("ref", fmt[key], key)
+            self.assertNotIn("choices", fmt[key], key)
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
