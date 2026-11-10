@@ -1,0 +1,79 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "행 번호로 행 가져오기",
+  "description": "행 번호로 한 행을 가져와요.",
+  "tool_key": "builtin:google_sheets_get_row",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "row_number": {
+      "title": "행 번호",
+      "description": "가져올 행 번호(1 이상)"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "행에 값이 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "행",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "row_number",
+          "title": "행 번호",
+          "type": "integer"
+        },
+        {
+          "key": "values",
+          "title": "값",
+          "type": "object",
+          "dynamic": true,
+          "description": "열 문자로 꺼내요. 예: values.B"
+        }
+      ]
+    },
+    {
+      "key": "row_number",
+      "title": "행 번호",
+      "type": "integer",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "values",
+      "title": "값",
+      "type": "object",
+      "dynamic": true,
+      "description": "열 문자로 꺼내요. 예: values.B. 못 찾으면 빈 값"
+    }
+  ]
+}

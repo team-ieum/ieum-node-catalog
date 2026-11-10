@@ -1,0 +1,145 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "ID로 스프레드시트 가져오기",
+  "description": "스프레드시트 정보와 시트 목록을 가져와요.",
+  "tool_key": "builtin:google_sheets_get_spreadsheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "스프레드시트가 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "스프레드시트",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "title",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "locale",
+          "title": "로캘",
+          "type": "string"
+        },
+        {
+          "key": "time_zone",
+          "title": "시간대",
+          "type": "string"
+        },
+        {
+          "key": "url",
+          "title": "링크",
+          "type": "string"
+        },
+        {
+          "key": "sheets",
+          "title": "시트 목록",
+          "type": "object",
+          "list": true,
+          "children": [
+            {
+              "key": "sheet_id",
+              "title": "시트 ID",
+              "type": "string"
+            },
+            {
+              "key": "title",
+              "title": "제목",
+              "type": "string"
+            },
+            {
+              "key": "index",
+              "title": "순서",
+              "type": "integer"
+            },
+            {
+              "key": "row_count",
+              "title": "행 수",
+              "type": "integer"
+            },
+            {
+              "key": "column_count",
+              "title": "열 수",
+              "type": "integer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "url",
+      "title": "링크",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "sheets",
+      "title": "시트 목록",
+      "type": "object",
+      "list": true,
+      "description": "못 찾으면 빈 값",
+      "children": [
+        {
+          "key": "sheet_id",
+          "title": "시트 ID",
+          "type": "string"
+        },
+        {
+          "key": "title",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "index",
+          "title": "순서",
+          "type": "integer"
+        },
+        {
+          "key": "row_count",
+          "title": "행 수",
+          "type": "integer"
+        },
+        {
+          "key": "column_count",
+          "title": "열 수",
+          "type": "integer"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "시트에서 여러 행 찾기",
+  "description": "열 값이 맞는 행을 모두 찾아요.",
+  "tool_key": "builtin:google_sheets_lookup_rows",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "lookup_column": {
+      "title": "찾을 열",
+      "description": "값을 찾을 열",
+      "optionsSource": "google.sheet_columns",
+      "optionsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "ref": false
+    },
+    "lookup_value": {
+      "title": "찾을 값",
+      "description": "화면에 보이는 값과 정확히 같아야 해요(대소문자 구분)"
+    },
+    "lookup_column_2": {
+      "title": "보조 열",
+      "description": "고르면 두 조건을 모두 만족하는 행을 찾아요",
+      "optionsSource": "google.sheet_columns",
+      "optionsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "ref": false
+    },
+    "lookup_value_2": {
+      "title": "보조 값",
+      "description": "보조 열에서 찾을 값"
+    },
+    "from_bottom": {
+      "title": "마지막 행부터 찾기",
+      "description": "켜면 가장 아래 행부터 찾아요",
+      "ref": false
+    },
+    "start_row": {
+      "title": "시작 행",
+      "description": "이 행부터 찾아요. 1행은 머리글이라 2부터 봐요"
+    },
+    "max_rows": {
+      "title": "최대 개수",
+      "description": "돌려줄 행 수 상한(1~500)"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "맞는 행이 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "행",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "row_number",
+          "title": "행 번호",
+          "type": "integer"
+        },
+        {
+          "key": "values",
+          "title": "값",
+          "type": "object",
+          "dynamic": true,
+          "description": "열 문자로 꺼내요. 예: values.B"
+        }
+      ]
+    }
+  ]
+}

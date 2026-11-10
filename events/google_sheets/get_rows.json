@@ -1,0 +1,74 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "시트에서 여러 행 가져오기",
+  "description": "시작 행부터 정한 수만큼 행을 가져와요.",
+  "tool_key": "builtin:google_sheets_get_rows",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "column_range": {
+      "title": "열 범위",
+      "description": "예: A:Z"
+    },
+    "row_count": {
+      "title": "가져올 행 수",
+      "description": "1~1500"
+    },
+    "start_row": {
+      "title": "시작 행",
+      "description": "1행은 머리글이라 기본은 2예요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "가져온 행이 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "행",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "row_number",
+          "title": "행 번호",
+          "type": "integer"
+        },
+        {
+          "key": "values",
+          "title": "값",
+          "type": "object",
+          "dynamic": true,
+          "description": "열 문자로 꺼내요. 예: values.B"
+        }
+      ]
+    }
+  ]
+}
