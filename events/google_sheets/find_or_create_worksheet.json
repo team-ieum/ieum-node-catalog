@@ -1,0 +1,46 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 찾기, 없으면 만들기",
+  "description": "제목이 같은 시트를 찾고 없으면 만들어요.",
+  "tool_key": "builtin:google_sheets_find_or_create_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "title": {
+      "title": "시트 제목",
+      "description": "대소문자 구분 정확히 일치"
+    },
+    "headers": {
+      "title": "헤더",
+      "description": "1행에 쓸 열 제목. 쉼표로 구분해요. 예: 이름,이메일,날짜"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 만듦",
+      "type": "boolean",
+      "description": "찾지 못해 새로 만들었는지"
+    },
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    }
+  ]
+}

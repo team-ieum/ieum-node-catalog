@@ -25,6 +25,21 @@ SHEETS_ROW_EVENTS = {
                                   "bold", "italic", "strikethrough"],
 }
 
+# 시트·파일 ACTION 이벤트 → (입력 칸 순서 = 도구 시그니처, 출력 칸 순서).
+SHEETS_SHEET_EVENTS = {
+    "google_sheets.create_worksheet": (["spreadsheet_id", "title", "headers"], ["spreadsheet_id", "sheet_id", "title"]),
+    "google_sheets.copy_worksheet": (["spreadsheet_id", "sheet_id", "destination_spreadsheet_id", "new_title"],
+                                     ["spreadsheet_id", "sheet_id", "title"]),
+    "google_sheets.rename_worksheet": (["spreadsheet_id", "sheet_id", "new_title"], ["sheet_id", "title", "previous_title"]),
+    "google_sheets.update_worksheet": (["spreadsheet_id", "sheet_id", "frozen_rows", "frozen_columns", "position", "visibility"],
+                                       ["sheet_id", "title", "updated"]),
+    "google_sheets.delete_worksheet": (["spreadsheet_id", "sheet_id", "confirm_delete"], ["deleted", "sheet_id", "title"]),
+    "google_sheets.create_spreadsheet": (["title", "folder_id", "copy_from", "headers"], ["spreadsheet_id", "title", "url"]),
+    "google_sheets.find_or_create_spreadsheet": (["title", "folder_id", "copy_from", "headers"],
+                                                 ["created", "spreadsheet_id", "title", "url"]),
+    "google_sheets.find_or_create_worksheet": (["spreadsheet_id", "title", "headers"], ["created", "sheet_id", "title"]),
+}
+
 GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
                    "include_signature", "label_ids"]
 GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
@@ -381,6 +396,42 @@ class RepoCatalogTest(unittest.TestCase):
         fmt = events["google_sheets.format_range"]["fields"]
         for key in ("background_color", "text_color", "bold", "italic", "strikethrough"):
             self.assertEqual(events["google_sheets.add_conditional_format"]["fields"][key], fmt[key], key)
+
+    def test_google_sheets_sheet_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        common = events["google_sheets.update_row"]["fields"]
+        for name, (fields, outs) in SHEETS_SHEET_EVENTS.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            self.assertEqual(list(ev["fields"]), fields, name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            for f in ev["outputFields"]:
+                self.assertTrue(f.get("title") and f.get("type"), (name, f["key"]))
+            for key, f in ev["fields"].items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+                if key in ("spreadsheet_id", "sheet_id"):
+                    self.assertEqual(f, common[key], (name, key))
+                if key in ("destination_spreadsheet_id", "copy_from", "visibility", "confirm_delete"):
+                    self.assertIs(f.get("ref"), False, (name, key))
+                if key in ("destination_spreadsheet_id", "copy_from"):
+                    self.assertEqual(f.get("optionsSource"), "google.spreadsheets", (name, key))
+                if key == "folder_id":
+                    self.assertEqual((f["title"], f["optionsSource"], "ref" in f), ("폴더", "google.folders", False), name)
+        upd = events["google_sheets.update_worksheet"]["fields"]["visibility"]
+        self.assertEqual([c["id"] for c in upd["choices"]], ["hide", "show"])
+        updated = next(f for f in events["google_sheets.update_worksheet"]["outputFields"] if f["key"] == "updated")
+        self.assertEqual((updated["type"], updated.get("list")), ("string", True))
+        # 삭제 확인 칸은 통째로 고정: type(boolean)·required(true)는 agent 시그니처에서 파생, default가 생기면 확인 없이 지운다.
+        self.assertEqual(events["google_sheets.delete_worksheet"]["fields"]["confirm_delete"],
+                         {"title": "삭제 확인", "description": "켜야 삭제돼요", "ref": False})
+        for name, key in (("google_sheets.delete_worksheet", "deleted"),
+                          ("google_sheets.find_or_create_spreadsheet", "created"),
+                          ("google_sheets.find_or_create_worksheet", "created")):
+            out = next(f for f in events[name]["outputFields"] if f["key"] == key)
+            self.assertEqual(out["type"], "boolean", (name, key))
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
