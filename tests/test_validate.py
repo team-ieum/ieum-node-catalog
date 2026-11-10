@@ -217,6 +217,15 @@ class RepoCatalogTest(unittest.TestCase):
         lookup_row = events["google_sheets.lookup_row"]["fields"]
         for key in ("lookup_column", "lookup_value", "lookup_column_2", "lookup_value_2", "from_bottom"):
             self.assertEqual(events["google_sheets.lookup_rows"]["fields"][key], lookup_row[key], key)
+        # 출력 2MB 예산·Drive 한 페이지 초과 → truncated, find_spreadsheet 항목엔 소유 여부.
+        outs = {n: [f["key"] for f in events[n]["outputFields"]] for n in new}
+        for name in ("google_sheets.lookup_rows", "google_sheets.get_rows", "google_sheets.find_spreadsheet"):
+            self.assertEqual(outs[name], ["found", "total", "items", "truncated"], name)
+            truncated = events[name]["outputFields"][-1]
+            self.assertEqual((truncated["type"], truncated["title"]), ("boolean", "잘림"), name)
+        items = {f["key"]: f for f in events["google_sheets.find_spreadsheet"]["outputFields"]}["items"]
+        self.assertEqual([c["key"] for c in items["children"]], ["id", "name", "url", "modified_time", "owned_by_me"])
+        self.assertEqual((items["children"][-1]["type"], items["children"][-1]["title"]), ("boolean", "내 파일"))
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)

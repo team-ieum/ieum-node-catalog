@@ -67,8 +67,19 @@
           "key": "modified_time",
           "title": "수정 시각",
           "type": "datetime"
+        },
+        {
+          "key": "owned_by_me",
+          "title": "내 파일",
+          "type": "boolean"
         }
       ]
+    },
+    {
+      "key": "truncated",
+      "title": "잘림",
+      "type": "boolean",
+      "description": "결과가 커서 일부만 담았으면 참"
     }
   ]
 }
