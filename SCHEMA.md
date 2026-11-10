@@ -22,7 +22,7 @@
 |---|---|---|
 | `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` `DELAY` |
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
-| `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
+| `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`, `FORMS_NEW_RESPONSE`·`FORMS_ANY_RESPONSE`). 20자 이하(BE 컬럼). 새 값은 BE `TriggerType`·agent `TRIGGER_TYPES`에 서브모듈 포인터 커밋과 함께 넣는다 — 그전에는 포인터를 올리지 않는다 |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키, 또는 ACTION 전용 키 — `builtin:github_*`(동적 서비스 액션)·`_ACTION_ONLY_TOOLS`(되돌릴 수 없는 일이라 AI 노드에 안 싣는 도구, 예 `builtin:google_calendar_delete`). 둘 다 `tools.registry.resolve_action_fn`이 푼다 |
 | `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 정확히 `{"type":"ACTION","config":{}}`(다른 키가 있으면 CI 거부) |
 | `builder` | ⬜ | 기본 `true`. `false`면 빌더·실행에서 빠진다(지금 카탈로그엔 없음). 프리셋은 쓰지 않는다(늘 빌더 비노출) |

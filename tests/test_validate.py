@@ -18,6 +18,7 @@ SHEETS_SEARCH_EVENTS = {"google_sheets.lookup_row", "google_sheets.read", "googl
 GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
                    "include_signature", "label_ids"]
 GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
+FORMS_RESPONSE_KEYS = ["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
@@ -396,6 +397,58 @@ class RepoCatalogTest(unittest.TestCase):
         self.assertEqual(mail["created"]["type"], "boolean")
         for name in ("gmail.create_draft", "gmail.create_reply_draft"):
             self.assertEqual(events[name]["outputFields"][0], {"key": "draftId", "title": "초안 ID", "type": "string"})
+
+    def test_google_forms_response_events(self):
+        _, events, _ = validate.load(validate.ROOT)
+        answers = {"key": "answers", "title": "답", "type": "dict", "dynamic": True,
+                   "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}
+
+        def check_response(fields, where):
+            by = {f["key"]: f for f in fields}
+            self.assertEqual({k: v for k, v in by["answers"].items() if k != "description"}, answers, where)
+            self.assertEqual([c["key"] for c in by["answerList"]["children"]], ["questionId", "question", "answer"], where)
+            self.assertEqual((by["answerList"]["list"], by["answerList"]["children"][2]["type"]), (True, "json"), where)
+            self.assertEqual((by["submittedAt"]["type"], by["createdAt"]["type"], by["totalScore"]["type"]),
+                             ("datetime", "datetime", "number"), where)
+
+        triggers = {"google_forms.new_response": ("FORMS_NEW_RESPONSE", FORMS_RESPONSE_KEYS),
+                    "google_forms.new_or_updated_response": ("FORMS_ANY_RESPONSE", FORMS_RESPONSE_KEYS + ["isUpdate"])}
+        for name, (ttype, outs) in triggers.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["trigger_type"], ev["tool_key"], ev["fixed"]),
+                             ("TRIGGER", "trigger", ttype, None, {"type": "TRIGGER", "config": {}}), name)
+            self.assertLessEqual(len(ttype), 20, name)  # BE workflows.trigger_type VARCHAR(20)
+            self.assertEqual(ev["inputFields"], [{"key": "form_id", "title": "폼", "type": "string", "required": True,
+                                                  "ref": False, "description": "지켜볼 폼(편집 화면 주소의 폼 ID도 돼요)",
+                                                  "optionsSource": "google.forms"}], name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            check_response(ev["outputFields"], name)
+        self.assertEqual(events["google_forms.new_or_updated_response"]["outputFields"][-1]["type"], "boolean")
+
+        form_id = events["google_forms.get_form"]["fields"]["form_id"]
+        search = {"google_forms.list_responses": (["form_id", "period", "since", "max_results"],
+                                                  ["found", "total", "items", "truncated"]),
+                  "google_forms.get_response": (["form_id", "response_id"], ["found", "total", "items"])}
+        for name, (keys, outs) in search.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "search", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertEqual(list(ev["fields"]), keys, name)
+            self.assertEqual(ev["fields"]["form_id"], form_id, name)
+            by = {f["key"]: f for f in ev["outputFields"]}
+            self.assertEqual(list(by), outs, name)
+            self.assertIs(by["items"]["list"], True, name)
+            self.assertEqual([c["key"] for c in by["items"]["children"]], FORMS_RESPONSE_KEYS, name)
+            check_response(by["items"]["children"], name)
+        s1 = events["google_forms.list_responses"]
+        self.assertEqual([c["id"] for c in s1["fields"]["period"]["choices"]],
+                         ["today", "last_7_days", "last_30_days", "all", "custom"])
+        self.assertIs(s1["fields"]["period"]["ref"], False)
+        self.assertEqual((s1["outputFields"][-1]["type"], s1["outputFields"][-1]["title"]), ("boolean", "잘림"))
+        rid = events["google_forms.get_response"]["fields"]["response_id"]
+        self.assertEqual((rid["optionsSource"], rid["optionsInputs"]), ("google.form_responses", ["form_id"]))
+        self.assertNotIn("ref", rid)  # 참조식 허용(spec 4절 S2)
 
 
 class BaseCompareTest(unittest.TestCase):
