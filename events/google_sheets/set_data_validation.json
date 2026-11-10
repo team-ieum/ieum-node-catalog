@@ -1,0 +1,172 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "데이터 유효성 설정",
+  "description": "범위에 입력 규칙을 걸어요. 범위에 있던 규칙은 이것으로 바뀌어요.",
+  "tool_key": "builtin:google_sheets_set_data_validation",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "cell_range": {
+      "title": "범위",
+      "description": "A1 표기. 예: A1:C10, A:A, 2:10. 시트는 위에서 고른 시트예요"
+    },
+    "condition": {
+      "title": "조건",
+      "ref": false,
+      "choices": [
+        {
+          "id": "NUMBER_GREATER",
+          "name": "숫자: 보다 큼"
+        },
+        {
+          "id": "NUMBER_GREATER_THAN_EQ",
+          "name": "숫자: 크거나 같음"
+        },
+        {
+          "id": "NUMBER_LESS",
+          "name": "숫자: 보다 작음"
+        },
+        {
+          "id": "NUMBER_LESS_THAN_EQ",
+          "name": "숫자: 작거나 같음"
+        },
+        {
+          "id": "NUMBER_EQ",
+          "name": "숫자: 같음"
+        },
+        {
+          "id": "NUMBER_NOT_EQ",
+          "name": "숫자: 같지 않음"
+        },
+        {
+          "id": "NUMBER_BETWEEN",
+          "name": "숫자: 사이"
+        },
+        {
+          "id": "NUMBER_NOT_BETWEEN",
+          "name": "숫자: 사이 아님"
+        },
+        {
+          "id": "TEXT_CONTAINS",
+          "name": "텍스트: 포함"
+        },
+        {
+          "id": "TEXT_NOT_CONTAINS",
+          "name": "텍스트: 포함 안 함"
+        },
+        {
+          "id": "TEXT_EQ",
+          "name": "텍스트: 정확히 일치"
+        },
+        {
+          "id": "TEXT_IS_EMAIL",
+          "name": "텍스트: 이메일"
+        },
+        {
+          "id": "TEXT_IS_URL",
+          "name": "텍스트: URL"
+        },
+        {
+          "id": "DATE_EQ",
+          "name": "날짜: 같음"
+        },
+        {
+          "id": "DATE_BEFORE",
+          "name": "날짜: 이전"
+        },
+        {
+          "id": "DATE_AFTER",
+          "name": "날짜: 이후"
+        },
+        {
+          "id": "DATE_ON_OR_BEFORE",
+          "name": "날짜: 같거나 이전"
+        },
+        {
+          "id": "DATE_ON_OR_AFTER",
+          "name": "날짜: 같거나 이후"
+        },
+        {
+          "id": "DATE_BETWEEN",
+          "name": "날짜: 사이"
+        },
+        {
+          "id": "DATE_NOT_BETWEEN",
+          "name": "날짜: 사이 아님"
+        },
+        {
+          "id": "DATE_IS_VALID",
+          "name": "유효한 날짜"
+        },
+        {
+          "id": "ONE_OF_RANGE",
+          "name": "범위 안의 값 중 하나"
+        },
+        {
+          "id": "ONE_OF_LIST",
+          "name": "목록 중 하나"
+        },
+        {
+          "id": "BOOLEAN",
+          "name": "체크박스"
+        },
+        {
+          "id": "CUSTOM_FORMULA",
+          "name": "맞춤 수식"
+        }
+      ]
+    },
+    "value_1": {
+      "title": "값",
+      "description": "조건과 비교할 값. '범위 안의 값 중 하나'는 범위(예: '목록'!A2:A), '맞춤 수식'은 =로 시작, '체크박스'는 체크했을 때 값(비우면 TRUE)"
+    },
+    "value_2": {
+      "title": "두 번째 값",
+      "description": "'사이'·'사이 아님'에서 써요. '체크박스'에선 해제했을 때 값"
+    },
+    "values": {
+      "title": "목록 항목",
+      "description": "'목록 중 하나'에서만 써요. 최대 500개, =로 시작하는 항목은 안 돼요"
+    },
+    "input_message": {
+      "title": "입력 안내",
+      "description": "셀을 고르면 보이는 안내 문구"
+    },
+    "strict": {
+      "title": "잘못된 입력 거부",
+      "description": "끄면 경고만 보여요",
+      "ref": false
+    },
+    "show_dropdown": {
+      "title": "드롭다운 표시",
+      "description": "'목록 중 하나'·'범위 안의 값 중 하나'에서 셀에 드롭다운을 보여요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "range",
+      "title": "규칙을 건 범위",
+      "type": "string"
+    }
+  ]
+}

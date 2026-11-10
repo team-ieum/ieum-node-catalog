@@ -1,0 +1,56 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트에 열 추가",
+  "description": "1행에 머리글을 쓴 새 열을 넣어요.",
+  "tool_key": "builtin:google_sheets_add_column",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "title": {
+      "title": "열 제목",
+      "description": "1행에 쓸 머리글. 입력한 글자 그대로 저장해요"
+    },
+    "before_column": {
+      "title": "넣을 위치",
+      "description": "이 열 앞에 넣어요. 비우면 맨 끝. 중간에 넣으면 오른쪽 열 문자가 바뀌어 이 시트를 쓰는 다른 노드의 열 칸이 어긋나요. 보통 비워 두세요",
+      "optionsSource": "google.sheet_columns",
+      "optionsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "column",
+      "title": "열 문자",
+      "type": "string",
+      "description": "넣은 열. 예: E"
+    },
+    {
+      "key": "title",
+      "title": "열 제목",
+      "type": "string"
+    }
+  ]
+}

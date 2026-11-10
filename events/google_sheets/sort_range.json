@@ -1,0 +1,64 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 범위 정렬",
+  "description": "기준 열 값으로 행 순서를 바꿔요.",
+  "tool_key": "builtin:google_sheets_sort_range",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "sort_column": {
+      "title": "기준 열",
+      "description": "이 열 값으로 정렬해요",
+      "optionsSource": "google.sheet_columns",
+      "optionsInputs": [
+        "spreadsheet_id",
+        "sheet_id"
+      ],
+      "ref": false
+    },
+    "sort_order": {
+      "title": "순서",
+      "ref": false,
+      "choices": [
+        {
+          "id": "ASCENDING",
+          "name": "오름차순"
+        },
+        {
+          "id": "DESCENDING",
+          "name": "내림차순"
+        }
+      ]
+    },
+    "cell_range": {
+      "title": "정렬할 범위",
+      "description": "A1 표기(예: A2:F100). 비우면 머리글(1행)을 뺀 전체. 1행을 넣으면 머리글도 섞여요. 정렬 뒤엔 앞 노드의 행 번호가 다른 행을 가리켜요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "range",
+      "title": "정렬한 범위",
+      "type": "string"
+    }
+  ]
+}

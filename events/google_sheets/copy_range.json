@@ -1,0 +1,97 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 범위 복사",
+  "description": "범위를 같은 시트의 다른 위치에 붙여 넣어요.",
+  "tool_key": "builtin:google_sheets_copy_range",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "source_range": {
+      "title": "복사할 범위",
+      "description": "A1 표기. 예: A1:C10, A:A, 2:10. 시트는 위에서 고른 시트예요"
+    },
+    "destination_range": {
+      "title": "붙여 넣을 위치",
+      "description": "왼쪽 위 셀 하나만 써도 돼요(예: E1). 그 자리의 값·서식을 덮어써요"
+    },
+    "paste_type": {
+      "title": "붙여 넣을 내용",
+      "ref": false,
+      "choices": [
+        {
+          "id": "PASTE_NORMAL",
+          "name": "전부"
+        },
+        {
+          "id": "PASTE_VALUES",
+          "name": "값만"
+        },
+        {
+          "id": "PASTE_FORMAT",
+          "name": "서식만"
+        },
+        {
+          "id": "PASTE_NO_BORDERS",
+          "name": "테두리 빼고 전부"
+        },
+        {
+          "id": "PASTE_FORMULA",
+          "name": "수식만"
+        },
+        {
+          "id": "PASTE_DATA_VALIDATION",
+          "name": "데이터 유효성만"
+        },
+        {
+          "id": "PASTE_CONDITIONAL_FORMATTING",
+          "name": "조건부 서식만"
+        }
+      ]
+    },
+    "paste_orientation": {
+      "title": "방향",
+      "ref": false,
+      "choices": [
+        {
+          "id": "NORMAL",
+          "name": "그대로"
+        },
+        {
+          "id": "TRANSPOSE",
+          "name": "행·열 바꾸기"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "source",
+      "title": "복사한 범위",
+      "type": "string"
+    },
+    {
+      "key": "destination",
+      "title": "붙여 넣은 위치",
+      "type": "string"
+    }
+  ]
+}

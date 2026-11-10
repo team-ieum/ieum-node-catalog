@@ -1,0 +1,160 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "시트 범위 서식",
+  "description": "범위의 숫자 형식·색·글자 모양·정렬을 바꿔요.",
+  "tool_key": "builtin:google_sheets_format_range",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "cell_range": {
+      "title": "범위",
+      "description": "A1 표기. 예: A1:C10, A:A, 2:10. 시트는 위에서 고른 시트예요"
+    },
+    "number_format": {
+      "title": "숫자 형식",
+      "description": "비우면 그대로",
+      "ref": false,
+      "choices": [
+        {
+          "id": "TEXT",
+          "name": "텍스트"
+        },
+        {
+          "id": "NUMBER",
+          "name": "숫자"
+        },
+        {
+          "id": "PERCENT",
+          "name": "퍼센트"
+        },
+        {
+          "id": "CURRENCY",
+          "name": "통화"
+        },
+        {
+          "id": "DATE",
+          "name": "날짜"
+        },
+        {
+          "id": "TIME",
+          "name": "시간"
+        },
+        {
+          "id": "DATE_TIME",
+          "name": "날짜+시간"
+        },
+        {
+          "id": "SCIENTIFIC",
+          "name": "지수"
+        }
+      ]
+    },
+    "number_pattern": {
+      "title": "형식 패턴",
+      "description": "숫자 형식을 고를 때만 써요. 예: yyyy-mm-dd, #,##0"
+    },
+    "background_color": {
+      "title": "배경색",
+      "description": "#RRGGBB(예: #FFF2CC). 비우면 그대로"
+    },
+    "text_color": {
+      "title": "글자색",
+      "description": "#RRGGBB(예: #1F4E79). 비우면 그대로"
+    },
+    "bold": {
+      "title": "굵게",
+      "description": "비우면 그대로, 끄면 굵게를 풀어요",
+      "ref": false
+    },
+    "italic": {
+      "title": "기울임",
+      "description": "비우면 그대로, 끄면 기울임을 풀어요",
+      "ref": false
+    },
+    "strikethrough": {
+      "title": "취소선",
+      "description": "비우면 그대로, 끄면 취소선을 풀어요",
+      "ref": false
+    },
+    "horizontal_alignment": {
+      "title": "가로 정렬",
+      "ref": false,
+      "choices": [
+        {
+          "id": "LEFT",
+          "name": "왼쪽"
+        },
+        {
+          "id": "CENTER",
+          "name": "가운데"
+        },
+        {
+          "id": "RIGHT",
+          "name": "오른쪽"
+        }
+      ]
+    },
+    "vertical_alignment": {
+      "title": "세로 정렬",
+      "ref": false,
+      "choices": [
+        {
+          "id": "TOP",
+          "name": "위"
+        },
+        {
+          "id": "MIDDLE",
+          "name": "가운데"
+        },
+        {
+          "id": "BOTTOM",
+          "name": "아래"
+        }
+      ]
+    },
+    "wrap_strategy": {
+      "title": "줄바꿈",
+      "ref": false,
+      "choices": [
+        {
+          "id": "OVERFLOW_CELL",
+          "name": "넘침"
+        },
+        {
+          "id": "CLIP",
+          "name": "자르기"
+        },
+        {
+          "id": "WRAP",
+          "name": "줄바꿈"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "range",
+      "title": "서식을 바꾼 범위",
+      "type": "string"
+    }
+  ]
+}
