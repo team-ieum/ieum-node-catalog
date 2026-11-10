@@ -1,0 +1,41 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 라벨 붙이기",
+  "description": "메일에 라벨을 붙여요. 별표는 '별표' 라벨을 붙이면 돼요.",
+  "tool_key": "builtin:google_gmail_add_label",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "message_id": {
+      "title": "메일",
+      "optionsSource": "google.gmail_messages"
+    },
+    "label_ids": {
+      "title": "라벨",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    },
+    {
+      "key": "labels",
+      "title": "라벨",
+      "type": "string",
+      "list": true
+    }
+  ]
+}

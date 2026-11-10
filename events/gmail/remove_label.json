@@ -1,0 +1,41 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 라벨 떼기",
+  "description": "메일에서 라벨을 떼요. 읽음 처리는 '읽지 않음'을 떼면 돼요.",
+  "tool_key": "builtin:google_gmail_remove_label",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "message_id": {
+      "title": "메일",
+      "optionsSource": "google.gmail_messages"
+    },
+    "label_ids": {
+      "title": "라벨",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    },
+    {
+      "key": "labels",
+      "title": "라벨",
+      "type": "string",
+      "list": true
+    }
+  ]
+}
