@@ -1,0 +1,111 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "폼 정보 가져오기",
+  "description": "구글 폼의 제목·응답 링크·질문 목록을 가져와요.",
+  "tool_key": "builtin:google_forms_get_form",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "form_id": {
+      "title": "폼",
+      "description": "대상 폼(편집 화면 주소의 폼 ID도 돼요)",
+      "optionsSource": "google.forms"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "폼",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "formId",
+          "title": "폼 ID",
+          "type": "string"
+        },
+        {
+          "key": "title",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "responderUrl",
+          "title": "응답 링크",
+          "type": "string"
+        },
+        {
+          "key": "isPublished",
+          "title": "게시됨",
+          "type": "boolean",
+          "description": "예전 형식의 폼은 비어 있어요"
+        },
+        {
+          "key": "isAcceptingResponses",
+          "title": "응답 받는 중",
+          "type": "boolean",
+          "description": "예전 형식의 폼은 비어 있어요"
+        },
+        {
+          "key": "linkedSheetId",
+          "title": "연결된 시트 ID",
+          "type": "string",
+          "description": "응답이 쌓이는 시트(없으면 빈 값)"
+        },
+        {
+          "key": "questions",
+          "title": "질문",
+          "type": "object",
+          "list": true,
+          "children": [
+            {
+              "key": "questionId",
+              "title": "질문 ID",
+              "type": "string"
+            },
+            {
+              "key": "title",
+              "title": "질문",
+              "type": "string"
+            },
+            {
+              "key": "kind",
+              "title": "종류",
+              "type": "string",
+              "description": "text·choice·scale·date·time·file_upload·rating·row·other"
+            },
+            {
+              "key": "required",
+              "title": "필수",
+              "type": "boolean"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "message",
+      "title": "결과가 없을 때 안내",
+      "type": "string"
+    }
+  ]
+}

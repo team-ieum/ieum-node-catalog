@@ -2,6 +2,7 @@
   "gmail":           {"provider": "google",  "title": "Gmail",           "brand": "gmail",   "serviceType": "GOOGLE",  "auth": "google_oauth"},
   "google_calendar": {"provider": "google",  "title": "Google Calendar", "brand": "google",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
   "google_drive":    {"provider": "google",  "title": "Google Drive",    "brand": "google",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
+  "google_forms":    {"provider": "google",  "title": "Google Forms",    "brand": "google",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
   "google_sheets":   {"provider": "google",  "title": "Google Sheets",   "brand": "sheets",  "serviceType": "GOOGLE",  "auth": "google_oauth"},
   "notion":          {"provider": "notion",  "title": "Notion",          "brand": "notion",  "serviceType": "NOTION",  "auth": "notion_token"},
   "github":          {"provider": "github",  "title": "GitHub",          "brand": "github",  "serviceType": "GITHUB",  "auth": "github_token"},
