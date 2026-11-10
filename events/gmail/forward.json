@@ -1,0 +1,86 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 메일 전달하기",
+  "description": "메일을 원본 첨부까지 그대로 다른 사람에게 전달해요.",
+  "tool_key": "builtin:google_gmail_forward",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "message_id": {
+      "title": "메일",
+      "description": "전달할 메일. 제목은 원래 제목에 Fwd:를 붙여요",
+      "optionsSource": "google.gmail_messages"
+    },
+    "to": {
+      "title": "받는 사람",
+      "description": "이메일 주소, 여러 명은 쉼표로. 받는 사람·참조·숨은참조 중 하나는 채워요"
+    },
+    "cc": {
+      "title": "참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "bcc": {
+      "title": "숨은참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "from_email": {
+      "title": "보낸 사람",
+      "description": "Gmail에 등록한 주소. 비우면 기본 주소",
+      "ref": false,
+      "optionsSource": "google.gmail_send_as"
+    },
+    "from_name": {
+      "title": "보낸 사람 이름"
+    },
+    "reply_to": {
+      "title": "답장 받을 주소"
+    },
+    "body_format": {
+      "title": "본문 형식",
+      "description": "HTML을 고르면 원본의 HTML 본문을 살려 전달해요",
+      "ref": false,
+      "choices": [
+        {
+          "id": "text/plain",
+          "name": "일반 텍스트"
+        },
+        {
+          "id": "text/html",
+          "name": "HTML"
+        }
+      ]
+    },
+    "body": {
+      "title": "덧붙일 말",
+      "type": "text",
+      "description": "전달하는 메일 위에 붙여요. 비워도 돼요"
+    },
+    "include_signature": {
+      "title": "서명 포함",
+      "description": "보낸 사람의 Gmail 서명을 본문 끝에 붙여요",
+      "ref": false
+    },
+    "label_ids": {
+      "title": "보낸 뒤 붙일 라벨",
+      "description": "보낸 메일에 붙일 라벨(여러 개)",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    }
+  ]
+}

@@ -15,6 +15,11 @@ SHEETS_SEARCH_EVENTS = {"google_sheets.lookup_row", "google_sheets.read", "googl
                         "google_sheets.get_rows", "google_sheets.get_row", "google_sheets.find_spreadsheet",
                         "google_sheets.find_worksheet", "google_sheets.get_spreadsheet"}
 
+GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
+                   "include_signature", "label_ids"]
+GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
+FORMS_RESPONSE_KEYS = ["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
+
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
 
@@ -134,6 +139,53 @@ class CheckTest(unittest.TestCase):
         bad = _event(fields={"props": {"type": "dict", "fieldsSource": "notion.properties", "fieldsInputs": ["q"]}})
         errs = self.ok(events={"gmail.send_email": bad})
         self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
+
+    def test_output_fields_source_format(self):
+        bad = _event(outputFields=[{"key": "answers", "title": "답", "type": "dict", "fieldsSource": "Form Q"}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsSource" in e and "형식" in e for e in errs), errs)
+
+    def test_output_fields_source_only_on_dict(self):
+        """Sheets values처럼 object+dynamic으로 적고 fieldsSource를 달면 agent validate_field가 거부한다 — CI에서 먼저 막는다."""
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=[{"key": "answers", "title": "답", "type": "object", "dynamic": True,
+                                    "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("type 'dict'" in e for e in errs), errs)
+
+    def test_output_fields_inputs_must_be_input_key(self):
+        out = {"key": "answers", "title": "답", "type": "dict", "dynamic": True, "fieldsSource": "google.form_questions"}
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=[{"key": "responseId", "title": "응답 ID", "type": "string"},
+                                   dict(out, fieldsInputs=["responseId"])])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("'answers'" in e and "입력 칸" in e for e in errs), errs)
+        good_action = _event(fields={"form_id": {"title": "폼"}}, outputFields=[dict(out, fieldsInputs=["form_id"])])
+        self.assertEqual(self.ok(events={"gmail.send_email": good_action}), [])
+        good_trigger = _trigger(inputFields=[{"key": "form_id", "title": "폼", "type": "string"}],
+                                outputFields=[dict(out, fieldsInputs=["form_id"])])
+        self.assertEqual(self.ok(events={"gmail.new_email": good_trigger}), [])
+
+    def test_output_fields_inputs_must_not_use_q(self):
+        bad = _event(fields={"q": {"title": "검색"}},
+                     outputFields=[{"key": "answers", "title": "답", "type": "dict",
+                                    "fieldsSource": "google.form_questions", "fieldsInputs": ["q"]}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
+
+    def test_output_dynamic_rules_apply_in_children(self):
+        """S1·S2 items[].answers — 목록 안쪽 출력 칸도 같은 규칙."""
+        def items(answers):
+            return [{"key": "items", "title": "응답", "type": "object", "list": True, "children": [answers]}]
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=items({"key": "answers", "title": "답", "type": "dict",
+                                         "fieldsSource": "google.form_questions", "fieldsInputs": ["nope"]}))
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("'answers'" in e and "입력 칸" in e for e in errs), errs)
+        good = _event(fields={"form_id": {"title": "폼"}},
+                      outputFields=items({"key": "answers", "title": "답", "type": "dict", "dynamic": True,
+                                          "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}))
+        self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
 
     def test_preset_rules(self):
         m = {"type": "AI"}
@@ -300,6 +352,103 @@ class RepoCatalogTest(unittest.TestCase):
                                        "isAcceptingResponses", "linkedSheetId", "questions"])
         self.assertIs(items["questions"]["list"], True)
         self.assertEqual([c["key"] for c in items["questions"]["children"]], ["questionId", "title", "kind", "required"])
+
+    def test_gmail_send_family_events(self):
+        _, events, _ = validate.load(validate.ROOT)
+        send = events["gmail.send_email"]["fields"]
+        find = events["gmail.find_email"]
+        no_subject = [k for k in GMAIL_SEND_KEYS if k != "subject"]
+        expected = {
+            "gmail.reply": (["thread_id"] + no_subject, ["messageId", "threadId"]),
+            "gmail.forward": (["message_id"] + no_subject, ["messageId", "threadId"]),
+            "gmail.create_draft": (GMAIL_SEND_KEYS[:-1], ["draftId", "messageId", "threadId"]),
+            "gmail.create_reply_draft": (["thread_id"] + no_subject[:-1], ["draftId", "messageId", "threadId"]),
+            "gmail.find_or_send": (["query", "search_label_ids", "include_spam_trash"] + GMAIL_SEND_KEYS,
+                                   ["created"] + GMAIL_MAIL_KEYS),
+        }
+        for name, (keys, outs) in expected.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:google_" + name.replace(".", "_"), name)
+            self.assertTrue(ev["title"].strip() and ev["description"].strip(), name)
+            self.assertEqual(list(ev["fields"]), keys, name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            for k in ("cc", "bcc", "from_email", "from_name", "reply_to", "include_signature", "label_ids"):
+                if k in ev["fields"]:
+                    self.assertEqual(ev["fields"][k], send[k], (name, k))
+            for k in ("body_format", "subject"):
+                if k in ev["fields"] and name != "gmail.forward":
+                    self.assertEqual(ev["fields"][k], send[k], (name, k))
+        self.assertEqual(events["gmail.reply"]["fields"]["thread_id"]["optionsSource"], "google.gmail_threads")
+        self.assertEqual(events["gmail.create_reply_draft"]["fields"]["thread_id"],
+                         events["gmail.reply"]["fields"]["thread_id"])
+        self.assertEqual(events["gmail.forward"]["fields"]["message_id"]["optionsSource"], "google.gmail_messages")
+        fos = events["gmail.find_or_send"]
+        self.assertEqual(fos["fields"]["search_label_ids"], find["fields"]["label_ids"])
+        for k in ("query", "include_spam_trash"):
+            self.assertEqual(fos["fields"][k], find["fields"][k], k)
+        for k in ("to", "body"):
+            self.assertEqual(fos["fields"][k], send[k], k)
+        mail = {f["key"]: f for f in fos["outputFields"]}
+        items = {c["key"]: c for c in {f["key"]: f for f in find["outputFields"]}["items"]["children"]}
+        for k in GMAIL_MAIL_KEYS:
+            self.assertEqual(mail[k], items[k], k)
+        self.assertEqual(mail["created"]["type"], "boolean")
+        for name in ("gmail.create_draft", "gmail.create_reply_draft"):
+            self.assertEqual(events[name]["outputFields"][0], {"key": "draftId", "title": "초안 ID", "type": "string"})
+
+    def test_google_forms_response_events(self):
+        _, events, _ = validate.load(validate.ROOT)
+        answers = {"key": "answers", "title": "답", "type": "dict", "dynamic": True,
+                   "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}
+
+        def check_response(fields, where):
+            by = {f["key"]: f for f in fields}
+            self.assertEqual({k: v for k, v in by["answers"].items() if k != "description"}, answers, where)
+            self.assertEqual([c["key"] for c in by["answerList"]["children"]], ["questionId", "question", "answer"], where)
+            self.assertEqual((by["answerList"]["list"], by["answerList"]["children"][2]["type"]), (True, "json"), where)
+            self.assertEqual((by["submittedAt"]["type"], by["createdAt"]["type"], by["totalScore"]["type"]),
+                             ("datetime", "datetime", "number"), where)
+
+        triggers = {"google_forms.new_response": ("FORMS_NEW_RESPONSE", FORMS_RESPONSE_KEYS),
+                    "google_forms.new_or_updated_response": ("FORMS_ANY_RESPONSE", FORMS_RESPONSE_KEYS + ["isUpdate"])}
+        for name, (ttype, outs) in triggers.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["trigger_type"], ev["tool_key"], ev["fixed"]),
+                             ("TRIGGER", "trigger", ttype, None, {"type": "TRIGGER", "config": {}}), name)
+            self.assertLessEqual(len(ttype), 20, name)  # BE workflows.trigger_type VARCHAR(20)
+            self.assertEqual(ev["inputFields"], [{"key": "form_id", "title": "폼", "type": "string", "required": True,
+                                                  "ref": False, "description": "지켜볼 폼(편집 화면 주소의 폼 ID도 돼요)",
+                                                  "optionsSource": "google.forms"}], name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            check_response(ev["outputFields"], name)
+        self.assertEqual(events["google_forms.new_or_updated_response"]["outputFields"][-1]["type"], "boolean")
+
+        form_id = events["google_forms.get_form"]["fields"]["form_id"]
+        search = {"google_forms.list_responses": (["form_id", "period", "since", "max_results"],
+                                                  ["found", "total", "items", "truncated"]),
+                  "google_forms.get_response": (["form_id", "response_id"], ["found", "total", "items"])}
+        for name, (keys, outs) in search.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "search", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertEqual(list(ev["fields"]), keys, name)
+            self.assertEqual(ev["fields"]["form_id"], form_id, name)
+            by = {f["key"]: f for f in ev["outputFields"]}
+            self.assertEqual(list(by), outs, name)
+            self.assertIs(by["items"]["list"], True, name)
+            self.assertEqual([c["key"] for c in by["items"]["children"]], FORMS_RESPONSE_KEYS, name)
+            check_response(by["items"]["children"], name)
+        s1 = events["google_forms.list_responses"]
+        self.assertEqual([c["id"] for c in s1["fields"]["period"]["choices"]],
+                         ["today", "last_7_days", "last_30_days", "all", "custom"])
+        self.assertIs(s1["fields"]["period"]["ref"], False)
+        self.assertEqual((s1["outputFields"][-1]["type"], s1["outputFields"][-1]["title"]), ("boolean", "잘림"))
+        rid = events["google_forms.get_response"]["fields"]["response_id"]
+        self.assertEqual((rid["optionsSource"], rid["optionsInputs"]), ("google.form_responses", ["form_id"]))
+        self.assertNotIn("ref", rid)  # 참조식 허용(spec 4절 S2)
 
 
 class BaseCompareTest(unittest.TestCase):

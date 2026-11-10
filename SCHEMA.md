@@ -22,7 +22,7 @@
 |---|---|---|
 | `node_type` | ✅ | `TRIGGER` `AI` `ACTION` `HTTP` `CONDITION` `TRANSFORM` `APPROVAL` `DELAY` |
 | `kind` | ✅ | `trigger`\|`action`\|`search`. 찾기·읽기·목록·조회는 `search` |
-| `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`) |
+| `trigger_type` | 트리거만 ✅ | BE `TriggerType` 값 (예: `WEBHOOK`, `GMAIL_NEW_EMAIL`, `FORMS_NEW_RESPONSE`·`FORMS_ANY_RESPONSE`). 20자 이하(BE 컬럼). 새 값은 BE `TriggerType`·agent `TRIGGER_TYPES`에 서브모듈 포인터 커밋과 함께 넣는다 — 그전에는 포인터를 올리지 않는다 |
 | `tool_key` | ✅ | 바인딩하는 도구 키, 없으면 `null`. `_TOOL_MAP` 키, 또는 ACTION 전용 키 — `builtin:github_*`(동적 서비스 액션)·`_ACTION_ONLY_TOOLS`(되돌릴 수 없는 일이라 AI 노드에 안 싣는 도구, 예 `builtin:google_calendar_delete`). 둘 다 `tools.registry.resolve_action_fn`이 푼다 |
 | `fixed` | ✅ | 불변 노드 골격(`type` + `config` 불변 키). `event`는 로더가 넣는다. 지운 옛 필드 `config.triggerType`·`config.serviceType`와 ACTION `config.tools`(도구는 `tool_key`)는 쓰지 않는다(쓰면 CI 거부). ACTION은 정확히 `{"type":"ACTION","config":{}}`(다른 키가 있으면 CI 거부) |
 | `builder` | ⬜ | 기본 `true`. `false`면 빌더·실행에서 빠진다(지금 카탈로그엔 없음). 프리셋은 쓰지 않는다(늘 빌더 비노출) |
@@ -51,6 +51,8 @@
 - 도구 필드의 type·required·default는 시그니처에서 파생(덮어쓰기 가능). 실행 시 주입 인자(`RUNTIME_INJECTED_PARAMS`)는 빠진다.
 - `default`는 키가 없을 때 실행이 쓰는 값이다. FE는 저장하지 않는다(키 있음 = 고정).
 - 빌더 LLM에게 줄 안내는 `description`에 쓴다(FE에도 그대로 보이니 사용자 문장으로).
+- `dynamic`(출력 칸): 안쪽 키가 실행마다 달라 `children`으로 고정하지 않는 객체 칸(예 Sheets `values`, Forms `answers`).
+  참조식은 `<칸>.<안쪽 키>`로 쓰고, 성공 테스트 `assert_matches_outputs`는 안쪽을 대조하지 않는다. 안쪽 키 목록을 받을 곳이 있으면 `fieldsSource`를 함께 단다(type `dict`).
 
 ### 동적 칸 (`fieldsSource`·`fieldsInputs`)
 
@@ -60,6 +62,11 @@
 ```
 - `fieldsSource`: 이 `dict` 칸의 **안쪽 칸 목록**을 BE `GET /api/v1/integrations/{app}/fields/{resource}`에서 받는다.
   형식은 `optionsSource`와 같은 `<공급원>.<목록>`이고 `type: dict` 칸에만 쓴다(시그니처 파생 `object`는 `fields`에서 `dict`로 덮는다. CI 거부).
+- **출력 칸에도 쓴다**(`outputFields`·그 children). 뜻: 이 출력 dict의 안쪽 키 목록(키·제목·type)을 같은 `/fields` API로 받는다.
+  출력 칸엔 저장값·`_names`가 없다 — 칸 목록만 받아 참조식 `answers.<안쪽 key>`를 고르는 데 쓴다.
+  출력 칸의 `fieldsInputs`는 **같은 이벤트의 입력 칸 key**(노드 `config.<key>` 값을 쿼리로 싣는다)이고, 입력 칸에서의 '같은 부모의 형제 칸'과 뜻이 다르다(CI 거부: 입력 칸이 아닌 key).
+  type은 입력과 같이 `dict`만. 예: `{"key":"answers","title":"답","type":"dict","dynamic":true,"fieldsSource":"google.form_questions","fieldsInputs":["form_id"]}`.
+  agent 정적 검증은 참조식 첫 칸(`answers`)까지만 대조한다.
 - `fieldsInputs`: 칸 목록 요청에 실을 같은 항목의 칸 key. `optionsInputs`와 규칙이 같다. `q`는 쓰지 않고, `fieldsSource` 없이 쓰지 않는다(CI 거부).
 - 응답 `data.fields`는 이 문서의 Field 모양이다. 저장은 `config.<칸> = {안쪽 key: 단순값}`이고, 안쪽 key는 응답 key를 그대로 쓴다.
   표시 이름은 `config._names.<칸>.<안쪽 key>`에 둔다.

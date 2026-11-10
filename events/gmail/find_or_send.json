@@ -1,0 +1,138 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 메일 찾기, 없으면 보내기",
+  "description": "검색어에 맞는 메일을 찾고, 없을 때만 메일을 보내요.",
+  "tool_key": "builtin:google_gmail_find_or_send",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "query": {
+      "title": "검색어",
+      "description": "Gmail 검색창과 같은 문법. 날짜는 PST 자정 기준 — 정확히 하려면 after:<epoch초>"
+    },
+    "search_label_ids": {
+      "title": "라벨",
+      "description": "고른 라벨을 모두 가진 메일",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    },
+    "include_spam_trash": {
+      "title": "스팸·휴지통 포함",
+      "ref": false
+    },
+    "to": {
+      "title": "받는 사람",
+      "description": "이메일 주소, 여러 명은 쉼표로. 받는 사람·참조·숨은참조 중 하나는 채워요"
+    },
+    "cc": {
+      "title": "참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "bcc": {
+      "title": "숨은참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "from_email": {
+      "title": "보낸 사람",
+      "description": "Gmail에 등록한 주소. 비우면 기본 주소",
+      "ref": false,
+      "optionsSource": "google.gmail_send_as"
+    },
+    "from_name": {
+      "title": "보낸 사람 이름"
+    },
+    "reply_to": {
+      "title": "답장 받을 주소"
+    },
+    "subject": {
+      "title": "제목"
+    },
+    "body_format": {
+      "title": "본문 형식",
+      "ref": false,
+      "choices": [
+        {
+          "id": "text/plain",
+          "name": "일반 텍스트"
+        },
+        {
+          "id": "text/html",
+          "name": "HTML"
+        }
+      ]
+    },
+    "body": {
+      "title": "본문",
+      "type": "text"
+    },
+    "include_signature": {
+      "title": "서명 포함",
+      "description": "보낸 사람의 Gmail 서명을 본문 끝에 붙여요",
+      "ref": false
+    },
+    "label_ids": {
+      "title": "보낸 뒤 붙일 라벨",
+      "description": "보낸 메일에 붙일 라벨(여러 개)",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 보냄",
+      "type": "boolean",
+      "description": "찾지 못해 메일을 보냈는지. 보냈으면 메일 칸은 보낸 값이에요"
+    },
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "스레드 ID",
+      "type": "string"
+    },
+    {
+      "key": "from",
+      "title": "보낸 사람",
+      "type": "string"
+    },
+    {
+      "key": "to",
+      "title": "받는 사람",
+      "type": "string"
+    },
+    {
+      "key": "subject",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "snippet",
+      "title": "미리보기",
+      "type": "text"
+    },
+    {
+      "key": "bodyText",
+      "title": "본문",
+      "type": "text"
+    },
+    {
+      "key": "receivedAt",
+      "title": "받은 시각",
+      "type": "datetime"
+    },
+    {
+      "key": "labels",
+      "title": "라벨 ID",
+      "type": "string",
+      "list": true
+    }
+  ]
+}

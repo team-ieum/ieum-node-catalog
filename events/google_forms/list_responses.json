@@ -1,0 +1,145 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "폼 응답 목록 가져오기",
+  "description": "구글 폼 응답을 기간으로 골라 최근 제출 순으로 가져와요.",
+  "tool_key": "builtin:google_forms_list_responses",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "form_id": {
+      "title": "폼",
+      "description": "대상 폼(편집 화면 주소의 폼 ID도 돼요)",
+      "optionsSource": "google.forms"
+    },
+    "period": {
+      "title": "기간",
+      "description": "오늘·최근 며칠은 한국 시간 기준",
+      "ref": false,
+      "choices": [
+        {
+          "id": "today",
+          "name": "오늘"
+        },
+        {
+          "id": "last_7_days",
+          "name": "최근 7일"
+        },
+        {
+          "id": "last_30_days",
+          "name": "최근 30일"
+        },
+        {
+          "id": "all",
+          "name": "전체"
+        },
+        {
+          "id": "custom",
+          "name": "직접 입력"
+        }
+      ]
+    },
+    "since": {
+      "title": "시작 시각",
+      "description": "기간이 '직접 입력'일 때 이 시각 이후 제출된 응답. 예: 2026-11-01T09:00:00+09:00"
+    },
+    "max_results": {
+      "title": "최대 개수",
+      "description": "기본 100, 최대 500"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "한 건 이상 찾았는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "응답",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "responseId",
+          "title": "응답 ID",
+          "type": "string"
+        },
+        {
+          "key": "submittedAt",
+          "title": "제출 시각",
+          "type": "datetime",
+          "description": "마지막으로 제출(수정 포함)한 시각"
+        },
+        {
+          "key": "createdAt",
+          "title": "처음 제출 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "respondentEmail",
+          "title": "응답자 이메일",
+          "type": "string",
+          "description": "이메일을 수집하는 폼만, 아니면 빈 값"
+        },
+        {
+          "key": "answers",
+          "title": "답",
+          "type": "dict",
+          "dynamic": true,
+          "fieldsSource": "google.form_questions",
+          "fieldsInputs": [
+            "form_id"
+          ],
+          "description": "질문 ID로 꺼내요. 예: answers.<질문 ID>. 답하지 않은 질문은 없어요"
+        },
+        {
+          "key": "answerList",
+          "title": "답 목록",
+          "type": "object",
+          "list": true,
+          "description": "폼 질문 순서",
+          "children": [
+            {
+              "key": "questionId",
+              "title": "질문 ID",
+              "type": "string"
+            },
+            {
+              "key": "question",
+              "title": "질문",
+              "type": "string"
+            },
+            {
+              "key": "answer",
+              "title": "답",
+              "type": "json",
+              "description": "글·글 목록·숫자·파일 정보 목록({fileId, fileName, mimeType}) 중 하나"
+            }
+          ]
+        },
+        {
+          "key": "totalScore",
+          "title": "점수",
+          "type": "number",
+          "description": "퀴즈가 아니면 비어 있어요"
+        }
+      ]
+    },
+    {
+      "key": "truncated",
+      "title": "잘림",
+      "type": "boolean",
+      "description": "결과가 너무 커서 오래된 응답을 뺐는지"
+    }
+  ]
+}

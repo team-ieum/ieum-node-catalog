@@ -1,0 +1,81 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 초안 만들기",
+  "description": "새 메일 초안을 만들어요. 보내지는 않아요.",
+  "tool_key": "builtin:google_gmail_create_draft",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "to": {
+      "title": "받는 사람",
+      "description": "이메일 주소, 여러 명은 쉼표로. 초안이라 비워도 돼요"
+    },
+    "cc": {
+      "title": "참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "bcc": {
+      "title": "숨은참조",
+      "description": "이메일 주소, 여러 명은 쉼표로"
+    },
+    "from_email": {
+      "title": "보낸 사람",
+      "description": "Gmail에 등록한 주소. 비우면 기본 주소",
+      "ref": false,
+      "optionsSource": "google.gmail_send_as"
+    },
+    "from_name": {
+      "title": "보낸 사람 이름"
+    },
+    "reply_to": {
+      "title": "답장 받을 주소"
+    },
+    "subject": {
+      "title": "제목"
+    },
+    "body_format": {
+      "title": "본문 형식",
+      "ref": false,
+      "choices": [
+        {
+          "id": "text/plain",
+          "name": "일반 텍스트"
+        },
+        {
+          "id": "text/html",
+          "name": "HTML"
+        }
+      ]
+    },
+    "body": {
+      "title": "본문",
+      "type": "text"
+    },
+    "include_signature": {
+      "title": "서명 포함",
+      "description": "보낸 사람의 Gmail 서명을 본문 끝에 붙여요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "draftId",
+      "title": "초안 ID",
+      "type": "string"
+    },
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    }
+  ]
+}

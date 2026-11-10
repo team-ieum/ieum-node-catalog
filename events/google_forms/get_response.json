@@ -1,0 +1,112 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "폼 응답 하나 가져오기",
+  "description": "응답 ID로 구글 폼 응답 하나를 가져와요.",
+  "tool_key": "builtin:google_forms_get_response",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "form_id": {
+      "title": "폼",
+      "description": "대상 폼(편집 화면 주소의 폼 ID도 돼요)",
+      "optionsSource": "google.forms"
+    },
+    "response_id": {
+      "title": "응답",
+      "description": "가져올 응답(응답 ID를 직접 넣어도 돼요)",
+      "optionsSource": "google.form_responses",
+      "optionsInputs": [
+        "form_id"
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "응답을 찾았는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "응답",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "responseId",
+          "title": "응답 ID",
+          "type": "string"
+        },
+        {
+          "key": "submittedAt",
+          "title": "제출 시각",
+          "type": "datetime",
+          "description": "마지막으로 제출(수정 포함)한 시각"
+        },
+        {
+          "key": "createdAt",
+          "title": "처음 제출 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "respondentEmail",
+          "title": "응답자 이메일",
+          "type": "string",
+          "description": "이메일을 수집하는 폼만, 아니면 빈 값"
+        },
+        {
+          "key": "answers",
+          "title": "답",
+          "type": "dict",
+          "dynamic": true,
+          "fieldsSource": "google.form_questions",
+          "fieldsInputs": [
+            "form_id"
+          ],
+          "description": "질문 ID로 꺼내요. 예: answers.<질문 ID>. 답하지 않은 질문은 없어요"
+        },
+        {
+          "key": "answerList",
+          "title": "답 목록",
+          "type": "object",
+          "list": true,
+          "description": "폼 질문 순서",
+          "children": [
+            {
+              "key": "questionId",
+              "title": "질문 ID",
+              "type": "string"
+            },
+            {
+              "key": "question",
+              "title": "질문",
+              "type": "string"
+            },
+            {
+              "key": "answer",
+              "title": "답",
+              "type": "json",
+              "description": "글·글 목록·숫자·파일 정보 목록({fileId, fileName, mimeType}) 중 하나"
+            }
+          ]
+        },
+        {
+          "key": "totalScore",
+          "title": "점수",
+          "type": "number",
+          "description": "퀴즈가 아니면 비어 있어요"
+        }
+      ]
+    }
+  ]
+}
