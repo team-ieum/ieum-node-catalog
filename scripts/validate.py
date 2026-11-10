@@ -48,11 +48,15 @@ def load(root):
 
 
 def _options_errors(where, entry):
-    fields = list(entry.get("inputFields") or []) + [dict(v, key=k) for k, v in (entry.get("fields") or {}).items()
+    inputs = list(entry.get("inputFields") or []) + [dict(v, key=k) for k, v in (entry.get("fields") or {}).items()
                                                      if isinstance(v, dict)]
+    # 한계: 도구 시그니처에만 있는 칸은 카탈로그가 모른다 — 출력 fieldsInputs가 가리키는 칸은 fields에 적는다.
+    input_keys = {f.get("key") for f in inputs if isinstance(f, dict)}
+    outputs = entry.get("outputFields") if isinstance(entry.get("outputFields"), list) else []
+    fields = [(f, False) for f in inputs] + [(f, True) for f in outputs]
     errs = []
     while fields:
-        f = fields.pop()
+        f, is_output = fields.pop()
         if not isinstance(f, dict):
             continue
         src = f.get("optionsSource")
@@ -69,9 +73,14 @@ def _options_errors(where, entry):
             errs.append(f"{where}: '{f.get('key')}'의 fieldsInputs는 fieldsSource와 함께 쓴다.")
         if "q" in (f.get("fieldsInputs") or []):
             errs.append(f"{where}: '{f.get('key')}'의 fieldsInputs에 'q'를 쓰지 않는다 — 드롭다운 검색어 파라미터 이름이다.")
+        if is_output and fsrc is not None:
+            bad = [k for k in (f.get("fieldsInputs") or []) if k not in input_keys]
+            if bad:
+                errs.append(f"{where}: 출력 칸 '{f.get('key')}'의 fieldsInputs {bad}는 같은 이벤트의 입력 칸 key여야 한다"
+                            f"(config.<key> 값을 싣는다).")
         if "llm" in f:
             errs.append(f"{where}: '{f.get('key')}'의 llm은 옛 생성 경로 전용이다 — 빌더 안내는 description에 쓴다.")
-        fields.extend(f.get("children") or [])
+        fields.extend((c, is_output) for c in (f.get("children") or []))
     return errs
 
 

@@ -51,6 +51,8 @@
 - 도구 필드의 type·required·default는 시그니처에서 파생(덮어쓰기 가능). 실행 시 주입 인자(`RUNTIME_INJECTED_PARAMS`)는 빠진다.
 - `default`는 키가 없을 때 실행이 쓰는 값이다. FE는 저장하지 않는다(키 있음 = 고정).
 - 빌더 LLM에게 줄 안내는 `description`에 쓴다(FE에도 그대로 보이니 사용자 문장으로).
+- `dynamic`(출력 칸): 안쪽 키가 실행마다 달라 `children`으로 고정하지 않는 객체 칸(예 Sheets `values`, Forms `answers`).
+  참조식은 `<칸>.<안쪽 키>`로 쓰고, 성공 테스트 `assert_matches_outputs`는 안쪽을 대조하지 않는다. 안쪽 키 목록을 받을 곳이 있으면 `fieldsSource`를 함께 단다(type `dict`).
 
 ### 동적 칸 (`fieldsSource`·`fieldsInputs`)
 
@@ -60,6 +62,11 @@
 ```
 - `fieldsSource`: 이 `dict` 칸의 **안쪽 칸 목록**을 BE `GET /api/v1/integrations/{app}/fields/{resource}`에서 받는다.
   형식은 `optionsSource`와 같은 `<공급원>.<목록>`이고 `type: dict` 칸에만 쓴다(시그니처 파생 `object`는 `fields`에서 `dict`로 덮는다. CI 거부).
+- **출력 칸에도 쓴다**(`outputFields`·그 children). 뜻: 이 출력 dict의 안쪽 키 목록(키·제목·type)을 같은 `/fields` API로 받는다.
+  출력 칸엔 저장값·`_names`가 없다 — 칸 목록만 받아 참조식 `answers.<안쪽 key>`를 고르는 데 쓴다.
+  출력 칸의 `fieldsInputs`는 **같은 이벤트의 입력 칸 key**(노드 `config.<key>` 값을 쿼리로 싣는다)이고, 입력 칸에서의 '같은 부모의 형제 칸'과 뜻이 다르다(CI 거부: 입력 칸이 아닌 key).
+  type은 입력과 같이 `dict`만. 예: `{"key":"answers","title":"답","type":"dict","dynamic":true,"fieldsSource":"google.form_questions","fieldsInputs":["form_id"]}`.
+  agent 정적 검증은 참조식 첫 칸(`answers`)까지만 대조한다.
 - `fieldsInputs`: 칸 목록 요청에 실을 같은 항목의 칸 key. `optionsInputs`와 규칙이 같다. `q`는 쓰지 않고, `fieldsSource` 없이 쓰지 않는다(CI 거부).
 - 응답 `data.fields`는 이 문서의 Field 모양이다. 저장은 `config.<칸> = {안쪽 key: 단순값}`이고, 안쪽 key는 응답 key를 그대로 쓴다.
   표시 이름은 `config._names.<칸>.<안쪽 key>`에 둔다.

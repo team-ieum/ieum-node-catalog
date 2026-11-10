@@ -135,6 +135,53 @@ class CheckTest(unittest.TestCase):
         errs = self.ok(events={"gmail.send_email": bad})
         self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
 
+    def test_output_fields_source_format(self):
+        bad = _event(outputFields=[{"key": "answers", "title": "답", "type": "dict", "fieldsSource": "Form Q"}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsSource" in e and "형식" in e for e in errs), errs)
+
+    def test_output_fields_source_only_on_dict(self):
+        """Sheets values처럼 object+dynamic으로 적고 fieldsSource를 달면 agent validate_field가 거부한다 — CI에서 먼저 막는다."""
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=[{"key": "answers", "title": "답", "type": "object", "dynamic": True,
+                                    "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("type 'dict'" in e for e in errs), errs)
+
+    def test_output_fields_inputs_must_be_input_key(self):
+        out = {"key": "answers", "title": "답", "type": "dict", "dynamic": True, "fieldsSource": "google.form_questions"}
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=[{"key": "responseId", "title": "응답 ID", "type": "string"},
+                                   dict(out, fieldsInputs=["responseId"])])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("'answers'" in e and "입력 칸" in e for e in errs), errs)
+        good_action = _event(fields={"form_id": {"title": "폼"}}, outputFields=[dict(out, fieldsInputs=["form_id"])])
+        self.assertEqual(self.ok(events={"gmail.send_email": good_action}), [])
+        good_trigger = _trigger(inputFields=[{"key": "form_id", "title": "폼", "type": "string"}],
+                                outputFields=[dict(out, fieldsInputs=["form_id"])])
+        self.assertEqual(self.ok(events={"gmail.new_email": good_trigger}), [])
+
+    def test_output_fields_inputs_must_not_use_q(self):
+        bad = _event(fields={"q": {"title": "검색"}},
+                     outputFields=[{"key": "answers", "title": "답", "type": "dict",
+                                    "fieldsSource": "google.form_questions", "fieldsInputs": ["q"]}])
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("fieldsInputs에 'q'" in e for e in errs), errs)
+
+    def test_output_dynamic_rules_apply_in_children(self):
+        """S1·S2 items[].answers — 목록 안쪽 출력 칸도 같은 규칙."""
+        def items(answers):
+            return [{"key": "items", "title": "응답", "type": "object", "list": True, "children": [answers]}]
+        bad = _event(fields={"form_id": {"title": "폼"}},
+                     outputFields=items({"key": "answers", "title": "답", "type": "dict",
+                                         "fieldsSource": "google.form_questions", "fieldsInputs": ["nope"]}))
+        errs = self.ok(events={"gmail.send_email": bad})
+        self.assertTrue(any("'answers'" in e and "입력 칸" in e for e in errs), errs)
+        good = _event(fields={"form_id": {"title": "폼"}},
+                      outputFields=items({"key": "answers", "title": "답", "type": "dict", "dynamic": True,
+                                          "fieldsSource": "google.form_questions", "fieldsInputs": ["form_id"]}))
+        self.assertEqual(self.ok(events={"gmail.send_email": good}), [])
+
     def test_preset_rules(self):
         m = {"type": "AI"}
         self.assertEqual(self.ok(presets=[{"id": "ai.web_search", "app": "gmail", "match": m}]), [])
