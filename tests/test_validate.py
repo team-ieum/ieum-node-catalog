@@ -319,11 +319,18 @@ class RepoCatalogTest(unittest.TestCase):
             cm = f["column_map"]
             self.assertEqual((cm["type"], cm["ref"], cm["fieldsSource"], cm["fieldsInputs"]),
                              ("dict", False, "google.sheet_columns", ["spreadsheet_id", "sheet_id"]))
-        self.assertIs(events["google_sheets.delete_rows"]["fields"]["confirm_delete"]["ref"], False)
+        # type·required는 agent 시그니처에서 파생(boolean·required). default가 생기면 삭제 확인이 무력해진다.
+        self.assertEqual(events["google_sheets.delete_rows"]["fields"]["confirm_delete"],
+                         {"title": "삭제 확인", "ref": False,
+                          "description": "켜야 실행돼요. 지운 행은 되돌릴 수 없어요(버전 기록으로만 복구)"})
         fmt = events["google_sheets.format_rows"]["fields"]
         for key in ("bold", "italic", "strikethrough"):
             self.assertIs(fmt[key]["ref"], False, key)
             self.assertNotIn("choices", fmt[key])
+            self.assertNotIn("default", fmt[key])
+        for key in ("row_numbers", "background_color", "text_color"):
+            self.assertNotIn("ref", fmt[key], key)
+            self.assertNotIn("choices", fmt[key], key)
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
