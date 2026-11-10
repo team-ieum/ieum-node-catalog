@@ -1,0 +1,30 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 대화에서 라벨 떼기",
+  "description": "대화의 모든 메일에서 라벨을 떼요.",
+  "tool_key": "builtin:google_gmail_remove_thread_label",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "thread_id": {
+      "title": "대화",
+      "optionsSource": "google.gmail_threads"
+    },
+    "label_ids": {
+      "title": "라벨",
+      "ref": false,
+      "optionsSource": "google.gmail_labels"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "Gmail 대화 가져오기",
+  "description": "대화의 메일을 모두 가져와요.",
+  "tool_key": "builtin:google_gmail_get_thread",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "thread_id": {
+      "title": "대화",
+      "optionsSource": "google.gmail_threads"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "메일",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "messageId",
+          "title": "메일 ID",
+          "type": "string"
+        },
+        {
+          "key": "threadId",
+          "title": "스레드 ID",
+          "type": "string"
+        },
+        {
+          "key": "from",
+          "title": "보낸 사람",
+          "type": "string"
+        },
+        {
+          "key": "to",
+          "title": "받는 사람",
+          "type": "string"
+        },
+        {
+          "key": "subject",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "snippet",
+          "title": "미리보기",
+          "type": "text"
+        },
+        {
+          "key": "bodyText",
+          "title": "본문",
+          "type": "text"
+        },
+        {
+          "key": "receivedAt",
+          "title": "받은 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "labels",
+          "title": "라벨 ID",
+          "type": "string",
+          "list": true
+        }
+      ]
+    }
+  ]
+}

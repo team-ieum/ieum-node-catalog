@@ -1,0 +1,30 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 휴지통으로 이동",
+  "description": "메일을 휴지통으로 옮겨요. 30일 안에는 되돌릴 수 있어요.",
+  "tool_key": "builtin:google_gmail_trash",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "message_id": {
+      "title": "메일",
+      "optionsSource": "google.gmail_messages"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "Gmail 메일 보관",
+  "description": "받은편지함에서 빼서 보관해요.",
+  "tool_key": "builtin:google_gmail_archive",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "message_id": {
+      "title": "메일",
+      "optionsSource": "google.gmail_messages"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "messageId",
+      "title": "메일 ID",
+      "type": "string"
+    },
+    {
+      "key": "threadId",
+      "title": "대화 ID",
+      "type": "string"
+    },
+    {
+      "key": "labels",
+      "title": "라벨",
+      "type": "string",
+      "list": true
+    }
+  ]
+}
