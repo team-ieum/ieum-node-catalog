@@ -1,0 +1,184 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "조건부 서식 추가",
+  "description": "조건에 맞는 셀에 서식을 입혀요. 실행할 때마다 규칙이 하나씩 쌓여요.",
+  "tool_key": "builtin:google_sheets_add_conditional_format",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "cell_range": {
+      "title": "범위",
+      "description": "A1 표기. 예: A1:C10, A:A, 2:10. 시트는 위에서 고른 시트예요"
+    },
+    "condition": {
+      "title": "조건",
+      "ref": false,
+      "choices": [
+        {
+          "id": "NUMBER_GREATER",
+          "name": "숫자: 보다 큼"
+        },
+        {
+          "id": "NUMBER_GREATER_THAN_EQ",
+          "name": "숫자: 크거나 같음"
+        },
+        {
+          "id": "NUMBER_LESS",
+          "name": "숫자: 보다 작음"
+        },
+        {
+          "id": "NUMBER_LESS_THAN_EQ",
+          "name": "숫자: 작거나 같음"
+        },
+        {
+          "id": "NUMBER_EQ",
+          "name": "숫자: 같음"
+        },
+        {
+          "id": "NUMBER_NOT_EQ",
+          "name": "숫자: 같지 않음"
+        },
+        {
+          "id": "NUMBER_BETWEEN",
+          "name": "숫자: 사이"
+        },
+        {
+          "id": "NUMBER_NOT_BETWEEN",
+          "name": "숫자: 사이 아님"
+        },
+        {
+          "id": "TEXT_CONTAINS",
+          "name": "텍스트: 포함"
+        },
+        {
+          "id": "TEXT_NOT_CONTAINS",
+          "name": "텍스트: 포함 안 함"
+        },
+        {
+          "id": "TEXT_EQ",
+          "name": "텍스트: 정확히 일치"
+        },
+        {
+          "id": "TEXT_STARTS_WITH",
+          "name": "텍스트: 시작"
+        },
+        {
+          "id": "TEXT_ENDS_WITH",
+          "name": "텍스트: 끝남"
+        },
+        {
+          "id": "DATE_EQ",
+          "name": "날짜: 같음"
+        },
+        {
+          "id": "DATE_BEFORE",
+          "name": "날짜: 이전"
+        },
+        {
+          "id": "DATE_AFTER",
+          "name": "날짜: 이후"
+        },
+        {
+          "id": "BLANK",
+          "name": "비어 있음"
+        },
+        {
+          "id": "NOT_BLANK",
+          "name": "비어 있지 않음"
+        },
+        {
+          "id": "CUSTOM_FORMULA",
+          "name": "맞춤 수식"
+        }
+      ]
+    },
+    "value_1": {
+      "title": "값",
+      "description": "조건과 비교할 값. '맞춤 수식'은 =로 시작해요. '비어 있음'·'비어 있지 않음'에선 안 써요"
+    },
+    "value_2": {
+      "title": "두 번째 값",
+      "description": "'사이'·'사이 아님'에서만 써요"
+    },
+    "relative_date": {
+      "title": "상대 날짜",
+      "description": "날짜 조건에서 값 대신 써요",
+      "ref": false,
+      "choices": [
+        {
+          "id": "PAST_YEAR",
+          "name": "지난 1년"
+        },
+        {
+          "id": "PAST_MONTH",
+          "name": "지난 한 달"
+        },
+        {
+          "id": "PAST_WEEK",
+          "name": "지난 한 주"
+        },
+        {
+          "id": "YESTERDAY",
+          "name": "어제"
+        },
+        {
+          "id": "TODAY",
+          "name": "오늘"
+        },
+        {
+          "id": "TOMORROW",
+          "name": "내일"
+        }
+      ]
+    },
+    "background_color": {
+      "title": "배경색",
+      "description": "#RRGGBB(예: #FFF2CC). 비우면 그대로"
+    },
+    "text_color": {
+      "title": "글자색",
+      "description": "#RRGGBB(예: #1F4E79). 비우면 그대로"
+    },
+    "bold": {
+      "title": "굵게",
+      "description": "비우면 그대로, 끄면 굵게를 풀어요",
+      "ref": false
+    },
+    "italic": {
+      "title": "기울임",
+      "description": "비우면 그대로, 끄면 기울임을 풀어요",
+      "ref": false
+    },
+    "strikethrough": {
+      "title": "취소선",
+      "description": "비우면 그대로, 끄면 취소선을 풀어요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "range",
+      "title": "규칙을 건 범위",
+      "type": "string"
+    }
+  ]
+}

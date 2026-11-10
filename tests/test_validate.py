@@ -28,6 +28,24 @@ SHEETS_ROW_EVENTS = {
 GMAIL_SEND_KEYS = ["to", "cc", "bcc", "from_email", "from_name", "reply_to", "subject", "body_format", "body",
                    "include_signature", "label_ids"]
 GMAIL_MAIL_KEYS = ["messageId", "threadId", "from", "to", "subject", "snippet", "bodyText", "receivedAt", "labels"]
+SHEETS_RANGE_FIELDS = {
+    "google_sheets.add_column": ["spreadsheet_id", "sheet_id", "title", "before_column"],
+    "google_sheets.copy_range": ["spreadsheet_id", "sheet_id", "source_range", "destination_range", "paste_type",
+                                 "paste_orientation"],
+    "google_sheets.sort_range": ["spreadsheet_id", "sheet_id", "sort_column", "sort_order", "cell_range"],
+    "google_sheets.format_range": ["spreadsheet_id", "sheet_id", "cell_range", "number_format", "number_pattern",
+                                   "background_color", "text_color", "bold", "italic", "strikethrough",
+                                   "horizontal_alignment", "vertical_alignment", "wrap_strategy"],
+    "google_sheets.add_conditional_format": ["spreadsheet_id", "sheet_id", "cell_range", "condition", "value_1",
+                                             "value_2", "relative_date", "background_color", "text_color", "bold",
+                                             "italic", "strikethrough"],
+    "google_sheets.set_data_validation": ["spreadsheet_id", "sheet_id", "cell_range", "condition", "value_1",
+                                          "value_2", "values", "input_message", "strict", "show_dropdown"],
+}
+SHEETS_RANGE_OUTPUTS = {"google_sheets.add_column": ["column", "title"],
+                        "google_sheets.copy_range": ["source", "destination"]}  # 나머지 4개는 ["range"]
+_NO_REF = {"spreadsheet_id", "sheet_id", "before_column", "sort_column", "bold", "italic", "strikethrough",
+           "strict", "show_dropdown"}
 FORMS_RESPONSE_KEYS = ["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
@@ -331,6 +349,38 @@ class RepoCatalogTest(unittest.TestCase):
         for key in ("row_numbers", "background_color", "text_color"):
             self.assertNotIn("ref", fmt[key], key)
             self.assertNotIn("choices", fmt[key], key)
+
+    def test_google_sheets_range_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        common = {k: events["google_sheets.update_row"]["fields"][k] for k in ("spreadsheet_id", "sheet_id")}
+        column = {k: v for k, v in events["google_sheets.lookup_row"]["fields"]["lookup_column"].items()
+                  if k in ("optionsSource", "optionsInputs", "ref")}
+        for name, keys in SHEETS_RANGE_FIELDS.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            fields = ev["fields"]
+            self.assertEqual(list(fields), keys, name)
+            self.assertEqual({k: fields[k] for k in common}, common, name)
+            for key, f in fields.items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+                if "choices" in f or key in _NO_REF:
+                    self.assertIs(f.get("ref"), False, (name, key))
+            for key in ("before_column", "sort_column"):
+                if key in fields:
+                    self.assertEqual({k: fields[key][k] for k in column}, column, (name, key))
+            outs = [f["key"] for f in ev["outputFields"]]
+            self.assertEqual(outs, SHEETS_RANGE_OUTPUTS.get(name, ["range"]), name)
+            for f in ev["outputFields"]:
+                self.assertTrue(f.get("title") and f.get("type") == "string", (name, f["key"]))
+        cf = [c["id"] for c in events["google_sheets.add_conditional_format"]["fields"]["condition"]["choices"]]
+        dv = [c["id"] for c in events["google_sheets.set_data_validation"]["fields"]["condition"]["choices"]]
+        self.assertEqual((len(cf), len(dv)), (19, 25))
+        fmt = events["google_sheets.format_range"]["fields"]
+        for key in ("background_color", "text_color", "bold", "italic", "strikethrough"):
+            self.assertEqual(events["google_sheets.add_conditional_format"]["fields"][key], fmt[key], key)
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
