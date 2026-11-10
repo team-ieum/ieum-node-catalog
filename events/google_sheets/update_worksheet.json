@@ -1,0 +1,75 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 속성 바꾸기",
+  "description": "고정 행·열, 위치, 숨기기를 바꿔요. 비운 칸은 그대로 둬요.",
+  "tool_key": "builtin:google_sheets_update_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "frozen_rows": {
+      "title": "고정할 행 수",
+      "description": "0이면 고정 해제"
+    },
+    "frozen_columns": {
+      "title": "고정할 열 수",
+      "description": "0이면 고정 해제"
+    },
+    "position": {
+      "title": "시트 위치",
+      "description": "1이 맨 앞"
+    },
+    "visibility": {
+      "title": "보이기",
+      "description": "비우면 그대로",
+      "ref": false,
+      "choices": [
+        {
+          "id": "hide",
+          "name": "숨기기"
+        },
+        {
+          "id": "show",
+          "name": "보이기"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    },
+    {
+      "key": "updated",
+      "title": "바꾼 속성",
+      "type": "string",
+      "list": true,
+      "description": "frozen_rows·frozen_columns·position·visibility 중 바꾼 것"
+    }
+  ]
+}

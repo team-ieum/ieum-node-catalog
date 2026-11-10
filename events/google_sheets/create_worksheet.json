@@ -1,0 +1,45 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 만들기",
+  "description": "스프레드시트에 새 시트를 만들어요.",
+  "tool_key": "builtin:google_sheets_create_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "title": {
+      "title": "시트 제목",
+      "description": "같은 이름 시트가 있으면 실패해요"
+    },
+    "headers": {
+      "title": "헤더",
+      "description": "1행에 쓸 열 제목. 쉼표로 구분해요. 예: 이름,이메일,날짜"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "spreadsheet_id",
+      "title": "스프레드시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 삭제",
+  "description": "시트를 지워요. 되돌릴 수 없어요.",
+  "tool_key": "builtin:google_sheets_delete_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "confirm_delete": {
+      "title": "삭제 확인",
+      "description": "켜야 삭제돼요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "deleted",
+      "title": "삭제됨",
+      "type": "boolean"
+    },
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "지운 시트 이름",
+      "type": "string"
+    }
+  ]
+}

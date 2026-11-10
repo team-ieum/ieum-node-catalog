@@ -1,0 +1,57 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 복사",
+  "description": "시트를 같은 파일이나 다른 스프레드시트로 복사해요.",
+  "tool_key": "builtin:google_sheets_copy_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "destination_spreadsheet_id": {
+      "title": "붙여넣을 스프레드시트",
+      "description": "비우면 같은 파일에 복사해요",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "new_title": {
+      "title": "새 시트 이름",
+      "description": "비우면 Google이 정한 이름(예: …의 사본)"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "spreadsheet_id",
+      "title": "스프레드시트 ID",
+      "type": "string",
+      "description": "복사본이 있는 파일"
+    },
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string"
+    }
+  ]
+}

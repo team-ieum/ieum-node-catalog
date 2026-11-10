@@ -1,0 +1,49 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "워크시트 이름 바꾸기",
+  "description": "시트 이름을 바꿔요.",
+  "tool_key": "builtin:google_sheets_rename_worksheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "spreadsheet_id": {
+      "title": "스프레드시트",
+      "description": "대상 스프레드시트",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "sheet_id": {
+      "title": "워크시트",
+      "description": "대상 워크시트(탭)",
+      "optionsSource": "google.worksheets",
+      "optionsInputs": [
+        "spreadsheet_id"
+      ],
+      "ref": false
+    },
+    "new_title": {
+      "title": "새 이름"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "sheet_id",
+      "title": "시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "새 이름",
+      "type": "string"
+    },
+    {
+      "key": "previous_title",
+      "title": "이전 이름",
+      "type": "string"
+    }
+  ]
+}

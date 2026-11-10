@@ -1,0 +1,56 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "스프레드시트 찾기, 없으면 만들기",
+  "description": "이름이 같은 스프레드시트를 찾고 없으면 만들어요.",
+  "tool_key": "builtin:google_sheets_find_or_create_spreadsheet",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "title": {
+      "title": "이름",
+      "description": "정확히 같은 이름을 찾아요. 폴더를 고르면 그 폴더 안에서만 찾아요"
+    },
+    "folder_id": {
+      "title": "폴더",
+      "description": "만들 폴더 (비우면 내 드라이브 최상위)",
+      "optionsSource": "google.folders"
+    },
+    "copy_from": {
+      "title": "복사할 스프레드시트",
+      "description": "고르면 이 파일을 복사해 만들어요",
+      "optionsSource": "google.spreadsheets",
+      "ref": false
+    },
+    "headers": {
+      "title": "헤더",
+      "description": "1행에 쓸 열 제목. 쉼표로 구분해요. 복사할 스프레드시트를 고르면 무시해요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 만듦",
+      "type": "boolean",
+      "description": "찾지 못해 새로 만들었는지"
+    },
+    {
+      "key": "spreadsheet_id",
+      "title": "스프레드시트 ID",
+      "type": "string"
+    },
+    {
+      "key": "title",
+      "title": "이름",
+      "type": "string"
+    },
+    {
+      "key": "url",
+      "title": "링크",
+      "type": "string"
+    }
+  ]
+}
