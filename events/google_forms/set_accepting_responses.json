@@ -1,0 +1,36 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "폼 응답 받기 켜기·끄기",
+  "description": "구글 폼이 응답을 받을지 켜거나 꺼요.",
+  "tool_key": "builtin:google_forms_set_accepting_responses",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "form_id": {
+      "title": "폼",
+      "description": "대상 폼(편집 화면 주소의 폼 ID도 돼요)",
+      "optionsSource": "google.forms"
+    },
+    "accepting": {
+      "title": "응답 받기",
+      "description": "켜면 응답을 받아요(게시 안 된 폼은 게시도 함께). 끄면 게시는 그대로 두고 응답만 막아요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "isPublished",
+      "title": "게시됨",
+      "type": "boolean"
+    },
+    {
+      "key": "isAcceptingResponses",
+      "title": "응답 받는 중",
+      "type": "boolean"
+    }
+  ]
+}

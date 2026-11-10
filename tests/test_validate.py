@@ -282,6 +282,25 @@ class RepoCatalogTest(unittest.TestCase):
             outs = {f["key"]: f for f in events[name]["outputFields"]}
             self.assertIs(outs[dyn_key].get("dynamic"), True, name)
 
+    def test_google_forms_events(self):
+        apps, events, _ = validate.load(validate.ROOT)
+        self.assertEqual(apps["google_forms"]["auth"], "google_oauth")
+        c1, s3 = events["google_forms.set_accepting_responses"], events["google_forms.get_form"]
+        self.assertEqual((c1["kind"], c1["tool_key"]), ("action", "builtin:google_forms_set_accepting_responses"))
+        self.assertEqual((s3["kind"], s3["tool_key"]), ("search", "builtin:google_forms_get_form"))
+        for ev in (c1, s3):
+            self.assertEqual(ev["fields"]["form_id"]["optionsSource"], "google.forms")
+        self.assertIs(c1["fields"]["accepting"]["ref"], False)
+        self.assertEqual([f["key"] for f in c1["outputFields"]], ["isPublished", "isAcceptingResponses"])
+        outs = {f["key"]: f for f in s3["outputFields"]}
+        self.assertEqual(list(outs), ["found", "total", "items", "message"])
+        self.assertIs(outs["items"]["list"], True)
+        items = {c["key"]: c for c in outs["items"]["children"]}
+        self.assertEqual(list(items), ["formId", "title", "description", "responderUrl", "isPublished",
+                                       "isAcceptingResponses", "linkedSheetId", "questions"])
+        self.assertIs(items["questions"]["list"], True)
+        self.assertEqual([c["key"] for c in items["questions"]["children"]], ["questionId", "title", "kind", "required"])
+
 
 class BaseCompareTest(unittest.TestCase):
     def snap(self, events, presets=()):
