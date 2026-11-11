@@ -1,0 +1,77 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "캘린더 정보",
+  "description": "캘린더 이름·시간대 같은 정보를 가져와요.",
+  "tool_key": "builtin:google_calendar_get_calendar",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "정보를 볼 캘린더 (비우면 기본 캘린더)",
+      "optionsSource": "google.calendars"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "캘린더가 있는지 (없거나 권한이 없으면 false)"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "캘린더",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "summary",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "timeZone",
+          "title": "시간대",
+          "type": "string"
+        },
+        {
+          "key": "location",
+          "title": "위치",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "summary",
+      "title": "이름",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "timeZone",
+      "title": "시간대",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    }
+  ]
+}

@@ -61,7 +61,18 @@ SHEETS_RANGE_OUTPUTS = {"google_sheets.add_column": ["column", "title"],
                         "google_sheets.copy_range": ["source", "destination"]}  # 나머지 4개는 ["range"]
 _NO_REF = {"spreadsheet_id", "sheet_id", "before_column", "sort_column", "bold", "italic", "strikethrough",
            "strict", "show_dropdown"}
-FORMS_RESPONSE_KEYS = ["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
+CALENDAR_SEARCH_EVENTS = {
+    "google_calendar.get_event": (["event_id", "calendar_id"],
+                                  ["found", "total", "items", "summary", "start", "end", "htmlLink"]),
+    "google_calendar.find_busy": (["calendar_ids", "time_min", "time_max", "time_zone"], ["found", "total", "items"]),
+    "google_calendar.list_calendars": (["writable_only"], ["found", "total", "items"]),
+    "google_calendar.get_calendar": (["calendar_id"], ["found", "total", "items", "summary", "timeZone"]),
+}
+CALENDAR_ACTION_EVENTS = {
+    "google_calendar.find_or_create": (["summary", "start_datetime", "end_datetime", "description", "calendar_id",
+                                        "query", "time_min", "time_max"], ["created", "eventId", "htmlLink"]),
+}
+FORMS_RESPONSE_KEYS =["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
 
@@ -432,6 +443,43 @@ class RepoCatalogTest(unittest.TestCase):
                           ("google_sheets.find_or_create_worksheet", "created")):
             out = next(f for f in events[name]["outputFields"] if f["key"] == key)
             self.assertEqual(out["type"], "boolean", (name, key))
+
+    def test_google_calendar_search_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        search = {n for n, e in events.items() if n.startswith("google_calendar.") and e.get("kind") == "search"}
+        self.assertEqual(search, set(CALENDAR_SEARCH_EVENTS) | {"google_calendar.find"})
+        find_items = {f["key"]: f for f in events["google_calendar.find"]["outputFields"]}["items"]
+        for name, (fields, outs) in {**CALENDAR_SEARCH_EVENTS, **CALENDAR_ACTION_EVENTS}.items():
+            ev = events[name]
+            kind = "search" if name in CALENDAR_SEARCH_EVENTS else "action"
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", kind, {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            self.assertEqual(list(ev["fields"]), fields, name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            for key, f in ev["fields"].items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+
+            def walk(fs):
+                for f in fs:
+                    self.assertTrue(f.get("title") and f.get("type"), (name, f.get("key")))
+                    walk(f.get("children") or [])
+            walk(ev["outputFields"])
+            if kind == "search":
+                o = {f["key"]: f for f in ev["outputFields"]}
+                self.assertEqual((o["found"]["type"], o["total"]["type"], o["items"].get("list")),
+                                 ("boolean", "integer", True), name)
+        # 일정을 돌려주는 항목은 일정 찾기와 같은 모양 — 다음 노드가 같은 참조식을 쓴다.
+        items = {f["key"]: f for f in events["google_calendar.get_event"]["outputFields"]}["items"]
+        self.assertEqual(items["children"], find_items["children"])
+        self.assertEqual(events["google_calendar.list_calendars"]["fields"]["writable_only"].get("ref"), False)
+        # 찾고 없으면 만들기의 만들기 칸은 일정 만들기와 같다(캘린더 설명만 다름).
+        create = events["google_calendar.create"]["fields"]
+        foc = events["google_calendar.find_or_create"]["fields"]
+        for key in ("summary", "start_datetime", "end_datetime", "description"):
+            self.assertEqual(foc[key], create[key], key)
+        self.assertEqual(foc["calendar_id"]["optionsSource"], "google.writable_calendars")
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)

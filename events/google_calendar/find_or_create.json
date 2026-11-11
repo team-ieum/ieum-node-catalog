@@ -1,0 +1,66 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "캘린더 일정 찾기, 없으면 만들기",
+  "description": "검색어에 맞는 일정을 찾고 없으면 새로 만들어요.",
+  "tool_key": "builtin:google_calendar_find_or_create",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "summary": {
+      "title": "제목"
+    },
+    "start_datetime": {
+      "title": "시작",
+      "type": "datetime"
+    },
+    "end_datetime": {
+      "title": "종료",
+      "type": "datetime"
+    },
+    "description": {
+      "title": "설명",
+      "type": "text"
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "찾고 만들 캘린더 (비우면 기본 캘린더, 쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "query": {
+      "title": "검색어",
+      "description": "제목·설명·장소·참석자에서 찾아요. 비우면 제목으로 찾아요"
+    },
+    "time_min": {
+      "title": "찾을 시작 시각",
+      "type": "datetime",
+      "description": "이 시각 이후에 끝나는 일정만 찾아요 (비우면 지금부터)"
+    },
+    "time_max": {
+      "title": "찾을 종료 시각",
+      "type": "datetime",
+      "description": "이 시각 전에 시작하는 일정만 찾아요 (비우면 제한 없음)"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "created",
+      "title": "새로 만듦",
+      "type": "boolean",
+      "description": "찾지 못해 새로 만들었는지"
+    },
+    {
+      "key": "eventId",
+      "title": "일정 ID",
+      "type": "string"
+    },
+    {
+      "key": "htmlLink",
+      "title": "일정 링크",
+      "type": "string"
+    }
+  ]
+}

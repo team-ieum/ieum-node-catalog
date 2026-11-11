@@ -1,0 +1,71 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "캘린더 목록",
+  "description": "내 캘린더 목록을 가져와요.",
+  "tool_key": "builtin:google_calendar_list_calendars",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "writable_only": {
+      "title": "쓰기 가능한 캘린더만",
+      "description": "켜면 일정을 만들 수 있는 캘린더만 가져와요",
+      "ref": false
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "캘린더가 하나라도 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "캘린더",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "summary",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "timeZone",
+          "title": "시간대",
+          "type": "string"
+        },
+        {
+          "key": "accessRole",
+          "title": "권한",
+          "type": "string",
+          "description": "owner·writer·reader 등"
+        },
+        {
+          "key": "primary",
+          "title": "기본 캘린더",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}
