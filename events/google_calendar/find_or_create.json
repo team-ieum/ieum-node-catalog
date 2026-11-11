@@ -34,6 +34,28 @@
       "title": "검색어",
       "description": "제목·설명·장소·참석자에서 찾아요. 비우면 제목으로 찾아요"
     },
+    "period": {
+      "title": "기간",
+      "description": "'오늘 일정'처럼 실행한 날 기준이면 골라요(캘린더 시간대). 고르면 시작·종료 시각은 쓰지 않아요",
+      "choices": [
+        {
+          "id": "today",
+          "name": "오늘"
+        },
+        {
+          "id": "tomorrow",
+          "name": "내일"
+        },
+        {
+          "id": "this_week",
+          "name": "이번 주(월~일)"
+        },
+        {
+          "id": "next_7_days",
+          "name": "앞으로 7일"
+        }
+      ]
+    },
     "time_min": {
       "title": "찾을 시작 시각",
       "type": "datetime",

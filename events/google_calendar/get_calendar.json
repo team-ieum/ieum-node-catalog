@@ -2,7 +2,7 @@
   "node_type": "ACTION",
   "kind": "search",
   "title": "캘린더 정보",
-  "description": "캘린더 이름·시간대 같은 정보를 가져와요.",
+  "description": "캘린더의 시간대·내 권한·기본 알림 같은 정보를 가져와요.",
   "tool_key": "builtin:google_calendar_get_calendar",
   "builder": true,
   "fixed": {
@@ -12,7 +12,7 @@
   "fields": {
     "calendar_id": {
       "title": "캘린더",
-      "description": "정보를 볼 캘린더 (비우면 기본 캘린더)",
+      "description": "정보를 볼 캘린더 (비우면 기본 캘린더, 내 캘린더 목록에 있는 캘린더만)",
       "optionsSource": "google.calendars"
     }
   },
@@ -55,9 +55,40 @@
           "type": "string"
         },
         {
-          "key": "location",
-          "title": "위치",
-          "type": "string"
+          "key": "accessRole",
+          "title": "내 권한",
+          "type": "string",
+          "description": "owner·writer·reader 등"
+        },
+        {
+          "key": "primary",
+          "title": "기본 캘린더",
+          "type": "boolean"
+        },
+        {
+          "key": "defaultReminders",
+          "title": "기본 알림",
+          "type": "object",
+          "list": true,
+          "children": [
+            {
+              "key": "method",
+              "title": "방식",
+              "type": "string",
+              "description": "email·popup"
+            },
+            {
+              "key": "minutes",
+              "title": "몇 분 전",
+              "type": "integer"
+            }
+          ]
+        },
+        {
+          "key": "meetSupported",
+          "title": "Meet 지원",
+          "type": "boolean",
+          "description": "이 캘린더 일정에 Meet 회의를 붙일 수 있는지"
         }
       ]
     },
@@ -70,6 +101,12 @@
     {
       "key": "timeZone",
       "title": "시간대",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "accessRole",
+      "title": "내 권한",
       "type": "string",
       "description": "못 찾으면 빈 값"
     }

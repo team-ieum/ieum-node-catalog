@@ -12,21 +12,19 @@
   "fields": {
     "calendar_ids": {
       "title": "캘린더",
-      "description": "캘린더 ID나 이메일을 쉼표로 구분해요(최대 50개). 비우면 기본 캘린더"
+      "description": "캘린더 ID나 이메일을 쉼표로 구분해요(최대 50개). 내 목록에 없는 동료 이메일도 돼요"
     },
     "time_min": {
       "title": "시작 시각",
-      "type": "datetime",
-      "description": "비우면 지금부터"
+      "type": "datetime"
     },
     "time_max": {
       "title": "종료 시각",
-      "type": "datetime",
-      "description": "이 시각까지 찾아요 (비우면 시작부터 7일)"
+      "type": "datetime"
     },
     "time_zone": {
       "title": "시간대",
-      "description": "IANA 이름(예: Asia/Seoul). 오프셋 없는 시각을 이 시간대로 읽어요. 비우면 첫 캘린더의 시간대"
+      "description": "IANA 이름(예: Asia/Seoul). 오프셋 없는 시각을 이 시간대로 읽고 결과도 이 시간대로 줘요. 비우면 UTC"
     }
   },
   "outputFields": [
@@ -61,6 +59,25 @@
           "key": "end",
           "title": "종료",
           "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "errors",
+      "title": "읽지 못한 캘린더",
+      "type": "object",
+      "list": true,
+      "description": "권한이 없거나 없는 캘린더 — 여기 있는 캘린더의 바쁜 시간은 결과에 없어요",
+      "children": [
+        {
+          "key": "calendarId",
+          "title": "캘린더",
+          "type": "string"
+        },
+        {
+          "key": "reason",
+          "title": "이유",
+          "type": "string"
         }
       ]
     }

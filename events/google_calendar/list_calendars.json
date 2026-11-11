@@ -10,9 +10,39 @@
     "config": {}
   },
   "fields": {
-    "writable_only": {
-      "title": "쓰기 가능한 캘린더만",
-      "description": "켜면 일정을 만들 수 있는 캘린더만 가져와요",
+    "min_access_role": {
+      "title": "최소 권한",
+      "description": "이 권한 이상인 캘린더만 가져와요. 비우면 전부",
+      "ref": false,
+      "choices": [
+        {
+          "id": "freeBusyReader",
+          "name": "바쁨 여부만 보기"
+        },
+        {
+          "id": "reader",
+          "name": "읽기"
+        },
+        {
+          "id": "writerWithoutPrivateAccess",
+          "name": "쓰기(비공개 일정 제외)"
+        },
+        {
+          "id": "writer",
+          "name": "쓰기"
+        },
+        {
+          "id": "owner",
+          "name": "소유자"
+        }
+      ]
+    },
+    "show_hidden": {
+      "title": "숨긴 캘린더 포함",
+      "ref": false
+    },
+    "show_deleted": {
+      "title": "삭제된 캘린더 포함",
       "ref": false
     }
   },
@@ -63,6 +93,16 @@
         {
           "key": "primary",
           "title": "기본 캘린더",
+          "type": "boolean"
+        },
+        {
+          "key": "hidden",
+          "title": "숨김",
+          "type": "boolean"
+        },
+        {
+          "key": "deleted",
+          "title": "삭제됨",
           "type": "boolean"
         }
       ]
