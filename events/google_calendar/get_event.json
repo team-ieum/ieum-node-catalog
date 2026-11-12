@@ -1,0 +1,132 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "ID로 캘린더 일정 가져오기",
+  "description": "일정 ID로 일정 하나를 가져와요.",
+  "tool_key": "builtin:google_calendar_get_event",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "event_id": {
+      "title": "일정",
+      "description": "가져올 일정. 목록엔 앞으로의 일정만 나와요 — 지난 일정은 ID를 직접 넣거나 앞 노드 값을 참조해요",
+      "optionsSource": "google.events",
+      "optionsInputs": [
+        "calendar_id"
+      ]
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "읽을 캘린더 (비우면 기본 캘린더, 공휴일 캘린더 포함)",
+      "optionsSource": "google.calendars"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "일정이 있는지 (지워졌거나 없으면 false)"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "일정",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "summary",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "start",
+          "title": "시작",
+          "type": "datetime",
+          "description": "종일 일정은 날짜(YYYY-MM-DD)"
+        },
+        {
+          "key": "end",
+          "title": "종료",
+          "type": "datetime",
+          "description": "종일 일정은 날짜이고, Google 규칙대로 끝나는 날의 다음 날이에요"
+        },
+        {
+          "key": "allDay",
+          "title": "종일",
+          "type": "boolean"
+        },
+        {
+          "key": "location",
+          "title": "장소",
+          "type": "string"
+        },
+        {
+          "key": "description",
+          "title": "설명",
+          "type": "text"
+        },
+        {
+          "key": "htmlLink",
+          "title": "일정 링크",
+          "type": "string"
+        },
+        {
+          "key": "recurringEventId",
+          "title": "반복 일정 ID",
+          "type": "string",
+          "description": "반복 일정의 회차면 원본 일정 ID, 아니면 빈 값"
+        },
+        {
+          "key": "status",
+          "title": "상태",
+          "type": "string"
+        },
+        {
+          "key": "attendees",
+          "title": "참석자",
+          "type": "string",
+          "list": true,
+          "description": "참석자 이메일 목록"
+        }
+      ]
+    },
+    {
+      "key": "summary",
+      "title": "제목",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "start",
+      "title": "시작",
+      "type": "datetime",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "end",
+      "title": "종료",
+      "type": "datetime",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "htmlLink",
+      "title": "일정 링크",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "캘린더 바쁜 시간 찾기",
+  "description": "기간 안에서 일정이 잡힌 시간대를 찾아요.",
+  "tool_key": "builtin:google_calendar_find_busy",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "calendar_ids": {
+      "title": "캘린더",
+      "description": "캘린더 ID나 이메일을 쉼표로 구분해요(최대 50개). 내 목록에 없는 동료 이메일도 돼요"
+    },
+    "time_min": {
+      "title": "시작 시각",
+      "type": "datetime"
+    },
+    "time_max": {
+      "title": "종료 시각",
+      "type": "datetime"
+    },
+    "time_zone": {
+      "title": "시간대",
+      "description": "IANA 이름(예: Asia/Seoul). 오프셋 없는 시각을 이 시간대로 읽고 결과도 이 시간대로 줘요. 비우면 UTC"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "바쁜 시간이 하나라도 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "바쁜 시간",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "calendarId",
+          "title": "캘린더",
+          "type": "string"
+        },
+        {
+          "key": "start",
+          "title": "시작",
+          "type": "datetime"
+        },
+        {
+          "key": "end",
+          "title": "종료",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "errors",
+      "title": "읽지 못한 캘린더",
+      "type": "object",
+      "list": true,
+      "description": "권한이 없거나 없는 캘린더 — 여기 있는 캘린더의 바쁜 시간은 결과에 없어요",
+      "children": [
+        {
+          "key": "calendarId",
+          "title": "캘린더",
+          "type": "string"
+        },
+        {
+          "key": "reason",
+          "title": "이유",
+          "type": "string",
+          "description": "notFound(없는 캘린더)·notReturned(응답에 없음 — 없는 캘린더이거나 같은 캘린더를 두 번 넣음) 등"
+        }
+      ]
+    }
+  ]
+}
