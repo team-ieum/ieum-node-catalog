@@ -77,7 +77,8 @@
         {
           "key": "reason",
           "title": "이유",
-          "type": "string"
+          "type": "string",
+          "description": "notFound(없는 캘린더)·notReturned(응답에 없음 — 없는 캘린더이거나 같은 캘린더를 두 번 넣음) 등"
         }
       ]
     }
