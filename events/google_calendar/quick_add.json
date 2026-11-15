@@ -1,0 +1,73 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "문장으로 캘린더 일정 만들기",
+  "description": "'내일 오후 3시 팀 회의'처럼 문장 하나로 일정을 만들어요.",
+  "tool_key": "builtin:google_calendar_quick_add",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "text": {
+      "title": "문장",
+      "type": "text",
+      "description": "예: 내일 오후 3시 팀 회의. 참석자는 넣을 수 없어요 — 필요하면 '참석자 추가'를 이어 붙여요"
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "일정을 만들 캘린더 (비우면 기본 캘린더, 쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "send_updates": {
+      "title": "참석자 알림",
+      "description": "비우면 Google 기본 동작",
+      "ref": false,
+      "choices": [
+        {
+          "id": "all",
+          "name": "모두에게"
+        },
+        {
+          "id": "externalOnly",
+          "name": "외부 참석자에게만"
+        },
+        {
+          "id": "none",
+          "name": "보내지 않음"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "eventId",
+      "title": "일정 ID",
+      "type": "string"
+    },
+    {
+      "key": "htmlLink",
+      "title": "일정 링크",
+      "type": "string"
+    },
+    {
+      "key": "summary",
+      "title": "제목",
+      "type": "string",
+      "description": "Google이 문장에서 읽어 낸 제목"
+    },
+    {
+      "key": "start",
+      "title": "시작",
+      "type": "datetime",
+      "description": "종일 일정은 날짜(YYYY-MM-DD)"
+    },
+    {
+      "key": "end",
+      "title": "종료",
+      "type": "datetime",
+      "description": "종일 일정은 날짜이고, Google 규칙대로 끝나는 날의 다음 날이에요"
+    }
+  ]
+}

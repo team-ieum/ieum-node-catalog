@@ -12,7 +12,7 @@
   "fields": {
     "event_id": {
       "title": "일정",
-      "description": "가져올 일정. 목록엔 앞으로의 일정만 나와요 — 지난 일정은 ID를 직접 넣거나 앞 노드 값을 참조해요",
+      "description": "가져올 일정",
       "optionsSource": "google.events",
       "optionsInputs": [
         "calendar_id"
