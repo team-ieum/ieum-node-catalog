@@ -73,6 +73,18 @@ CALENDAR_ACTION_EVENTS = {
     "google_calendar.find_or_create": (["summary", "start_datetime", "end_datetime", "description", "calendar_id",
                                         "query", "period", "time_min", "time_max"], ["created", "eventId", "htmlLink"]),
 }
+CALENDAR_UPDATE_EVENTS = {
+    "google_calendar.quick_add": (["text", "calendar_id", "send_updates"],
+                                  ["eventId", "htmlLink", "summary", "start", "end"]),
+    "google_calendar.add_attendees": (["event_id", "attendees", "calendar_id", "scope", "send_updates"],
+                                      ["eventId", "htmlLink", "attendees", "added"]),
+    "google_calendar.remove_attendees": (["event_id", "attendees", "calendar_id", "scope", "send_updates"],
+                                         ["eventId", "htmlLink", "attendees", "removed"]),
+    "google_calendar.move_event": (["event_id", "destination_calendar_id", "calendar_id", "send_updates"],
+                                   ["eventId", "htmlLink", "calendarId"]),
+    "google_calendar.create_calendar": (["summary", "description", "time_zone", "location"],
+                                        ["calendarId", "summary", "timeZone"]),
+}
 FORMS_RESPONSE_KEYS =["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
@@ -488,6 +500,36 @@ class RepoCatalogTest(unittest.TestCase):
         for key in ("summary", "start_datetime", "end_datetime", "description"):
             self.assertEqual(foc[key], create[key], key)
         self.assertEqual(foc["calendar_id"]["optionsSource"], "google.writable_calendars")
+
+    def test_google_calendar_update_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        upd = events["google_calendar.update"]["fields"]
+        for name, (fields, outs) in CALENDAR_UPDATE_EVENTS.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "action", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            self.assertEqual(list(ev["fields"]), fields, name)
+            self.assertEqual([f["key"] for f in ev["outputFields"]], outs, name)
+            for f in ev["outputFields"]:
+                self.assertTrue(f.get("title") and f.get("type"), (name, f["key"]))
+            for key, f in ev["fields"].items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+                # 쓰는 노드의 캘린더는 쓰기 가능한 캘린더만(공휴일 캘린더에 쓰면 403), 일정은 캘린더에 연쇄
+                if key in ("calendar_id", "destination_calendar_id"):
+                    self.assertEqual(f["optionsSource"], "google.writable_calendars", (name, key))
+                if key == "event_id":
+                    self.assertEqual((f["optionsSource"], f["optionsInputs"]), ("google.events", ["calendar_id"]), name)
+                if key == "send_updates":
+                    self.assertEqual(f["choices"], upd["send_updates"]["choices"], name)
+                if key in ("scope", "send_updates"):
+                    self.assertIs(f.get("ref"), False, (name, key))
+        for name, key in (("google_calendar.add_attendees", "added"), ("google_calendar.remove_attendees", "removed")):
+            outs = {f["key"]: f for f in events[name]["outputFields"]}
+            self.assertEqual([c["id"] for c in events[name]["fields"]["scope"]["choices"]], ["this", "all"], name)
+            self.assertIs(outs["attendees"].get("list"), True, name)
+            self.assertIs(outs[key].get("list"), True, name)
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)

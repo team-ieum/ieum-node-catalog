@@ -1,0 +1,68 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "다른 캘린더로 일정 옮기기",
+  "description": "일정을 다른 캘린더로 옮겨요. 주최자가 옮긴 캘린더로 바뀌어요.",
+  "tool_key": "builtin:google_calendar_move_event",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "event_id": {
+      "title": "일정",
+      "description": "옮길 일정 (일반 일정만 — 생일·포커스 타임·부재중·근무 위치·Gmail 일정은 옮길 수 없어요)",
+      "optionsSource": "google.events",
+      "optionsInputs": [
+        "calendar_id"
+      ]
+    },
+    "destination_calendar_id": {
+      "title": "옮길 캘린더",
+      "description": "일정을 옮겨 넣을 캘린더 (쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "지금 일정이 있는 캘린더 (비우면 기본 캘린더)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "send_updates": {
+      "title": "참석자 알림",
+      "description": "비우면 Google 기본 동작",
+      "ref": false,
+      "choices": [
+        {
+          "id": "all",
+          "name": "모두에게"
+        },
+        {
+          "id": "externalOnly",
+          "name": "외부 참석자에게만"
+        },
+        {
+          "id": "none",
+          "name": "보내지 않음"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "eventId",
+      "title": "일정 ID",
+      "type": "string"
+    },
+    {
+      "key": "htmlLink",
+      "title": "일정 링크",
+      "type": "string"
+    },
+    {
+      "key": "calendarId",
+      "title": "옮긴 캘린더 ID",
+      "type": "string"
+    }
+  ]
+}

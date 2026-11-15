@@ -1,0 +1,92 @@
+{
+  "node_type": "ACTION",
+  "kind": "action",
+  "title": "캘린더 일정에 참석자 추가",
+  "description": "기존 참석자는 두고 참석자를 더해요.",
+  "tool_key": "builtin:google_calendar_add_attendees",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "event_id": {
+      "title": "일정",
+      "description": "참석자를 더할 일정",
+      "optionsSource": "google.events",
+      "optionsInputs": [
+        "calendar_id"
+      ]
+    },
+    "attendees": {
+      "title": "참석자 이메일",
+      "description": "쉼표로 구분해요. 예: a@x.com, b@x.com"
+    },
+    "calendar_id": {
+      "title": "캘린더",
+      "description": "대상 캘린더 (비우면 기본 캘린더, 쓰기 권한이 있는 캘린더만)",
+      "optionsSource": "google.writable_calendars"
+    },
+    "scope": {
+      "title": "적용 범위",
+      "description": "반복 일정일 때 이 일정만 또는 반복 전체",
+      "ref": false,
+      "choices": [
+        {
+          "id": "this",
+          "name": "이 일정만"
+        },
+        {
+          "id": "all",
+          "name": "반복 전체"
+        }
+      ]
+    },
+    "send_updates": {
+      "title": "참석자 알림",
+      "description": "비우면 Google 기본 동작",
+      "ref": false,
+      "choices": [
+        {
+          "id": "all",
+          "name": "모두에게"
+        },
+        {
+          "id": "externalOnly",
+          "name": "외부 참석자에게만"
+        },
+        {
+          "id": "none",
+          "name": "보내지 않음"
+        }
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "eventId",
+      "title": "일정 ID",
+      "type": "string",
+      "description": "실제로 바꾼 일정(반복 전체면 원본) ID"
+    },
+    {
+      "key": "htmlLink",
+      "title": "일정 링크",
+      "type": "string"
+    },
+    {
+      "key": "attendees",
+      "title": "참석자",
+      "type": "string",
+      "list": true,
+      "description": "바꾼 뒤 참석자 이메일 목록"
+    },
+    {
+      "key": "added",
+      "title": "추가한 참석자",
+      "type": "string",
+      "list": true,
+      "description": "이미 있거나 없던 이메일은 빠져요. 비면 바꾸지 않았어요"
+    }
+  ]
+}
