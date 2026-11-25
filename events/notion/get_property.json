@@ -1,0 +1,59 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "Notion 속성 하나 가져오기",
+  "description": "페이지나 DB 행의 속성 하나를 끝까지 가져와요. 관계·사람이 25개를 넘어도 다 와요.",
+  "tool_key": "builtin:notion_get_property",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "page_id": {
+      "title": "페이지",
+      "description": "페이지 또는 DB 행. 목록엔 페이지만 나와요 — DB 행은 앞 노드 값을 참조하거나 ID를 넣어요",
+      "optionsSource": "notion.pages"
+    },
+    "property_id": {
+      "title": "속성",
+      "description": "가져올 속성",
+      "optionsSource": "notion.page_properties",
+      "optionsInputs": [
+        "page_id"
+      ]
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "속성 값이 있는지 (비었으면 false)"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer",
+      "description": "값의 개수 — 관계·사람·다중 선택은 항목 수, 나머지는 0 또는 1"
+    },
+    {
+      "key": "items",
+      "title": "값",
+      "type": "json",
+      "list": true,
+      "description": "값을 하나씩 — 관계는 페이지 ID, 사람은 이름, 글은 문단 조각"
+    },
+    {
+      "key": "type",
+      "title": "속성 종류",
+      "type": "string"
+    },
+    {
+      "key": "value",
+      "title": "값",
+      "type": "json",
+      "description": "한 덩어리로 — 글은 이어 붙인 문자열, 목록 종류는 목록"
+    }
+  ]
+}

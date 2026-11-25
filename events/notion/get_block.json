@@ -1,0 +1,82 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "Notion 블록 가져오기",
+  "description": "블록 하나의 종류와 글을 가져와요.",
+  "tool_key": "builtin:notion_get_block",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "block_id": {
+      "title": "블록 ID",
+      "description": "블록이나 페이지 ID — 앞 노드 값을 참조하거나 직접 넣어요"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "블록이 있는지 (없거나 공유되지 않았으면 false)"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "블록",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "type",
+          "title": "종류",
+          "type": "string",
+          "description": "paragraph·heading_1·to_do 등"
+        },
+        {
+          "key": "text",
+          "title": "글",
+          "type": "text"
+        },
+        {
+          "key": "hasChildren",
+          "title": "하위 블록 있음",
+          "type": "boolean"
+        },
+        {
+          "key": "createdAt",
+          "title": "만든 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "lastEditedAt",
+          "title": "마지막 수정",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "type",
+      "title": "종류",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "text",
+      "title": "글",
+      "type": "text",
+      "description": "못 찾으면 빈 값"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "ID로 Notion 페이지·행 가져오기",
+  "description": "페이지나 DB 행의 속성을 가져와요. 본문은 가져오지 않아요.",
+  "tool_key": "builtin:notion_get_page",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "page_id": {
+      "title": "페이지",
+      "description": "페이지 또는 DB 행. 목록엔 페이지만 나와요 — DB 행은 앞 노드 값을 참조하거나 ID를 넣어요",
+      "optionsSource": "notion.pages"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "페이지가 있는지 (없거나 IEUM에 공유되지 않았으면 false)"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "페이지",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "title",
+          "title": "제목",
+          "type": "string"
+        },
+        {
+          "key": "url",
+          "title": "링크",
+          "type": "string"
+        },
+        {
+          "key": "properties",
+          "title": "속성",
+          "type": "dict",
+          "dynamic": true,
+          "description": "속성 이름 → 값. 관계·사람은 25개까지만 와요 — 더 필요하면 '속성 하나 가져오기'"
+        },
+        {
+          "key": "parentType",
+          "title": "상위 종류",
+          "type": "string",
+          "description": "workspace·page_id·data_source_id(DB 행) 등"
+        },
+        {
+          "key": "inTrash",
+          "title": "휴지통",
+          "type": "boolean"
+        },
+        {
+          "key": "createdAt",
+          "title": "만든 시각",
+          "type": "datetime"
+        },
+        {
+          "key": "lastEditedAt",
+          "title": "마지막 수정",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "key": "title",
+      "title": "제목",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "url",
+      "title": "링크",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "properties",
+      "title": "속성",
+      "type": "dict",
+      "dynamic": true,
+      "description": "못 찾으면 빈 값"
+    }
+  ]
+}

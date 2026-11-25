@@ -1,0 +1,79 @@
+{
+  "node_type": "ACTION",
+  "kind": "search",
+  "title": "Notion 사용자 정보",
+  "description": "워크스페이스 사용자 한 명의 이름·이메일을 가져와요.",
+  "tool_key": "builtin:notion_get_user",
+  "builder": true,
+  "fixed": {
+    "type": "ACTION",
+    "config": {}
+  },
+  "fields": {
+    "user_id": {
+      "title": "사용자",
+      "description": "가져올 사용자 (목록에 없으면 ID를 넣어요)",
+      "optionsSource": "notion.users"
+    }
+  },
+  "outputFields": [
+    {
+      "key": "found",
+      "title": "찾음",
+      "type": "boolean",
+      "description": "사용자가 있는지"
+    },
+    {
+      "key": "total",
+      "title": "개수",
+      "type": "integer"
+    },
+    {
+      "key": "items",
+      "title": "사용자",
+      "type": "object",
+      "list": true,
+      "children": [
+        {
+          "key": "id",
+          "title": "ID",
+          "type": "string"
+        },
+        {
+          "key": "name",
+          "title": "이름",
+          "type": "string"
+        },
+        {
+          "key": "type",
+          "title": "종류",
+          "type": "string",
+          "description": "person·bot"
+        },
+        {
+          "key": "email",
+          "title": "이메일",
+          "type": "string",
+          "description": "연동 권한에 따라 빈 값일 수 있어요"
+        },
+        {
+          "key": "avatarUrl",
+          "title": "프로필 사진",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "key": "name",
+      "title": "이름",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    },
+    {
+      "key": "email",
+      "title": "이메일",
+      "type": "string",
+      "description": "못 찾으면 빈 값"
+    }
+  ]
+}

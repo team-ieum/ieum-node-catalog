@@ -85,6 +85,14 @@ CALENDAR_UPDATE_EVENTS = {
     "google_calendar.create_calendar": (["summary", "description", "time_zone", "location"],
                                         ["calendarId", "summary", "timeZone"]),
 }
+NOTION_READ_EVENTS = {
+    "notion.get_page": (["page_id"], ["found", "total", "items", "title", "url", "properties"]),
+    "notion.get_property": (["page_id", "property_id"], ["found", "total", "items", "type", "value"]),
+    "notion.get_block": (["block_id"], ["found", "total", "items", "type", "text"]),
+    "notion.get_block_children": (["block_id", "output_format", "page_size", "start_cursor"],
+                                  ["found", "total", "items", "markdown", "raw", "nextCursor", "hasMore", "truncated"]),
+    "notion.get_user": (["user_id"], ["found", "total", "items", "name", "email"]),
+}
 FORMS_RESPONSE_KEYS =["responseId", "submittedAt", "createdAt", "respondentEmail", "answers", "answerList", "totalScore"]
 
 APP = {"provider": "google", "title": "Gmail", "brand": "gmail", "serviceType": "GOOGLE", "auth": "google_oauth"}
@@ -530,6 +538,32 @@ class RepoCatalogTest(unittest.TestCase):
             self.assertEqual([c["id"] for c in events[name]["fields"]["scope"]["choices"]], ["this", "all"], name)
             self.assertIs(outs["attendees"].get("list"), True, name)
             self.assertIs(outs[key].get("list"), True, name)
+
+    def test_notion_read_events_follow_contract(self):
+        _, events, _ = validate.load(validate.ROOT)
+        for name, (fields, outs) in NOTION_READ_EVENTS.items():
+            ev = events[name]
+            self.assertEqual((ev["node_type"], ev["kind"], ev["fixed"], ev["builder"]),
+                             ("ACTION", "search", {"type": "ACTION", "config": {}}, True), name)
+            self.assertEqual(ev["tool_key"], "builtin:" + name.replace(".", "_"), name)
+            self.assertTrue(ev.get("title", "").strip() and ev.get("description", "").strip(), name)
+            self.assertEqual(list(ev["fields"]), fields, name)
+            o = {f["key"]: f for f in ev["outputFields"]}
+            self.assertEqual(list(o), outs, name)
+            self.assertEqual((o["found"]["type"], o["total"]["type"], o["items"].get("list")),
+                             ("boolean", "integer", True), name)
+            for key, f in ev["fields"].items():
+                self.assertTrue(f.get("title") and f["title"] != key, (name, key))
+        # 페이지는 notion.pages(DB 행 제외), 속성은 그 페이지에 연쇄(IEUM-BE-125)
+        for name in ("notion.get_page", "notion.get_property"):
+            self.assertEqual(events[name]["fields"]["page_id"]["optionsSource"], "notion.pages", name)
+        prop = events["notion.get_property"]["fields"]["property_id"]
+        self.assertEqual((prop["optionsSource"], prop["optionsInputs"]), ("notion.page_properties", ["page_id"]))
+        fmt = events["notion.get_block_children"]["fields"]["output_format"]
+        self.assertEqual(([c["id"] for c in fmt["choices"]], fmt.get("ref")), (["markdown", "json"], False))
+        self.assertEqual(events["notion.get_user"]["fields"]["user_id"]["optionsSource"], "notion.users")
+        props = {f["key"]: f for f in events["notion.get_page"]["outputFields"]}["properties"]
+        self.assertEqual((props["type"], props.get("dynamic")), ("dict", True))
 
     def test_get_pr_reviews_outputs(self):
         _, events, _ = validate.load(validate.ROOT)
